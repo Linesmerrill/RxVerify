@@ -26,6 +26,8 @@ RxVerify is a comprehensive drug information system that combines:
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
+> **📋 For detailed architecture diagrams and technical specifications, see [ARCHITECTURE.md](ARCHITECTURE.md)**
+
 ## 📁 **Project Structure**
 
 ```

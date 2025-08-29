@@ -1,0 +1,5 @@
+2025-08-29 14:47:33,723 - root - INFO - Processing query: What are the key differences between atorvastatin and metformin?...
+2025-08-29 14:47:34,217 - root - INFO - Retrieved 5 documents
+2025-08-29 14:47:34,219 - root - INFO - Cross-check completed, 2 unified records
+2025-08-29 14:47:41,619 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 14:47:41,639 - root - INFO - LLM response generated successfully

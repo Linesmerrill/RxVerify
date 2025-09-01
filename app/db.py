@@ -2,9 +2,27 @@ import os
 from typing import List, Dict, Optional
 import chromadb
 from chromadb.config import Settings
+from app.embeddings import embed
+import asyncio
 
 # ChromaDB client - uses local file storage by default
 client = chromadb.PersistentClient(path="./chroma_db")
+
+# Custom embedding function for ChromaDB
+class ChromaEmbeddingFunction:
+    def __init__(self):
+        pass
+    
+    def __call__(self, input: List[str]) -> List[List[float]]:
+        """ChromaDB-compatible embedding function that calls our async embed function."""
+        # Run the async function in a new event loop
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        
+        return loop.run_until_complete(embed(input))
 
 # Get or create collection for drug documents
 def get_collection():
@@ -13,14 +31,20 @@ def get_collection():
     except:
         return client.create_collection(
             "drug_docs",
-            metadata={"hnsw:space": "cosine"}  # Better for text similarity
+            metadata={"hnsw:space": "l2"},  # Use Euclidean distance for better differentiation
+            embedding_function=ChromaEmbeddingFunction()  # Use our custom embedding function
         )
 
-def search_keyword(query: str, limit: int = 10) -> List[dict]:
-    """Search by text content using ChromaDB's text search."""
+async def search_keyword(query: str, limit: int = 10) -> List[dict]:
+    """Search by text content using our custom embeddings."""
     collection = get_collection()
+    
+    # Generate embedding for the query using our function
+    query_embedding = (await embed([query]))[0]
+    
+    # Search by embedding instead of text
     results = collection.query(
-        query_texts=[query],
+        query_embeddings=[query_embedding],
         n_results=limit,
         include=["metadatas", "documents", "distances"]
     )

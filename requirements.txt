@@ -6,3 +6,4 @@ python-dotenv
 httpx
 pytest
 openai
+requests

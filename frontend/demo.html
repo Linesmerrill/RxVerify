@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RxVerify Frontend Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-6 py-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-4">RxVerify Frontend Demo</h1>
+                <p class="text-xl text-primary-100">Modern, Professional Drug Information Interface</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Demo Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Features Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Modern Design</h3>
+                <p class="text-gray-600">Glass morphism effects, smooth animations, and responsive layout for all devices.</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Real-time API</h3>
+                <p class="text-gray-600">Direct integration with RxVerify backend for instant drug information retrieval.</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Rich Results</h3>
+                <p class="text-gray-600">Formatted answers, source citations, and cross-validation results display.</p>
+            </div>
+        </div>
+
+        <!-- Live Demo Section -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Live Demo</h2>
+                <p class="text-gray-600">Experience the full RxVerify interface with real backend integration</p>
+            </div>
+            
+            <div class="text-center">
+                <a href="index.html" class="inline-flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 text-lg">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Launch Full Interface
+                </a>
+            </div>
+        </div>
+
+        <!-- Screenshots/Preview -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Query Interface</h3>
+                <div class="bg-gray-100 rounded-lg p-4 mb-4">
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div class="h-20 bg-gray-200 rounded mb-2"></div>
+                        <div class="h-8 bg-blue-600 rounded"></div>
+                    </div>
+                </div>
+                <p class="text-gray-600 text-sm">Modern form design with character counting, validation, and advanced options.</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Results Display</h3>
+                <div class="bg-gray-100 rounded-lg p-4 mb-4">
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <div class="h-6 bg-green-200 rounded mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div class="h-16 bg-gray-200 rounded mb-2"></div>
+                        <div class="h-8 bg-blue-200 rounded"></div>
+                    </div>
+                </div>
+                <p class="text-gray-600 text-sm">Rich results with AI-generated answers, source citations, and data validation.</p>
+            </div>
+        </div>
+
+        <!-- Technical Features -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Technical Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Frontend Technologies</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Vanilla JavaScript (ES6+)
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Tailwind CSS for styling
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            HeroIcons integration
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Responsive design
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">User Experience</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Keyboard shortcuts
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Toast notifications
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Loading states
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Error handling
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Instructions -->
+        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-8">
+            <h2 class="text-2xl font-bold text-blue-900 mb-4">Demo Instructions</h2>
+            <div class="space-y-4 text-blue-800">
+                <div class="flex items-start space-x-3">
+                    <div class="w-6 h-6 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="text-blue-800 text-sm font-bold">1</span>
+                    </div>
+                    <div>
+                        <p class="font-medium">Ensure RxVerify backend is running on port 8000</p>
+                        <p class="text-sm opacity-75">The frontend needs the backend API to function properly</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <div class="w-6 h-6 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="text-blue-800 text-sm font-bold">2</span>
+                    </div>
+                    <div>
+                        <p class="font-medium">Click "Launch Full Interface" above</p>
+                        <p class="text-sm opacity-75">This opens the complete RxVerify frontend application</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <div class="w-6 h-6 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="text-blue-800 text-sm font-bold">3</span>
+                    </div>
+                    <div>
+                        <p class="font-medium">Try the example queries or ask your own questions</p>
+                        <p class="text-sm opacity-75">Experience the full drug information retrieval workflow</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-16">
+        <div class="container mx-auto px-6 py-8">
+            <div class="text-center">
+                <p class="text-gray-400">&copy; 2025 RxVerify. Professional drug information interface.</p>
+                <p class="text-sm text-gray-500 mt-2">Built for demonstration and production use</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

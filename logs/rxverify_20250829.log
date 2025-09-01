@@ -3,3 +3,1589 @@
 2025-08-29 14:47:34,219 - root - INFO - Cross-check completed, 2 unified records
 2025-08-29 14:47:41,619 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
 2025-08-29 14:47:41,639 - root - INFO - LLM response generated successfully
+2025-08-29 15:07:18,104 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:07:18,441 - root - INFO - Retrieved 5 documents
+2025-08-29 15:07:18,444 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 15:07:22,657 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:07:22,692 - root - INFO - LLM response generated successfully
+2025-08-29 15:15:14,444 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:15:14,868 - root - INFO - Retrieved 3 documents
+2025-08-29 15:15:14,869 - root - INFO - Cross-check completed, 2 unified records
+2025-08-29 15:15:18,475 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:15:18,485 - root - INFO - LLM response generated successfully
+2025-08-29 15:15:22,377 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:15:22,652 - root - INFO - Retrieved 3 documents
+2025-08-29 15:15:22,653 - root - INFO - Cross-check completed, 2 unified records
+2025-08-29 15:15:25,566 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:15:25,575 - root - INFO - LLM response generated successfully
+2025-08-29 15:15:44,396 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:15:44,825 - root - INFO - Retrieved 3 documents
+2025-08-29 15:15:44,827 - root - INFO - Cross-check completed, 2 unified records
+2025-08-29 15:15:47,269 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:15:47,280 - root - INFO - LLM response generated successfully
+2025-08-29 15:16:01,829 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:16:02,226 - root - INFO - Retrieved 3 documents
+2025-08-29 15:16:02,228 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 15:16:05,088 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:16:05,100 - root - INFO - LLM response generated successfully
+2025-08-29 15:16:23,344 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:16:23,706 - root - INFO - Retrieved 3 documents
+2025-08-29 15:16:23,707 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 15:16:25,999 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:16:26,012 - root - INFO - LLM response generated successfully
+2025-08-29 15:16:36,462 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:16:36,720 - root - INFO - Retrieved 3 documents
+2025-08-29 15:16:36,721 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 15:16:39,510 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:16:39,512 - root - INFO - LLM response generated successfully
+2025-08-29 15:17:03,971 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:17:04,333 - root - INFO - Retrieved 3 documents
+2025-08-29 15:17:04,334 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 15:17:06,635 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:17:06,651 - root - INFO - LLM response generated successfully
+2025-08-29 15:27:51,026 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:27:51,204 - root - INFO - Retrieved 5 documents
+2025-08-29 15:27:51,206 - root - INFO - Cross-check completed, 2 unified records
+2025-08-29 15:27:55,781 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:27:55,814 - root - INFO - LLM response generated successfully
+2025-08-29 15:30:36,884 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:30:37,236 - root - INFO - Retrieved 5 documents
+2025-08-29 15:30:37,237 - root - INFO - Cross-check completed, 2 unified records
+2025-08-29 15:30:42,545 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:30:42,567 - root - INFO - LLM response generated successfully
+2025-08-29 15:31:35,739 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:31:36,492 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:31:36,516 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 384, got 1536
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 9, in retrieve
+    v_hits = search_vector(vec, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 42, in search_vector
+    results = collection.query(
+        query_embeddings=[embedding],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 384, got 1536
+2025-08-29 15:31:40,814 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:31:41,053 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:31:41,057 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 384, got 1536
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 9, in retrieve
+    v_hits = search_vector(vec, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 42, in search_vector
+    results = collection.query(
+        query_embeddings=[embedding],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 384, got 1536
+2025-08-29 15:36:18,785 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:36:19,448 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:36:20,011 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 1536, got 384
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 23, in search_keyword
+    results = collection.query(
+        query_texts=[query],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 15:36:22,274 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:36:23,254 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:36:23,467 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 1536, got 384
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 23, in search_keyword
+    results = collection.query(
+        query_texts=[query],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 15:36:39,047 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:36:39,572 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:36:39,760 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 1536, got 384
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 23, in search_keyword
+    results = collection.query(
+        query_texts=[query],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 15:36:42,112 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:36:42,265 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:36:42,435 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 1536, got 384
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 23, in search_keyword
+    results = collection.query(
+        query_texts=[query],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 15:37:41,451 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:37:42,135 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:37:42,831 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 1536, got 384
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 23, in search_keyword
+    results = collection.query(
+        query_texts=[query],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 15:37:45,894 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:37:46,069 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:37:46,251 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 1536, got 384
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 23, in search_keyword
+    results = collection.query(
+        query_texts=[query],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 15:38:39,727 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:38:40,122 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:38:40,323 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 1536, got 384
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 23, in search_keyword
+    results = collection.query(
+        query_texts=[query],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 15:38:44,082 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:38:44,248 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:38:44,442 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 1536, got 384
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 23, in search_keyword
+    results = collection.query(
+        query_texts=[query],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 15:39:31,685 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:39:32,211 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:39:32,748 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 1536, got 384
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 41, in search_keyword
+    results = collection.query(
+        query_texts=[query],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 15:39:37,299 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:39:37,757 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:39:37,940 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 1536, got 384
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 41, in search_keyword
+    results = collection.query(
+        query_texts=[query],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 15:40:30,254 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:40:30,734 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:40:31,243 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 1536, got 384
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 41, in search_keyword
+    results = collection.query(
+        query_texts=[query],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 15:40:35,972 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:40:36,222 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:40:36,406 - root - ERROR - Query processing failed: Collection expecting embedding with dimension of 1536, got 384
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 41, in search_keyword
+    results = collection.query(
+        query_texts=[query],
+        n_results=limit,
+        include=["metadatas", "documents", "distances"]
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/models/Collection.py", line 221, in query
+    query_results = self._client._query(
+        collection_id=self.id,
+    ...<7 lines>...
+        database=self.database,
+    )
+  File "/Users/merrill/workspace/RxVerify/venv/lib/python3.13/site-packages/chromadb/api/rust.py", line 505, in _query
+    rust_response = self.bindings.query(
+        str(collection_id),
+    ...<7 lines>...
+        database,
+    )
+chromadb.errors.InvalidArgumentError: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 15:41:22,581 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:41:23,450 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:41:23,607 - root - ERROR - Query processing failed: this event loop is already running.
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 32, in search_keyword
+    query_embedding = loop.run_until_complete(embed([query]))[0]
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1512, in uvloop.loop.Loop.run_until_complete
+  File "uvloop/loop.pyx", line 1505, in uvloop.loop.Loop.run_until_complete
+  File "uvloop/loop.pyx", line 1379, in uvloop.loop.Loop.run_forever
+  File "uvloop/loop.pyx", line 520, in uvloop.loop.Loop._run
+RuntimeError: this event loop is already running.
+2025-08-29 15:41:23,813 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:41:28,090 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:41:28,267 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:41:28,271 - root - ERROR - Query processing failed: this event loop is already running.
+Traceback (most recent call last):
+  File "/Users/merrill/workspace/RxVerify/app/main.py", line 86, in query
+    docs = await retrieve(q.question, top_k=q.top_k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/merrill/workspace/RxVerify/app/retriever.py", line 10, in retrieve
+    k_hits = search_keyword(question, limit=top_k)
+  File "/Users/merrill/workspace/RxVerify/app/db.py", line 32, in search_keyword
+    query_embedding = loop.run_until_complete(embed([query]))[0]
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1512, in uvloop.loop.Loop.run_until_complete
+  File "uvloop/loop.pyx", line 1505, in uvloop.loop.Loop.run_until_complete
+  File "uvloop/loop.pyx", line 1379, in uvloop.loop.Loop.run_forever
+  File "uvloop/loop.pyx", line 520, in uvloop.loop.Loop._run
+RuntimeError: this event loop is already running.
+2025-08-29 15:41:28,525 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:42:01,812 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:42:02,596 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:42:03,128 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:42:03,138 - root - INFO - Retrieved 5 documents
+2025-08-29 15:42:03,142 - root - INFO - Cross-check completed, 2 unified records
+2025-08-29 15:42:08,838 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:42:08,852 - root - INFO - LLM response generated successfully
+2025-08-29 15:42:59,228 - app.monitoring - ERROR - ChromaDB health check failed: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 15:42:59,870 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:43:08,680 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:43:08,986 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:43:09,201 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:43:09,228 - root - INFO - Retrieved 5 documents
+2025-08-29 15:43:09,230 - root - INFO - Cross-check completed, 2 unified records
+2025-08-29 15:43:16,596 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:43:16,614 - root - INFO - LLM response generated successfully
+2025-08-29 15:46:40,117 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:46:40,419 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:46:40,911 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:46:40,930 - root - INFO - Retrieved 3 documents
+2025-08-29 15:46:40,931 - root - INFO - Cross-check completed, 1 unified records
+2025-08-29 15:46:46,351 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:46:46,368 - root - INFO - LLM response generated successfully
+2025-08-29 15:49:28,173 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:49:28,833 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:49:29,491 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:49:29,496 - root - INFO - Retrieved 5 documents
+2025-08-29 15:49:29,498 - root - INFO - Cross-check completed, 2 unified records
+2025-08-29 15:49:37,069 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:49:37,117 - root - INFO - LLM response generated successfully
+2025-08-29 15:50:25,311 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:50:25,926 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:50:26,328 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:50:26,332 - root - INFO - Retrieved 3 documents
+2025-08-29 15:50:26,333 - root - INFO - Cross-check completed, 1 unified records
+2025-08-29 15:50:30,975 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:50:30,987 - root - INFO - LLM response generated successfully
+2025-08-29 15:51:30,230 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:51:30,982 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:51:31,410 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:51:31,415 - root - INFO - Retrieved 5 documents
+2025-08-29 15:51:31,417 - root - INFO - Cross-check completed, 2 unified records
+2025-08-29 15:51:36,637 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:51:36,648 - root - INFO - LLM response generated successfully
+2025-08-29 15:52:29,287 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:52:29,915 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:52:30,407 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:52:30,417 - root - INFO - Retrieved 3 documents
+2025-08-29 15:52:30,418 - root - INFO - Cross-check completed, 1 unified records
+2025-08-29 15:52:33,653 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:52:33,667 - root - INFO - LLM response generated successfully
+2025-08-29 15:52:39,234 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 15:52:39,655 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:52:39,872 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:52:39,877 - root - INFO - Retrieved 5 documents
+2025-08-29 15:52:39,877 - root - INFO - Cross-check completed, 2 unified records
+2025-08-29 15:52:44,376 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:52:44,388 - root - INFO - LLM response generated successfully
+2025-08-29 15:54:36,663 - root - INFO - Processing query: what are the side effects or warfarin?...
+2025-08-29 15:54:37,384 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:54:37,645 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 15:54:37,650 - root - INFO - Retrieved 3 documents
+2025-08-29 15:54:37,652 - root - INFO - Cross-check completed, 2 unified records
+2025-08-29 15:54:38,986 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 15:54:39,056 - root - INFO - LLM response generated successfully
+2025-08-29 15:59:11,522 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:00:34,683 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:00:51,377 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:00:51,377 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:00:51,377 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?'
+2025-08-29 16:00:51,379 - app.medical_apis - INFO - DrugBank search returned 1 results for 'What are the side effects of warfarin?'
+2025-08-29 16:00:52,396 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=What+are+the+side+effects+of+warfarin%3F&limit=2 "HTTP/1.1 200 OK"
+2025-08-29 16:00:52,439 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=What+are+the+side+effects+of+warfarin%3F&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:00:52,440 - app.medical_apis - INFO - RxNorm search returned 0 results for 'What are the side effects of warfarin?'
+2025-08-29 16:00:52,440 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3AWhat+are+the+side+effects+of+warfarin%3F&limit=1 "HTTP/1.1 400 Bad Request"
+2025-08-29 16:00:52,560 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/10d8c5b6-8541-4c82-aa6d-9ae8c624e45e "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:00:52,565 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3AWhat+are+the+side+effects+of+warfarin%3F&limit=1 "HTTP/1.1 400 Bad Request"
+2025-08-29 16:00:52,566 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'What are the side effects of warfarin?'
+2025-08-29 16:00:52,644 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/186e1f69-2c60-49de-9863-bdb0b6cc41a7 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:00:52,645 - app.medical_apis - INFO - DailyMed search returned 0 results for 'What are the side effects of warfarin?'
+2025-08-29 16:00:53,201 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:00:53,206 - app.medical_apis - INFO - Total documents retrieved from all sources: 1
+2025-08-29 16:00:53,206 - app.retriever - INFO - Retrieved 1 relevant documents from live medical databases
+2025-08-29 16:00:53,206 - root - INFO - Retrieved 1 documents
+2025-08-29 16:00:53,208 - root - INFO - Cross-check completed, 1 unified records
+2025-08-29 16:00:54,677 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:00:54,687 - root - INFO - LLM response generated successfully
+2025-08-29 16:00:58,970 - root - INFO - Processing query: What should I expect when taking metformin?...
+2025-08-29 16:00:58,970 - app.retriever - INFO - Starting real-time retrieval for: What should I expect when taking metformin?
+2025-08-29 16:00:58,970 - app.medical_apis - INFO - Searching all medical databases for: 'What should I expect when taking metformin?'
+2025-08-29 16:00:58,972 - app.medical_apis - INFO - DrugBank search returned 1 results for 'What should I expect when taking metformin?'
+2025-08-29 16:00:59,401 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3AWhat+should+I+expect+when+taking+metformin%3F&limit=1 "HTTP/1.1 400 Bad Request"
+2025-08-29 16:00:59,403 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=What+should+I+expect+when+taking+metformin%3F&limit=2 "HTTP/1.1 200 OK"
+2025-08-29 16:00:59,437 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=What+should+I+expect+when+taking+metformin%3F&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:00:59,438 - app.medical_apis - INFO - RxNorm search returned 0 results for 'What should I expect when taking metformin?'
+2025-08-29 16:00:59,558 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3AWhat+should+I+expect+when+taking+metformin%3F&limit=1 "HTTP/1.1 400 Bad Request"
+2025-08-29 16:00:59,559 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'What should I expect when taking metformin?'
+2025-08-29 16:00:59,583 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/10d8c5b6-8541-4c82-aa6d-9ae8c624e45e "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:00:59,659 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/186e1f69-2c60-49de-9863-bdb0b6cc41a7 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:00:59,660 - app.medical_apis - INFO - DailyMed search returned 0 results for 'What should I expect when taking metformin?'
+2025-08-29 16:01:00,079 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:01:00,081 - app.medical_apis - INFO - Total documents retrieved from all sources: 1
+2025-08-29 16:01:00,081 - app.retriever - INFO - Retrieved 1 relevant documents from live medical databases
+2025-08-29 16:01:00,081 - root - INFO - Retrieved 1 documents
+2025-08-29 16:01:00,081 - root - INFO - Cross-check completed, 1 unified records
+2025-08-29 16:01:02,345 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:01:02,346 - root - INFO - LLM response generated successfully
+2025-08-29 16:01:16,802 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:01:18,748 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:02:13,080 - app.monitoring - ERROR - ChromaDB health check failed: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 16:02:13,852 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:02:30,584 - root - INFO - Processing query: What should I expect when taking warfarin?...
+2025-08-29 16:02:30,584 - app.retriever - INFO - Starting real-time retrieval for: What should I expect when taking warfarin?
+2025-08-29 16:02:30,584 - app.medical_apis - INFO - Searching all medical databases for: 'What should I expect when taking warfarin?'
+2025-08-29 16:02:30,586 - app.medical_apis - INFO - DrugBank search returned 1 results for 'What should I expect when taking warfarin?'
+2025-08-29 16:02:31,028 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3AWhat+should+I+expect+when+taking+warfarin%3F&limit=1 "HTTP/1.1 400 Bad Request"
+2025-08-29 16:02:31,112 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=What+should+I+expect+when+taking+warfarin%3F&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:02:31,112 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=What+should+I+expect+when+taking+warfarin%3F&limit=2 "HTTP/1.1 200 OK"
+2025-08-29 16:02:31,113 - app.medical_apis - INFO - RxNorm search returned 0 results for 'What should I expect when taking warfarin?'
+2025-08-29 16:02:31,161 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3AWhat+should+I+expect+when+taking+warfarin%3F&limit=1 "HTTP/1.1 400 Bad Request"
+2025-08-29 16:02:31,161 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'What should I expect when taking warfarin?'
+2025-08-29 16:02:31,266 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/10d8c5b6-8541-4c82-aa6d-9ae8c624e45e "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:02:31,338 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/186e1f69-2c60-49de-9863-bdb0b6cc41a7 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:02:31,338 - app.medical_apis - INFO - DailyMed search returned 0 results for 'What should I expect when taking warfarin?'
+2025-08-29 16:02:31,674 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:02:31,677 - app.medical_apis - INFO - Total documents retrieved from all sources: 1
+2025-08-29 16:02:31,677 - app.retriever - INFO - Retrieved 1 relevant documents from live medical databases
+2025-08-29 16:02:31,677 - root - INFO - Retrieved 1 documents
+2025-08-29 16:02:31,679 - root - INFO - Cross-check completed, 1 unified records
+2025-08-29 16:02:33,435 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:02:33,491 - root - INFO - LLM response generated successfully
+2025-08-29 16:05:17,095 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:06:10,481 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:06:16,485 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:06:16,485 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:06:16,485 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?'
+2025-08-29 16:06:16,486 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:06:16,999 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=2 "HTTP/1.1 200 OK"
+2025-08-29 16:06:17,021 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:06:17,078 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:06:17,079 - app.medical_apis - INFO - RxNorm search returned 4 results for 'warfarin'
+2025-08-29 16:06:17,193 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/10d8c5b6-8541-4c82-aa6d-9ae8c624e45e "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:06:17,205 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=1 "HTTP/1.1 200 OK"
+2025-08-29 16:06:17,206 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:06:17,273 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/186e1f69-2c60-49de-9863-bdb0b6cc41a7 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:06:17,274 - app.medical_apis - INFO - DailyMed search returned 0 results for 'warfarin'
+2025-08-29 16:06:18,379 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:18,694 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:18,876 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:19,249 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:19,413 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:20,991 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:20,997 - app.medical_apis - INFO - Total documents retrieved from all sources: 6
+2025-08-29 16:06:20,997 - app.retriever - INFO - Retrieved 5 relevant documents from live medical databases
+2025-08-29 16:06:20,997 - root - INFO - Retrieved 5 documents
+2025-08-29 16:06:20,999 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:06:23,047 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:06:23,063 - root - INFO - LLM response generated successfully
+2025-08-29 16:06:27,650 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:06:27,650 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:06:27,650 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?'
+2025-08-29 16:06:27,652 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:06:28,035 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:06:28,036 - app.medical_apis - INFO - RxNorm search returned 4 results for 'warfarin'
+2025-08-29 16:06:28,037 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=2 "HTTP/1.1 200 OK"
+2025-08-29 16:06:28,053 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:06:28,202 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/10d8c5b6-8541-4c82-aa6d-9ae8c624e45e "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:06:28,220 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=1 "HTTP/1.1 200 OK"
+2025-08-29 16:06:28,222 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:06:28,273 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/186e1f69-2c60-49de-9863-bdb0b6cc41a7 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:06:28,274 - app.medical_apis - INFO - DailyMed search returned 0 results for 'warfarin'
+2025-08-29 16:06:28,660 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:28,900 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:29,188 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:29,349 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:29,496 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:29,646 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:29,657 - app.medical_apis - INFO - Total documents retrieved from all sources: 6
+2025-08-29 16:06:29,657 - app.retriever - INFO - Retrieved 5 relevant documents from live medical databases
+2025-08-29 16:06:29,657 - root - INFO - Retrieved 5 documents
+2025-08-29 16:06:29,658 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:06:30,707 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:06:30,715 - root - INFO - LLM response generated successfully
+2025-08-29 16:06:36,249 - root - INFO - Processing query: warfarin...
+2025-08-29 16:06:36,249 - app.retriever - INFO - Starting real-time retrieval for: warfarin
+2025-08-29 16:06:36,249 - app.medical_apis - INFO - Searching all medical databases for: 'warfarin'
+2025-08-29 16:06:36,250 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:06:36,606 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:06:36,649 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:06:36,650 - app.medical_apis - INFO - RxNorm search returned 4 results for 'warfarin'
+2025-08-29 16:06:36,650 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=2 "HTTP/1.1 200 OK"
+2025-08-29 16:06:36,787 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=1 "HTTP/1.1 200 OK"
+2025-08-29 16:06:36,788 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:06:36,808 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/10d8c5b6-8541-4c82-aa6d-9ae8c624e45e "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:06:36,879 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/186e1f69-2c60-49de-9863-bdb0b6cc41a7 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:06:36,879 - app.medical_apis - INFO - DailyMed search returned 0 results for 'warfarin'
+2025-08-29 16:06:37,202 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:37,422 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:37,625 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:37,801 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:37,943 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:38,100 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:06:38,101 - app.medical_apis - INFO - Total documents retrieved from all sources: 6
+2025-08-29 16:06:38,101 - app.retriever - INFO - Retrieved 6 relevant documents from live medical databases
+2025-08-29 16:06:38,101 - root - INFO - Retrieved 6 documents
+2025-08-29 16:06:38,102 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:06:42,269 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:06:42,276 - root - INFO - LLM response generated successfully
+2025-08-29 16:06:51,275 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:06:52,850 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:07:06,486 - root - INFO - Processing query: What should I expect when taking warfarin?...
+2025-08-29 16:07:06,487 - app.retriever - INFO - Starting real-time retrieval for: What should I expect when taking warfarin?
+2025-08-29 16:07:06,487 - app.medical_apis - INFO - Searching all medical databases for: 'What should I expect when taking warfarin?'
+2025-08-29 16:07:06,489 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:07:06,876 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=2 "HTTP/1.1 200 OK"
+2025-08-29 16:07:06,920 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:07:06,974 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:07:06,975 - app.medical_apis - INFO - RxNorm search returned 4 results for 'warfarin'
+2025-08-29 16:07:07,022 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/10d8c5b6-8541-4c82-aa6d-9ae8c624e45e "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:07:07,094 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/186e1f69-2c60-49de-9863-bdb0b6cc41a7 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:07:07,095 - app.medical_apis - INFO - DailyMed search returned 0 results for 'warfarin'
+2025-08-29 16:07:07,095 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=1 "HTTP/1.1 200 OK"
+2025-08-29 16:07:07,096 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:07:07,672 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:07:07,980 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:07:08,177 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:07:08,365 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:07:08,703 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:07:09,600 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:07:09,601 - app.medical_apis - INFO - Total documents retrieved from all sources: 6
+2025-08-29 16:07:09,601 - app.retriever - INFO - Retrieved 5 relevant documents from live medical databases
+2025-08-29 16:07:09,601 - root - INFO - Retrieved 5 documents
+2025-08-29 16:07:09,603 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:07:14,948 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:07:14,964 - root - INFO - LLM response generated successfully
+2025-08-29 16:15:41,307 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:15:42,954 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:15:51,553 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:15:53,048 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:16:12,457 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:16:13,907 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:16:26,345 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:16:27,764 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:16:34,843 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:16:36,258 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:16:51,721 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:16:53,302 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:17:29,903 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:17:31,510 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:17:40,210 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:17:40,210 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:17:40,210 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:17:40,210 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:17:40,212 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:17:40,660 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=3 "HTTP/1.1 200 OK"
+2025-08-29 16:17:40,692 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:17:40,694 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:17:40,766 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:17:40,832 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/10d8c5b6-8541-4c82-aa6d-9ae8c624e45e "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:17:40,926 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/186e1f69-2c60-49de-9863-bdb0b6cc41a7 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:17:40,950 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=1 "HTTP/1.1 200 OK"
+2025-08-29 16:17:40,951 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:17:41,010 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/3c2d90fc-130d-476c-e063-6294a90a8c15 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:17:41,011 - app.medical_apis - INFO - DailyMed search returned 0 results for 'warfarin'
+2025-08-29 16:17:41,849 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:17:42,381 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:17:42,784 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:17:42,971 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:17:42,972 - app.medical_apis - INFO - Total documents retrieved from all sources: 4
+2025-08-29 16:17:42,972 - app.retriever - INFO - Retrieved 4 relevant documents from live medical databases
+2025-08-29 16:17:42,972 - root - INFO - Retrieved 4 documents
+2025-08-29 16:17:42,974 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 16:17:44,562 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:17:44,571 - root - INFO - LLM response generated successfully
+2025-08-29 16:18:01,251 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:18:02,810 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:18:24,853 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:18:26,448 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:18:31,095 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:18:31,095 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:18:31,095 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:18:31,096 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:18:31,097 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:18:31,489 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=3 "HTTP/1.1 200 OK"
+2025-08-29 16:18:31,509 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:18:31,559 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:18:31,561 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:18:31,704 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/10d8c5b6-8541-4c82-aa6d-9ae8c624e45e "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:18:31,788 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/186e1f69-2c60-49de-9863-bdb0b6cc41a7 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:18:31,809 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:18:31,893 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:18:31,900 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/3c2d90fc-130d-476c-e063-6294a90a8c15 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:18:31,900 - app.medical_apis - INFO - DailyMed search returned 0 results for 'warfarin'
+2025-08-29 16:18:32,698 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:18:33,003 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:18:33,275 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:18:33,710 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:18:33,713 - app.medical_apis - INFO - Total documents retrieved from all sources: 4
+2025-08-29 16:18:33,713 - app.retriever - INFO - Retrieved 4 relevant documents from live medical databases
+2025-08-29 16:18:33,713 - root - INFO - Retrieved 4 documents
+2025-08-29 16:18:33,716 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 16:18:37,042 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:18:37,052 - root - INFO - LLM response generated successfully
+2025-08-29 16:18:41,693 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:18:41,693 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:18:41,693 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:18:41,693 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:18:41,695 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:18:42,068 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:18:42,083 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=3 "HTTP/1.1 200 OK"
+2025-08-29 16:18:42,132 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:18:42,133 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:18:42,233 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:18:42,235 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/10d8c5b6-8541-4c82-aa6d-9ae8c624e45e "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:18:42,306 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/186e1f69-2c60-49de-9863-bdb0b6cc41a7 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:18:42,339 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:18:42,378 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/3c2d90fc-130d-476c-e063-6294a90a8c15 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:18:42,379 - app.medical_apis - INFO - DailyMed search returned 0 results for 'warfarin'
+2025-08-29 16:18:42,755 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:18:42,939 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:18:43,121 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:18:43,268 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:18:43,271 - app.medical_apis - INFO - Total documents retrieved from all sources: 4
+2025-08-29 16:18:43,271 - app.retriever - INFO - Retrieved 4 relevant documents from live medical databases
+2025-08-29 16:18:43,271 - root - INFO - Retrieved 4 documents
+2025-08-29 16:18:43,271 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 16:18:46,085 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:18:46,101 - root - INFO - LLM response generated successfully
+2025-08-29 16:18:56,237 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:18:56,237 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:18:56,237 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:18:56,237 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:18:56,238 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:18:56,626 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:18:56,773 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=3 "HTTP/1.1 200 OK"
+2025-08-29 16:18:56,774 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:18:56,775 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:18:56,852 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/10d8c5b6-8541-4c82-aa6d-9ae8c624e45e "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:18:56,860 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:18:56,919 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:18:56,922 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/186e1f69-2c60-49de-9863-bdb0b6cc41a7 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:18:57,031 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/3c2d90fc-130d-476c-e063-6294a90a8c15 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:18:57,032 - app.medical_apis - INFO - DailyMed search returned 0 results for 'warfarin'
+2025-08-29 16:18:57,289 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:18:57,517 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:18:57,979 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:18:58,147 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:18:58,149 - app.medical_apis - INFO - Total documents retrieved from all sources: 4
+2025-08-29 16:18:58,149 - app.retriever - INFO - Retrieved 4 relevant documents from live medical databases
+2025-08-29 16:18:58,149 - root - INFO - Retrieved 4 documents
+2025-08-29 16:18:58,149 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 16:19:00,800 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:19:00,801 - root - INFO - LLM response generated successfully
+2025-08-29 16:19:05,068 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:19:05,069 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:19:05,069 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:19:05,069 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:19:05,070 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:19:05,477 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:19:05,505 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:19:05,506 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:19:05,511 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=3 "HTTP/1.1 200 OK"
+2025-08-29 16:19:05,699 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:19:05,710 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/10d8c5b6-8541-4c82-aa6d-9ae8c624e45e "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:19:05,751 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:19:05,794 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/186e1f69-2c60-49de-9863-bdb0b6cc41a7 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:19:05,869 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/3c2d90fc-130d-476c-e063-6294a90a8c15 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:19:05,870 - app.medical_apis - INFO - DailyMed search returned 0 results for 'warfarin'
+2025-08-29 16:19:06,172 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:19:06,360 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:19:06,553 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:19:06,728 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:19:06,730 - app.medical_apis - INFO - Total documents retrieved from all sources: 4
+2025-08-29 16:19:06,730 - app.retriever - INFO - Retrieved 4 relevant documents from live medical databases
+2025-08-29 16:19:06,730 - root - INFO - Retrieved 4 documents
+2025-08-29 16:19:06,730 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 16:19:10,224 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:19:10,234 - root - INFO - LLM response generated successfully
+2025-08-29 16:19:15,892 - root - INFO - Processing query: warfarin...
+2025-08-29 16:19:15,893 - app.retriever - INFO - Starting real-time retrieval for: warfarin
+2025-08-29 16:19:15,893 - app.medical_apis - INFO - Searching all medical databases for: 'warfarin' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 2, DrugBank: 2)
+2025-08-29 16:19:15,894 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:19:16,290 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:19:16,303 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=2 "HTTP/1.1 200 OK"
+2025-08-29 16:19:16,354 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:19:16,354 - app.medical_apis - INFO - RxNorm search returned 4 results for 'warfarin'
+2025-08-29 16:19:16,461 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/10d8c5b6-8541-4c82-aa6d-9ae8c624e45e "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:19:16,494 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=4 "HTTP/1.1 200 OK"
+2025-08-29 16:19:16,506 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:19:16,537 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/186e1f69-2c60-49de-9863-bdb0b6cc41a7 "HTTP/1.1 415 Unsupported Media Type"
+2025-08-29 16:19:16,538 - app.medical_apis - INFO - DailyMed search returned 0 results for 'warfarin'
+2025-08-29 16:19:16,804 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:19:17,065 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:19:17,241 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:19:17,437 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:19:17,656 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:19:18,413 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:19:18,414 - app.medical_apis - INFO - Total documents retrieved from all sources: 6
+2025-08-29 16:19:18,414 - app.retriever - INFO - Retrieved 6 relevant documents from live medical databases
+2025-08-29 16:19:18,414 - root - INFO - Retrieved 6 documents
+2025-08-29 16:19:18,414 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:19:22,981 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:19:23,014 - root - INFO - LLM response generated successfully
+2025-08-29 16:20:08,089 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:20:09,736 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:20:14,224 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:20:14,224 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:20:14,224 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:20:14,224 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:20:14,225 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:20:14,660 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:20:14,706 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=3 "HTTP/1.1 200 OK"
+2025-08-29 16:20:14,766 - app.medical_apis - INFO - DailyMed search returned 3 results for 'warfarin'
+2025-08-29 16:20:14,775 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:20:14,776 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:20:14,866 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:20:14,976 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:20:15,551 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:15,791 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:15,945 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:16,132 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:16,381 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:16,551 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:16,725 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:16,730 - app.medical_apis - INFO - Total documents retrieved from all sources: 7
+2025-08-29 16:20:16,730 - app.retriever - INFO - Retrieved 7 relevant documents from live medical databases
+2025-08-29 16:20:16,730 - root - INFO - Retrieved 7 documents
+2025-08-29 16:20:16,732 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 16:20:20,387 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:20:20,418 - root - INFO - LLM response generated successfully
+2025-08-29 16:20:25,205 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:20:25,206 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:20:25,206 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:20:25,206 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:20:25,207 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:20:26,148 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:20:26,149 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:20:26,150 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=3 "HTTP/1.1 200 OK"
+2025-08-29 16:20:26,176 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:20:26,355 - app.medical_apis - INFO - DailyMed search returned 3 results for 'warfarin'
+2025-08-29 16:20:26,553 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:20:26,718 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:20:27,275 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:27,490 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:27,756 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:27,915 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:28,125 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:28,396 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:28,582 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:20:28,583 - app.medical_apis - INFO - Total documents retrieved from all sources: 7
+2025-08-29 16:20:28,584 - app.retriever - INFO - Retrieved 7 relevant documents from live medical databases
+2025-08-29 16:20:28,584 - root - INFO - Retrieved 7 documents
+2025-08-29 16:20:28,584 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 16:20:32,177 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:20:32,191 - root - INFO - LLM response generated successfully
+2025-08-29 16:20:52,763 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:20:54,528 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:20:59,121 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:20:59,121 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:20:59,121 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:20:59,121 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:20:59,122 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:20:59,509 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=3 "HTTP/1.1 200 OK"
+2025-08-29 16:20:59,510 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:20:59,579 - app.medical_apis - INFO - DailyMed search returned 0 results for 'warfarin'
+2025-08-29 16:20:59,637 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:20:59,638 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:20:59,732 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:20:59,799 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:21:00,396 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:21:00,558 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:21:00,910 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:21:01,319 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:21:01,321 - app.medical_apis - INFO - Total documents retrieved from all sources: 4
+2025-08-29 16:21:01,321 - app.retriever - INFO - Retrieved 4 relevant documents from live medical databases
+2025-08-29 16:21:01,322 - root - INFO - Retrieved 4 documents
+2025-08-29 16:21:01,324 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 16:21:03,572 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:21:03,581 - root - INFO - LLM response generated successfully
+2025-08-29 16:21:07,592 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:21:07,592 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:21:07,592 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:21:07,593 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:21:07,594 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:21:07,943 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:21:07,971 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=3 "HTTP/1.1 200 OK"
+2025-08-29 16:21:08,017 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:21:08,018 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:21:08,047 - app.medical_apis - INFO - DailyMed search returned 0 results for 'warfarin'
+2025-08-29 16:21:08,173 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:21:08,260 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:21:08,532 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:21:08,671 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:21:08,864 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:21:09,033 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:21:09,035 - app.medical_apis - INFO - Total documents retrieved from all sources: 4
+2025-08-29 16:21:09,036 - app.retriever - INFO - Retrieved 4 relevant documents from live medical databases
+2025-08-29 16:21:09,036 - root - INFO - Retrieved 4 documents
+2025-08-29 16:21:09,036 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 16:21:11,939 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:21:12,062 - root - INFO - LLM response generated successfully
+2025-08-29 16:21:21,427 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:21:23,102 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:25:55,070 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:25:56,742 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:26:08,468 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:26:10,045 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:26:15,316 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:26:15,316 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:26:15,316 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:26:15,316 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:26:15,318 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:26:15,737 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:26:15,759 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?search=warfarin&limit=3 "HTTP/1.1 200 OK"
+2025-08-29 16:26:15,815 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:26:15,816 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:26:15,840 - app.medical_apis - INFO - DailyMed search returned 0 results for 'warfarin'
+2025-08-29 16:26:15,968 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:26:16,054 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:26:16,922 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:26:17,169 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:26:17,737 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:26:17,919 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:26:17,920 - app.medical_apis - INFO - Total documents retrieved from all sources: 4
+2025-08-29 16:26:17,920 - app.retriever - INFO - Retrieved 4 relevant documents from live medical databases
+2025-08-29 16:26:17,920 - root - INFO - Retrieved 4 documents
+2025-08-29 16:26:17,922 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 16:26:20,553 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:26:20,569 - root - INFO - LLM response generated successfully
+2025-08-29 16:26:29,864 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:26:31,667 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:38:43,979 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:41:03,474 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:41:10,896 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:41:10,897 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:41:10,897 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:41:10,897 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:41:10,898 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:41:11,451 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:41:11,452 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:41:11,461 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:41:11,501 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:41:11,720 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:41:11,808 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:41:12,108 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=855290&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:41:12,415 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/91fa852c-b43d-4a55-983b-74aa6827125d.xml "HTTP/1.1 200 OK"
+2025-08-29 16:41:13,872 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/ba41b963-ec4a-4421-ac93-26654876a6be.xml "HTTP/1.1 200 OK"
+2025-08-29 16:41:14,686 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=855292&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:41:14,771 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/19a69a72-ac5d-45d5-a94d-a5aaecbe4730.xml "HTTP/1.1 200 OK"
+2025-08-29 16:41:15,787 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=855298&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:41:15,878 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/91fa852c-b43d-4a55-983b-74aa6827125d.xml "HTTP/1.1 200 OK"
+2025-08-29 16:41:16,447 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/ba41b963-ec4a-4421-ac93-26654876a6be.xml "HTTP/1.1 200 OK"
+2025-08-29 16:41:16,787 - app.medical_apis - INFO - DailyMed search returned 5 results for 'warfarin'
+2025-08-29 16:41:17,503 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:41:17,943 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:41:18,116 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:41:18,401 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:41:18,640 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:41:19,015 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:41:19,175 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:41:19,501 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:41:19,650 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:41:19,652 - app.medical_apis - INFO - Total documents retrieved from all sources: 9
+2025-08-29 16:41:19,652 - app.retriever - INFO - Retrieved 8 relevant documents from live medical databases
+2025-08-29 16:41:19,652 - root - INFO - Retrieved 8 documents
+2025-08-29 16:41:19,656 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:41:25,336 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:41:25,345 - root - INFO - LLM response generated successfully
+2025-08-29 16:41:35,552 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:41:37,172 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:43:00,911 - root - INFO - Processing query: What are the side effects of metformin?...
+2025-08-29 16:43:00,912 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of metformin?
+2025-08-29 16:43:00,912 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:43:00,912 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of metformin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:43:00,913 - app.medical_apis - INFO - DrugBank search returned 1 results for 'metformin'
+2025-08-29 16:43:01,505 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Ametformin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:43:01,557 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metformin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:43:01,567 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metformin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:43:01,569 - app.medical_apis - INFO - RxNorm search returned 2 results for 'metformin'
+2025-08-29 16:43:01,772 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Ametformin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:43:01,788 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'metformin'
+2025-08-29 16:43:02,116 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043567&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:43:02,290 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-08-29 16:43:03,762 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043574&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:43:03,853 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-08-29 16:43:04,794 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043582&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:43:04,877 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-08-29 16:43:05,382 - app.medical_apis - INFO - DailyMed search returned 3 results for 'metformin'
+2025-08-29 16:43:05,936 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:43:06,138 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:43:06,300 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:43:06,676 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:43:07,041 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:43:07,230 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:43:07,513 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:43:07,513 - app.medical_apis - INFO - Total documents retrieved from all sources: 7
+2025-08-29 16:43:07,514 - app.retriever - INFO - Retrieved 7 relevant documents from live medical databases
+2025-08-29 16:43:07,514 - root - INFO - Retrieved 7 documents
+2025-08-29 16:43:07,515 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:43:10,149 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:43:10,166 - root - INFO - LLM response generated successfully
+2025-08-29 16:43:26,229 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:45:05,546 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:45:10,290 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:45:10,290 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:45:10,290 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:45:10,290 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:45:10,292 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:45:10,780 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:45:10,808 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:45:10,809 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:45:10,810 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:45:11,112 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:45:11,186 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:45:11,358 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=855290&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:45:11,458 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/91fa852c-b43d-4a55-983b-74aa6827125d.xml "HTTP/1.1 200 OK"
+2025-08-29 16:45:12,609 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/ba41b963-ec4a-4421-ac93-26654876a6be.xml "HTTP/1.1 200 OK"
+2025-08-29 16:45:13,284 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=855292&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:45:13,368 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/19a69a72-ac5d-45d5-a94d-a5aaecbe4730.xml "HTTP/1.1 200 OK"
+2025-08-29 16:45:14,068 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=855298&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:45:14,184 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/91fa852c-b43d-4a55-983b-74aa6827125d.xml "HTTP/1.1 200 OK"
+2025-08-29 16:45:14,612 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/ba41b963-ec4a-4421-ac93-26654876a6be.xml "HTTP/1.1 200 OK"
+2025-08-29 16:45:14,855 - app.medical_apis - INFO - DailyMed search returned 5 results for 'warfarin'
+2025-08-29 16:45:15,568 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:45:15,794 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:45:15,985 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:45:16,758 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:45:17,050 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:45:17,263 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:45:17,526 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:45:17,830 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:45:17,994 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:45:17,996 - app.medical_apis - INFO - Total documents retrieved from all sources: 9
+2025-08-29 16:45:17,996 - app.retriever - INFO - Retrieved 8 relevant documents from live medical databases
+2025-08-29 16:45:17,996 - root - INFO - Retrieved 8 documents
+2025-08-29 16:45:18,003 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:45:22,718 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:45:22,742 - root - INFO - LLM response generated successfully
+2025-08-29 16:45:42,232 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:47:16,757 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:47:22,374 - root - INFO - Processing query: What are the side effects of aspirin?...
+2025-08-29 16:47:22,374 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of aspirin?
+2025-08-29 16:47:22,374 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:47:22,374 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of aspirin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:47:22,375 - app.medical_apis - INFO - DrugBank search returned 1 results for 'aspirin'
+2025-08-29 16:47:23,007 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=aspirin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:47:23,009 - app.medical_apis - INFO - RxNorm search returned 4 results for 'aspirin'
+2025-08-29 16:47:23,042 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=aspirin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:47:23,076 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aaspirin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:47:23,356 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aaspirin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:47:23,528 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'aspirin'
+2025-08-29 16:47:23,607 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2047428&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:47:23,706 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/444fa225-c204-45d1-b3b3-aa5650ee5d07.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:24,077 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1730187&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:47:24,155 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/75894849-a0ba-57be-e053-2a91aa0a049a.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:24,257 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/a37c9d9d-52db-23ff-e053-2995a90a8f76.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:24,488 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2047427&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:47:24,570 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/444fa225-c204-45d1-b3b3-aa5650ee5d07.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:24,599 - app.medical_apis - INFO - DailyMed search returned 4 results for 'aspirin'
+2025-08-29 16:47:25,248 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:25,416 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:25,621 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:25,845 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:26,069 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:26,213 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:26,400 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:26,994 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:27,193 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:27,195 - app.medical_apis - INFO - Total documents retrieved from all sources: 9
+2025-08-29 16:47:27,195 - app.retriever - INFO - Retrieved 8 relevant documents from live medical databases
+2025-08-29 16:47:27,195 - root - INFO - Retrieved 8 documents
+2025-08-29 16:47:27,200 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:47:28,721 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:47:28,732 - root - INFO - LLM response generated successfully
+2025-08-29 16:47:33,007 - root - INFO - Processing query: What are the side effects of ibuprofen?...
+2025-08-29 16:47:33,007 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of ibuprofen?
+2025-08-29 16:47:33,008 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:47:33,008 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of ibuprofen?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:47:33,009 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ibuprofen'
+2025-08-29 16:47:33,432 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aibuprofen&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:47:33,485 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ibuprofen&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:47:33,487 - app.medical_apis - INFO - RxNorm search returned 2 results for 'ibuprofen'
+2025-08-29 16:47:33,488 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ibuprofen&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:47:33,714 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aibuprofen&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:47:33,879 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'ibuprofen'
+2025-08-29 16:47:34,001 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1100070&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:47:34,091 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/558b9f26-37b2-423b-932d-25a37afe57ec.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:35,223 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1101919&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:47:35,335 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/7fafc13e-3fee-ace3-e053-2a91aa0ac2ea.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:35,487 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/90305282-f301-42c4-e053-2a95a90a6336.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:35,650 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/5c6f50e7-d309-4e47-9ee4-22503b00be3e.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:35,902 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1300267&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:47:36,002 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/af75f914-6385-42f7-9900-c3c6929b07df.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:36,023 - app.medical_apis - INFO - DailyMed search returned 5 results for 'ibuprofen'
+2025-08-29 16:47:36,561 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:36,768 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:37,066 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:37,319 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:37,508 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:37,679 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:37,851 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:38,080 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:38,249 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:38,258 - app.medical_apis - INFO - Total documents retrieved from all sources: 9
+2025-08-29 16:47:38,258 - app.retriever - INFO - Retrieved 8 relevant documents from live medical databases
+2025-08-29 16:47:38,258 - root - INFO - Retrieved 8 documents
+2025-08-29 16:47:38,259 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:47:45,004 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:47:45,005 - root - INFO - LLM response generated successfully
+2025-08-29 16:47:49,441 - root - INFO - Processing query: What are the side effects of ibuprofen?...
+2025-08-29 16:47:49,441 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of ibuprofen?
+2025-08-29 16:47:49,441 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:47:49,441 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of ibuprofen?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:47:49,443 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ibuprofen'
+2025-08-29 16:47:49,825 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aibuprofen&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:47:49,909 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ibuprofen&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:47:49,909 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ibuprofen&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:47:49,912 - app.medical_apis - INFO - RxNorm search returned 2 results for 'ibuprofen'
+2025-08-29 16:47:50,137 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aibuprofen&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:47:50,381 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'ibuprofen'
+2025-08-29 16:47:50,422 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1100070&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:47:50,553 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/558b9f26-37b2-423b-932d-25a37afe57ec.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:51,071 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1101919&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:47:51,146 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/7fafc13e-3fee-ace3-e053-2a91aa0ac2ea.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:51,225 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/90305282-f301-42c4-e053-2a95a90a6336.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:51,331 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/5c6f50e7-d309-4e47-9ee4-22503b00be3e.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:51,529 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1300267&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:47:51,607 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/af75f914-6385-42f7-9900-c3c6929b07df.xml "HTTP/1.1 200 OK"
+2025-08-29 16:47:51,609 - app.medical_apis - INFO - DailyMed search returned 5 results for 'ibuprofen'
+2025-08-29 16:47:51,950 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:52,152 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:52,345 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:52,551 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:52,681 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:52,848 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:53,411 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:53,779 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:54,231 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:47:54,232 - app.medical_apis - INFO - Total documents retrieved from all sources: 9
+2025-08-29 16:47:54,232 - app.retriever - INFO - Retrieved 8 relevant documents from live medical databases
+2025-08-29 16:47:54,232 - root - INFO - Retrieved 8 documents
+2025-08-29 16:47:54,232 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:47:58,055 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:47:58,056 - root - INFO - LLM response generated successfully
+2025-08-29 16:48:05,108 - app.monitoring - ERROR - ChromaDB health check failed: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 16:48:05,574 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:48:19,424 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:48:21,153 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:48:22,366 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:48:23,828 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:48:55,586 - root - INFO - Processing query: What are the side effects of warfarin?...
+2025-08-29 16:48:55,586 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of warfarin?
+2025-08-29 16:48:55,586 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:48:55,586 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of warfarin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:48:55,587 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:48:56,122 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:48:56,123 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:48:56,124 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:48:56,125 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:48:56,373 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:48:56,454 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:48:56,686 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=855290&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:48:56,883 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/91fa852c-b43d-4a55-983b-74aa6827125d.xml "HTTP/1.1 200 OK"
+2025-08-29 16:48:57,237 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/ba41b963-ec4a-4421-ac93-26654876a6be.xml "HTTP/1.1 200 OK"
+2025-08-29 16:48:57,568 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=855292&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:48:57,653 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/19a69a72-ac5d-45d5-a94d-a5aaecbe4730.xml "HTTP/1.1 200 OK"
+2025-08-29 16:48:57,979 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=855298&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:48:58,063 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/91fa852c-b43d-4a55-983b-74aa6827125d.xml "HTTP/1.1 200 OK"
+2025-08-29 16:48:58,264 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/ba41b963-ec4a-4421-ac93-26654876a6be.xml "HTTP/1.1 200 OK"
+2025-08-29 16:48:58,382 - app.medical_apis - INFO - DailyMed search returned 5 results for 'warfarin'
+2025-08-29 16:48:58,896 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:48:59,092 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:48:59,328 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:48:59,871 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:00,107 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:00,323 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:00,509 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:00,716 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:01,908 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:01,909 - app.medical_apis - INFO - Total documents retrieved from all sources: 9
+2025-08-29 16:49:01,910 - app.retriever - INFO - Retrieved 8 relevant documents from live medical databases
+2025-08-29 16:49:01,910 - root - INFO - Retrieved 8 documents
+2025-08-29 16:49:01,913 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:49:06,731 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:49:06,739 - root - INFO - LLM response generated successfully
+2025-08-29 16:49:12,381 - root - INFO - Processing query: What are the side effects of ibuprofen?...
+2025-08-29 16:49:12,381 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of ibuprofen?
+2025-08-29 16:49:12,381 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:49:12,381 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of ibuprofen?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:49:12,383 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ibuprofen'
+2025-08-29 16:49:12,747 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aibuprofen&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:49:12,800 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ibuprofen&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:49:12,802 - app.medical_apis - INFO - RxNorm search returned 2 results for 'ibuprofen'
+2025-08-29 16:49:13,004 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aibuprofen&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:49:13,115 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ibuprofen&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:49:13,276 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'ibuprofen'
+2025-08-29 16:49:13,635 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1100070&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:49:13,817 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/558b9f26-37b2-423b-932d-25a37afe57ec.xml "HTTP/1.1 200 OK"
+2025-08-29 16:49:14,719 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1101919&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:49:14,811 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/7fafc13e-3fee-ace3-e053-2a91aa0ac2ea.xml "HTTP/1.1 200 OK"
+2025-08-29 16:49:14,954 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/90305282-f301-42c4-e053-2a95a90a6336.xml "HTTP/1.1 200 OK"
+2025-08-29 16:49:15,096 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/5c6f50e7-d309-4e47-9ee4-22503b00be3e.xml "HTTP/1.1 200 OK"
+2025-08-29 16:49:15,364 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1300267&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:49:15,438 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/af75f914-6385-42f7-9900-c3c6929b07df.xml "HTTP/1.1 200 OK"
+2025-08-29 16:49:15,444 - app.medical_apis - INFO - DailyMed search returned 5 results for 'ibuprofen'
+2025-08-29 16:49:15,682 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:15,907 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:16,225 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:16,354 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:16,545 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:16,688 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:16,926 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:17,097 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:17,335 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:17,336 - app.medical_apis - INFO - Total documents retrieved from all sources: 9
+2025-08-29 16:49:17,336 - app.retriever - INFO - Retrieved 8 relevant documents from live medical databases
+2025-08-29 16:49:17,336 - root - INFO - Retrieved 8 documents
+2025-08-29 16:49:17,337 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:49:23,020 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:49:23,037 - root - INFO - LLM response generated successfully
+2025-08-29 16:49:27,655 - root - INFO - Processing query: What are the side effects of metformin?...
+2025-08-29 16:49:27,655 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of metformin?
+2025-08-29 16:49:27,656 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:49:27,656 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of metformin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:49:27,657 - app.medical_apis - INFO - DrugBank search returned 1 results for 'metformin'
+2025-08-29 16:49:28,046 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Ametformin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:49:28,074 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metformin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:49:28,075 - app.medical_apis - INFO - RxNorm search returned 2 results for 'metformin'
+2025-08-29 16:49:28,091 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metformin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:49:28,300 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Ametformin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:49:28,305 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'metformin'
+2025-08-29 16:49:28,626 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043567&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:49:28,754 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-08-29 16:49:29,397 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043574&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:49:29,480 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-08-29 16:49:29,772 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043582&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:49:29,856 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-08-29 16:49:29,967 - app.medical_apis - INFO - DailyMed search returned 3 results for 'metformin'
+2025-08-29 16:49:30,313 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:30,519 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:30,729 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:30,965 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:31,169 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:31,359 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:31,496 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:49:31,498 - app.medical_apis - INFO - Total documents retrieved from all sources: 7
+2025-08-29 16:49:31,498 - app.retriever - INFO - Retrieved 7 relevant documents from live medical databases
+2025-08-29 16:49:31,498 - root - INFO - Retrieved 7 documents
+2025-08-29 16:49:31,499 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 16:49:35,965 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:49:35,965 - root - INFO - LLM response generated successfully
+2025-08-29 16:52:56,508 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 16:54:56,391 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 16:55:04,904 - app.monitoring - ERROR - ChromaDB health check failed: Collection expecting embedding with dimension of 1536, got 384
+2025-08-29 16:55:05,519 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:55:18,773 - root - INFO - Processing query: side effects of warfarin...
+2025-08-29 16:55:18,773 - app.retriever - INFO - Starting real-time retrieval for: side effects of warfarin
+2025-08-29 16:55:18,773 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:55:18,773 - app.medical_apis - INFO - Searching all medical databases for: 'side effects of warfarin' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:55:18,775 - app.medical_apis - INFO - DrugBank search returned 1 results for 'warfarin'
+2025-08-29 16:55:19,301 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:55:19,304 - app.medical_apis - INFO - RxNorm search returned 2 results for 'warfarin'
+2025-08-29 16:55:19,344 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=warfarin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:55:19,391 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Awarfarin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:55:19,659 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Awarfarin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:55:19,867 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'warfarin'
+2025-08-29 16:55:20,001 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=855290&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:55:20,118 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/91fa852c-b43d-4a55-983b-74aa6827125d.xml "HTTP/1.1 200 OK"
+2025-08-29 16:55:20,541 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/ba41b963-ec4a-4421-ac93-26654876a6be.xml "HTTP/1.1 200 OK"
+2025-08-29 16:55:20,786 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=855292&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:55:20,866 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/19a69a72-ac5d-45d5-a94d-a5aaecbe4730.xml "HTTP/1.1 200 OK"
+2025-08-29 16:55:21,233 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=855298&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:55:21,394 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/91fa852c-b43d-4a55-983b-74aa6827125d.xml "HTTP/1.1 200 OK"
+2025-08-29 16:55:21,686 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/ba41b963-ec4a-4421-ac93-26654876a6be.xml "HTTP/1.1 200 OK"
+2025-08-29 16:55:21,814 - app.medical_apis - INFO - DailyMed search returned 5 results for 'warfarin'
+2025-08-29 16:55:22,277 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:55:22,643 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:55:22,888 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:55:23,153 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:55:23,383 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:55:23,551 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:55:23,794 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:55:24,080 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:55:24,358 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:55:24,435 - app.medical_apis - INFO - Total documents retrieved from all sources: 9
+2025-08-29 16:55:24,436 - app.retriever - INFO - Retrieved 5 relevant documents from live medical databases
+2025-08-29 16:55:24,436 - root - INFO - Retrieved 5 documents
+2025-08-29 16:55:24,442 - root - INFO - Cross-check completed, 3 unified records
+2025-08-29 16:55:30,061 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:55:30,073 - root - INFO - LLM response generated successfully
+2025-08-29 16:56:40,610 - root - INFO - Processing query: side effects of atorvastatin...
+2025-08-29 16:56:40,610 - app.retriever - INFO - Starting real-time retrieval for: side effects of atorvastatin
+2025-08-29 16:56:40,610 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 16:56:40,610 - app.medical_apis - INFO - Searching all medical databases for: 'side effects of atorvastatin' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 16:56:40,612 - app.medical_apis - INFO - DrugBank search returned 1 results for 'atorvastatin'
+2025-08-29 16:56:41,157 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aatorvastatin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 16:56:41,252 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:56:41,323 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 16:56:41,324 - app.medical_apis - INFO - RxNorm search returned 2 results for 'atorvastatin'
+2025-08-29 16:56:41,458 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aatorvastatin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 16:56:41,669 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'atorvastatin'
+2025-08-29 16:56:41,946 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611248&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:56:42,173 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 16:56:43,365 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611250&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:56:43,467 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 16:56:44,299 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611252&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 16:56:44,395 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 16:56:44,909 - app.medical_apis - INFO - DailyMed search returned 3 results for 'atorvastatin'
+2025-08-29 16:56:45,283 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:56:45,588 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:56:45,814 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:56:46,028 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:56:46,438 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:56:46,634 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 16:56:46,637 - app.medical_apis - INFO - Total documents retrieved from all sources: 6
+2025-08-29 16:56:46,637 - app.retriever - INFO - Retrieved 5 relevant documents from live medical databases
+2025-08-29 16:56:46,637 - root - INFO - Retrieved 5 documents
+2025-08-29 16:56:46,638 - root - INFO - Cross-check completed, 4 unified records
+2025-08-29 16:56:49,338 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 16:56:49,355 - root - INFO - LLM response generated successfully
+2025-08-29 17:04:32,283 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 17:04:58,997 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 17:05:06,761 - root - INFO - Processing query: What are the side effects of atorvastatin?...
+2025-08-29 17:05:06,762 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of atorvastatin?
+2025-08-29 17:05:06,762 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 17:05:06,762 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of atorvastatin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 17:05:06,763 - app.medical_apis - INFO - DrugBank search returned 1 results for 'atorvastatin'
+2025-08-29 17:05:07,350 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aatorvastatin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 17:05:07,419 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 17:05:07,432 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 17:05:07,434 - app.medical_apis - INFO - RxNorm search returned 2 results for 'atorvastatin'
+2025-08-29 17:05:07,591 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aatorvastatin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 17:05:07,712 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'atorvastatin'
+2025-08-29 17:05:08,031 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611248&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 17:05:08,136 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:05:08,751 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611250&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 17:05:08,841 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:05:09,157 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611252&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 17:05:09,245 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:05:09,372 - app.medical_apis - INFO - DailyMed search returned 3 results for 'atorvastatin'
+2025-08-29 17:05:10,290 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:05:11,005 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:05:11,352 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:05:12,037 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:05:12,201 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:05:12,473 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:05:12,475 - app.medical_apis - INFO - Total documents retrieved from all sources: 6
+2025-08-29 17:05:12,475 - app.retriever - INFO - Retrieved 6 relevant documents from live medical databases
+2025-08-29 17:05:12,476 - root - INFO - Retrieved 6 documents
+2025-08-29 17:05:12,482 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 17:05:17,650 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 17:05:17,673 - root - INFO - LLM response generated successfully
+2025-08-29 17:05:50,030 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 17:05:51,708 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 17:05:57,289 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 17:05:58,801 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 17:06:19,518 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 17:06:21,190 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 17:06:31,504 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 17:06:33,187 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 17:06:37,743 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 17:06:39,213 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 17:06:43,559 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 17:07:16,933 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 17:07:25,927 - root - INFO - Processing query: What are the side effects of atorvastatin?...
+2025-08-29 17:07:25,927 - app.retriever - INFO - Starting real-time retrieval for: What are the side effects of atorvastatin?
+2025-08-29 17:07:25,927 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 17:07:25,927 - app.medical_apis - INFO - Searching all medical databases for: 'What are the side effects of atorvastatin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 17:07:25,928 - app.medical_apis - INFO - DrugBank search returned 1 results for 'atorvastatin'
+2025-08-29 17:07:26,980 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 17:07:26,983 - app.medical_apis - INFO - RxNorm search returned 2 results for 'atorvastatin'
+2025-08-29 17:07:27,130 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 17:07:27,217 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aatorvastatin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 17:07:27,482 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aatorvastatin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 17:07:27,887 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'atorvastatin'
+2025-08-29 17:07:28,074 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611248&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 17:07:28,242 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:07:29,796 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611250&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 17:07:29,888 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:07:30,887 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611252&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 17:07:30,970 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:07:31,681 - app.medical_apis - INFO - DailyMed search returned 3 results for 'atorvastatin'
+2025-08-29 17:07:32,396 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:07:32,590 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:07:33,859 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:07:34,354 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:07:34,726 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:07:35,136 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:07:35,138 - app.medical_apis - INFO - Total documents retrieved from all sources: 6
+2025-08-29 17:07:35,140 - app.retriever - INFO - Retrieved 6 relevant documents from live medical databases
+2025-08-29 17:07:35,141 - root - INFO - Retrieved 6 documents
+2025-08-29 17:07:35,147 - root - INFO - Cross-check completed, 5 unified records
+2025-08-29 17:07:43,313 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 17:07:43,362 - root - INFO - LLM response generated successfully
+2025-08-29 17:07:54,897 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-08-29 17:07:56,928 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-08-29 17:08:21,791 - root - INFO - Processing query: side effects of atorvastatin?...
+2025-08-29 17:08:21,792 - app.retriever - INFO - Starting real-time retrieval for: side effects of atorvastatin?
+2025-08-29 17:08:21,792 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 17:08:21,792 - app.medical_apis - INFO - Searching all medical databases for: 'side effects of atorvastatin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 17:08:21,795 - app.medical_apis - INFO - DrugBank search returned 1 results for 'atorvastatin'
+2025-08-29 17:08:22,254 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aatorvastatin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 17:08:22,292 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 17:08:22,507 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aatorvastatin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 17:08:22,625 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'atorvastatin'
+2025-08-29 17:08:22,773 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611248&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 17:08:22,797 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 17:08:22,797 - app.medical_apis - INFO - RxNorm search returned 2 results for 'atorvastatin'
+2025-08-29 17:08:22,926 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:08:24,429 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611250&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 17:08:24,804 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:08:25,641 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611252&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 17:08:25,727 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:08:26,306 - app.medical_apis - INFO - DailyMed search returned 3 results for 'atorvastatin'
+2025-08-29 17:08:26,857 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:08:27,082 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:08:27,751 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:08:28,110 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:08:28,907 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:08:29,117 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:08:29,126 - app.medical_apis - INFO - Total documents retrieved from all sources: 6
+2025-08-29 17:08:29,127 - app.retriever - INFO - Retrieved 5 relevant documents from live medical databases
+2025-08-29 17:08:29,127 - root - INFO - Retrieved 5 documents
+2025-08-29 17:08:29,130 - root - INFO - Cross-check completed, 4 unified records
+2025-08-29 17:08:35,540 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 17:08:35,553 - root - INFO - LLM response generated successfully
+2025-08-29 17:09:38,260 - root - INFO - Processing query: what if I miss a dose of atorvastatin?...
+2025-08-29 17:09:38,262 - app.retriever - INFO - Starting real-time retrieval for: what if I miss a dose of atorvastatin?
+2025-08-29 17:09:38,263 - app.medical_apis - INFO - Searching all medical databases for: 'what if I miss a dose of atorvastatin?' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 2, DrugBank: 2)
+2025-08-29 17:09:38,266 - app.medical_apis - INFO - DrugBank search returned 1 results for 'atorvastatin'
+2025-08-29 17:09:38,785 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aatorvastatin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 17:09:38,917 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 17:09:38,919 - app.medical_apis - INFO - RxNorm search returned 4 results for 'atorvastatin'
+2025-08-29 17:09:38,920 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 17:09:39,031 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aatorvastatin&limit=4 "HTTP/1.1 200 OK"
+2025-08-29 17:09:39,624 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'atorvastatin'
+2025-08-29 17:09:39,720 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611248&pagesize=2 "HTTP/1.1 200 OK"
+2025-08-29 17:09:39,850 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:09:40,693 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611250&pagesize=2 "HTTP/1.1 200 OK"
+2025-08-29 17:09:40,770 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:09:41,280 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611252&pagesize=2 "HTTP/1.1 200 OK"
+2025-08-29 17:09:41,372 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:09:41,483 - app.medical_apis - INFO - DailyMed search returned 3 results for 'atorvastatin'
+2025-08-29 17:09:41,883 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:09:42,061 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:09:42,231 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:09:42,605 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:09:43,016 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:09:43,733 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:09:44,232 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:09:44,424 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:09:44,425 - app.medical_apis - INFO - Total documents retrieved from all sources: 8
+2025-08-29 17:09:44,426 - app.retriever - INFO - Retrieved 5 relevant documents from live medical databases
+2025-08-29 17:09:44,426 - root - INFO - Retrieved 5 documents
+2025-08-29 17:09:44,426 - root - INFO - Cross-check completed, 4 unified records
+2025-08-29 17:09:48,488 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 17:09:48,489 - root - INFO - LLM response generated successfully
+2025-08-29 17:11:06,276 - root - INFO - Processing query: the side effects of atorvastatin?...
+2025-08-29 17:11:06,276 - app.retriever - INFO - Starting real-time retrieval for: the side effects of atorvastatin?
+2025-08-29 17:11:06,276 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 17:11:06,276 - app.medical_apis - INFO - Searching all medical databases for: 'the side effects of atorvastatin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 17:11:06,278 - app.medical_apis - INFO - DrugBank search returned 1 results for 'the  atorvastatin'
+2025-08-29 17:11:06,830 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Athe++atorvastatin&limit=1 "HTTP/1.1 200 OK"
+2025-08-29 17:11:06,900 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=the++atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 17:11:06,901 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=the++atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 17:11:06,904 - app.medical_apis - INFO - RxNorm search returned 0 results for 'the  atorvastatin'
+2025-08-29 17:11:07,256 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Athe++atorvastatin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 17:11:07,321 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'the  atorvastatin'
+2025-08-29 17:11:07,329 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=the++atorvastatin&name_type=generic&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 17:11:07,330 - app.medical_apis - INFO - DailyMed search returned 0 results for 'the  atorvastatin'
+2025-08-29 17:11:07,736 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 400 Bad Request"
+2025-08-29 17:11:08,438 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:11:08,440 - app.medical_apis - INFO - Total documents retrieved from all sources: 2
+2025-08-29 17:11:08,441 - app.retriever - INFO - Retrieved 2 relevant documents from live medical databases
+2025-08-29 17:11:08,441 - root - INFO - Retrieved 2 documents
+2025-08-29 17:11:08,441 - root - INFO - Cross-check completed, 1 unified records
+2025-08-29 17:11:13,463 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 17:11:13,465 - root - INFO - LLM response generated successfully
+2025-08-29 17:13:33,626 - root - INFO - Processing query: what are the side effects of atorvastatin?...
+2025-08-29 17:13:33,628 - app.retriever - INFO - Starting real-time retrieval for: what are the side effects of atorvastatin?
+2025-08-29 17:13:33,629 - app.retriever - INFO - Side effects query detected - prioritizing DailyMed and OpenFDA
+2025-08-29 17:13:33,629 - app.medical_apis - INFO - Searching all medical databases for: 'what are the side effects of atorvastatin?' with custom limits (DailyMed: 3, OpenFDA: 3, RxNorm: 1, DrugBank: 1)
+2025-08-29 17:13:33,632 - app.medical_apis - INFO - DrugBank search returned 1 results for 'atorvastatin'
+2025-08-29 17:13:34,107 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aatorvastatin&limit=1 "HTTP/1.1 404 Not Found"
+2025-08-29 17:13:34,241 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 17:13:34,243 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-08-29 17:13:34,244 - app.medical_apis - INFO - RxNorm search returned 2 results for 'atorvastatin'
+2025-08-29 17:13:34,412 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aatorvastatin&limit=6 "HTTP/1.1 200 OK"
+2025-08-29 17:13:34,621 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'atorvastatin'
+2025-08-29 17:13:35,068 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611248&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 17:13:35,252 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:13:35,966 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611250&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 17:13:36,050 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:13:36,492 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2611252&pagesize=3 "HTTP/1.1 200 OK"
+2025-08-29 17:13:36,570 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/6375eae7-e159-4fb2-a91c-9aa20ac3c9e1.xml "HTTP/1.1 200 OK"
+2025-08-29 17:13:36,848 - app.medical_apis - INFO - DailyMed search returned 3 results for 'atorvastatin'
+2025-08-29 17:13:37,318 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:13:37,505 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:13:38,089 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:13:38,578 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:13:38,989 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:13:39,151 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-29 17:13:39,153 - app.medical_apis - INFO - Total documents retrieved from all sources: 6
+2025-08-29 17:13:39,154 - app.retriever - INFO - Retrieved 5 relevant documents from live medical databases
+2025-08-29 17:13:39,154 - root - INFO - Retrieved 5 documents
+2025-08-29 17:13:39,154 - root - INFO - Cross-check completed, 4 unified records
+2025-08-29 17:13:45,337 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-08-29 17:13:45,338 - root - INFO - LLM response generated successfully

@@ -34,9 +34,20 @@ Question: {question}
 Context Information:
 {context_text}
 
-Please provide a comprehensive answer based ONLY on the provided context. 
-If sources disagree, clearly indicate the differences with source citations.
-Always include inline citations like [RxNorm:ID], [DailyMed:ID], etc.
+IMPORTANT INSTRUCTIONS:
+1. Answer based ONLY on the provided context - NO HALLUCINATIONS
+2. If asked about side effects, provide COMPREHENSIVE coverage including:
+   - Most common and important side effects FIRST (e.g., muscle pain for statins)
+   - Serious side effects and warnings
+   - Organ system breakdown (musculoskeletal, liver, gastrointestinal, etc.)
+   - Use clear section headers, bullet points, and organized structure
+3. If information is missing, clearly state "Information not available in the provided sources"
+4. Always include inline citations like [RxNorm:ID], [DailyMed:ID], [OpenFDA:ID], [DrugBank:ID]
+5. If sources disagree, clearly indicate the differences with source citations
+6. Be honest about what you know and what you don't know
+7. Structure your response with clear headings and bullet points for readability
+
+Please provide a comprehensive, well-organized answer based on the available information.
 """
 
     try:
@@ -47,7 +58,7 @@ Always include inline citations like [RxNorm:ID], [DailyMed:ID], etc.
                 {"role": "user", "content": user_message}
             ],
             temperature=0.1,  # Low temperature for factual responses
-            max_tokens=1000
+            max_tokens=2000
         )
         
         return response.choices[0].message.content

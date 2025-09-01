@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RxVerify - Multi-Database Drug Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/outline/index.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/solid/index.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.8); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-6 py-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
+                        <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">RxVerify</h1>
+                        <p class="text-primary-100 text-sm">Multi-Database Drug Assistant</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                        <span class="text-sm">System Online</span>
+                    </div>
+                    <button id="statusBtn" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200">
+                        System Status
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Get Real-Time Drug Information
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Ask questions about medications and get intelligent, cited responses from live medical databases including RxNorm, DailyMed, OpenFDA, and DrugBank.
+            </p>
+            <div class="mt-4 inline-flex items-center space-x-2 px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                <span>Live API Integration</span>
+            </div>
+        </div>
+
+        <!-- Query Input Section -->
+        <div class="max-w-4xl mx-auto mb-12">
+            <div class="glass-effect rounded-2xl p-8 shadow-xl">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900">Ask Your Question</h3>
+                        <p class="text-gray-600">Get detailed drug information with AI-powered insights</p>
+                    </div>
+                </div>
+                
+                <form id="queryForm" class="space-y-4">
+                    <div class="relative">
+                        <textarea 
+                            id="questionInput" 
+                            rows="3" 
+                            placeholder="e.g., What are the side effects of atorvastatin? How does it interact with other medications? What's the recommended dosage for adults?"
+                            class="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none transition-all duration-200 text-gray-700 placeholder-gray-400"
+                        ></textarea>
+                        <div class="absolute bottom-3 right-3 flex items-center space-x-2">
+                            <span id="charCount" class="text-xs text-gray-400">0</span>
+                            <span class="text-xs text-gray-400">/ 500</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" id="advancedSearch" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                <span class="text-sm text-gray-600">Advanced search options</span>
+                            </label>
+                        </div>
+                        <button 
+                            type="submit" 
+                            id="submitBtn"
+                            class="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-all duration-200 flex items-center space-x-2 pulse-glow"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <span>Get Answer</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Advanced Search Options -->
+                <div id="advancedOptions" class="hidden mt-6 p-4 bg-gray-50 rounded-xl">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Results Count</label>
+                            <select id="topK" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                <option value="3">3 results</option>
+                                <option value="5" selected>5 results</option>
+                                <option value="8">8 results</option>
+                                <option value="10">10 results</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Search Type</label>
+                            <select id="searchType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                <option value="hybrid" selected>Hybrid (Vector + Keyword)</option>
+                                <option value="vector">Vector Only</option>
+                                <option value="keyword">Keyword Only</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Response Style</label>
+                            <select id="responseStyle" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                <option value="professional" selected>Professional</option>
+                                <option value="simple">Simple</option>
+                                <option value="detailed">Detailed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="hidden max-w-4xl mx-auto mb-8">
+            <div class="glass-effect rounded-2xl p-8 text-center">
+                <div class="animate-spin w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Processing Your Query</h3>
+                <p class="text-gray-600">Searching databases, cross-validating information, and generating AI response...</p>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div id="progressContainer" class="hidden max-w-4xl mx-auto mb-8">
+            <div class="glass-effect rounded-2xl p-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6 text-center">Processing Pipeline</h3>
+                <div class="space-y-4">
+                    <!-- Search Step -->
+                    <div id="step_search" class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                        <div class="step-icon">🔍</div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-medium text-gray-900">Searching vector database</h4>
+                                <span class="step-timing text-sm text-gray-500">0s</span>
+                            </div>
+                            <p class="step-description text-sm text-gray-600">Finding relevant drug information...</p>
+                        </div>
+                    </div>
+
+                    <!-- Cross-check Step -->
+                    <div id="step_crosscheck" class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                        <div class="step-icon">✅</div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-medium text-gray-900">Cross-validating sources</h4>
+                                <span class="step-timing text-sm text-gray-500"></span>
+                            </div>
+                            <p class="step-description text-sm text-gray-600">Checking data consistency across sources...</p>
+                        </div>
+                    </div>
+
+                    <!-- LLM Step -->
+                    <div id="step_llm" class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                        <div class="step-icon">🤖</div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-medium text-gray-900">Generating AI response</h4>
+                                <span class="step-timing text-sm text-gray-500">0s</span>
+                            </div>
+                            <p class="step-description text-sm text-gray-600">Creating intelligent answer with citations...</p>
+                        </div>
+                    </div>
+
+                    <!-- Finalize Step -->
+                    <div id="step_finalize" class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                        <div class="step-icon">✨</div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-medium text-gray-900">Finalizing results</h4>
+                                <span class="step-timing text-sm text-gray-500"></span>
+                            </div>
+                            <p class="step-description text-sm text-gray-600">Preparing your response...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="hidden max-w-4xl mx-auto space-y-6">
+            <!-- Answer will be inserted here -->
+            <div id="answer"></div>
+            
+            <!-- Sources will be inserted here -->
+            <div id="sources"></div>
+            
+            <!-- Cross-validation will be inserted here -->
+            <div id="crossValidation"></div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="hidden max-w-4xl mx-auto mb-8">
+            <div class="bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-red-900 mb-2">Query Failed</h3>
+                <p id="errorMessage" class="text-red-700 mb-4">An error occurred while processing your request.</p>
+                <button onclick="resetForm()" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-200">
+                    Try Again
+                </button>
+            </div>
+        </div>
+
+        <!-- Example Queries -->
+        <div class="max-w-4xl mx-auto mt-12">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Try These Example Queries</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <button onclick="setExampleQuery('What are the side effects of atorvastatin?')" class="p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all duration-200 text-left">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-900">Side Effects</div>
+                            <div class="text-sm text-gray-500">Learn about medication risks</div>
+                        </div>
+                    </div>
+                </button>
+
+                <button onclick="setExampleQuery('How does metformin interact with other diabetes medications?')" class="p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all duration-200 text-left">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-900">Drug Interactions</div>
+                            <div class="text-sm text-gray-500">Check compatibility</div>
+                        </div>
+                    </div>
+                </button>
+
+                <button onclick="setExampleQuery('What is the recommended dosage for lisinopril in adults with hypertension?')" class="p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all duration-200 text-left">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-900">Dosage Information</div>
+                            <div class="text-sm text-gray-500">Proper medication amounts</div>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-16">
+        <div class="container mx-auto px-6 py-8">
+            <div class="text-center">
+                <p class="text-gray-400">&copy; 2025 RxVerify. Built with modern AI and comprehensive drug databases.</p>
+                <p class="text-sm text-gray-500 mt-2">For educational purposes only. Always consult healthcare professionals for medical decisions.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

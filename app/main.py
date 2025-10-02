@@ -12,6 +12,7 @@ from app.config import settings
 from app.medical_apis import close_medical_api_client
 from app.search_service import get_search_service
 from app.medication_cache import get_medication_cache
+from app.rxlist_database import get_rxlist_database
 
 # Validate settings
 settings.validate()
@@ -253,6 +254,35 @@ async def search_medications(request: SearchRequest):
             status_code=500, 
             detail=f"Medication search failed: {str(e)}"
         )
+
+@app.get("/rxlist/stats")
+async def get_rxlist_stats():
+    """Get RxList database statistics."""
+    try:
+        rxlist_db = get_rxlist_database()
+        stats = rxlist_db.get_drug_stats()
+        return {
+            "status": "success",
+            "rxlist_stats": stats,
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        logger.error(f"Failed to get RxList stats: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get RxList stats: {str(e)}")
+
+@app.post("/rxlist/clear")
+async def clear_rxlist_database():
+    """Clear the RxList database."""
+    try:
+        rxlist_db = get_rxlist_database()
+        success = rxlist_db.clear_database()
+        if success:
+            return {"status": "success", "message": "RxList database cleared successfully"}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to clear RxList database")
+    except Exception as e:
+        logger.error(f"Failed to clear RxList database: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to clear RxList database: {str(e)}")
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):

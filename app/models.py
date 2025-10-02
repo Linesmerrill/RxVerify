@@ -7,6 +7,7 @@ class Source(str, Enum):
     DAILYMED = "dailymed"
     OPENFDA = "openfda"
     DRUGBANK = "drugbank"
+    RXLIST = "rxlist"
 
 class SourceRef(BaseModel):
     source: Source

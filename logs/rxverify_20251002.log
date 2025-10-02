@@ -753,3 +753,37 @@
 2025-10-02 10:58:43,819 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
 2025-10-02 11:00:06,892 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
 2025-10-02 11:00:08,731 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 12:49:56,477 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 12:49:58,377 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 12:50:04,136 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 12:50:05,996 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 12:50:08,423 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 12:50:09,893 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 12:50:21,030 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 12:50:22,792 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 12:50:25,929 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 12:50:27,529 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 12:50:41,673 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 12:50:43,449 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 12:51:06,719 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 12:51:08,516 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 12:51:25,962 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-02 12:51:25,962 - app.rxlist_database - INFO - RxList database initialized at rxlist_database.db
+2025-10-02 12:51:25,963 - app.rxlist_database - INFO - RxList database already contains 20 drugs
+2025-10-02 12:51:25,967 - app.search_service - INFO - Cache search completed in 3.21ms for query: 'acetaminophen'
+2025-10-02 12:51:25,969 - app.search_service - INFO - Cache search completed in 1.26ms for query: 'tyl'
+2025-10-02 12:51:31,809 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-02 12:51:31,810 - app.rxlist_database - INFO - RxList database initialized at rxlist_database.db
+2025-10-02 12:51:31,810 - app.rxlist_database - INFO - RxList database already contains 20 drugs
+2025-10-02 12:51:31,815 - app.search_service - INFO - RxList search completed in 3.85ms for query: 'gabapentin'
+2025-10-02 12:51:31,816 - app.search_service - INFO - RxList search completed in 1.36ms for query: 'tramadol'
+2025-10-02 12:51:39,321 - root - INFO - Processing medication search: gabapentin...
+2025-10-02 12:51:39,324 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-02 12:51:39,324 - app.rxlist_database - INFO - RxList database initialized at rxlist_database.db
+2025-10-02 12:51:39,325 - app.rxlist_database - INFO - RxList database already contains 20 drugs
+2025-10-02 12:51:39,329 - app.search_service - INFO - Cache search completed in 3.24ms for query: 'gabapentin'
+2025-10-02 12:51:43,695 - root - INFO - Processing medication search: tyl...
+2025-10-02 12:51:43,697 - app.search_service - INFO - Cache search completed in 1.31ms for query: 'tyl'
+2025-10-02 12:51:46,013 - root - INFO - Processing medication search: ivermectin...
+2025-10-02 12:51:46,016 - app.search_service - INFO - Cache search completed in 2.87ms for query: 'ivermectin'
+2025-10-02 12:51:50,044 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client

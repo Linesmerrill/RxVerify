@@ -7,6 +7,7 @@ from typing import List, Dict, Optional, Set
 from app.models import DrugSearchResult, Source
 from app.medical_apis import get_medical_api_client
 from app.medication_cache import get_medication_cache
+from app.rxlist_database import get_rxlist_database
 import logging
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,7 @@ class MedicationSearchService:
         self._common_uses_cache = {}
         self._drug_class_cache = {}
         self._medication_cache = get_medication_cache()
+        self._rxlist_database = get_rxlist_database()
     
     async def search_medications(self, query: str, limit: int = 10) -> List[DrugSearchResult]:
         """
@@ -39,7 +41,16 @@ class MedicationSearchService:
                 logger.info(f"Cache search completed in {processing_time:.2f}ms for query: '{query}'")
                 return cached_results
             
-            # 2. Try local fallback for common drugs and partial matches
+            # 2. Search RxList database (primary source)
+            rxlist_results = self._rxlist_database.search_drugs(query, limit)
+            if rxlist_results:
+                # Cache the RxList results for future searches
+                self._medication_cache.cache_medications(rxlist_results)
+                processing_time = (time.time() - start_time) * 1000
+                logger.info(f"RxList search completed in {processing_time:.2f}ms for query: '{query}'")
+                return rxlist_results
+            
+            # 3. Try local fallback for common drugs and partial matches
             local_results = self._search_local_drugs(query, limit)
             if local_results:
                 # Cache the local results for future searches
@@ -48,23 +59,23 @@ class MedicationSearchService:
                 logger.info(f"Local search completed in {processing_time:.2f}ms for query: '{query}'")
                 return local_results
             
-            # 3. Search RxNorm API for new medications
+            # 4. Search RxNorm API for new medications (fallback)
             api_client = await get_medical_api_client()
             rxnorm_results = await self._search_rxnorm_fast(api_client, query, limit)
             
-            # 4. Enhance results with additional information
+            # 5. Enhance results with additional information
             enhanced_results = await self._enhance_search_results(rxnorm_results, query)
             
-            # 5. Sort by relevance (exact matches first, then partial matches)
+            # 6. Sort by relevance (exact matches first, then partial matches)
             sorted_results = self._sort_by_relevance(enhanced_results, query)
             
-            # 6. Consolidate medications with same common uses
+            # 7. Consolidate medications with same common uses
             consolidated_results = self._consolidate_medications(sorted_results)
             
-            # 7. Limit results
+            # 8. Limit results
             final_results = consolidated_results[:limit]
             
-            # 8. Cache the results for future fast lookups
+            # 9. Cache the results for future fast lookups
             if final_results:
                 self._medication_cache.cache_medications(final_results)
             

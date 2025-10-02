@@ -3,10 +3,21 @@ from typing import List, Dict, Optional
 import chromadb
 from chromadb.config import Settings
 from app.embeddings import embed
+from app.config import settings
 import asyncio
 
-# ChromaDB client - uses local file storage by default
-client = chromadb.PersistentClient(path="./chroma_db")
+# ChromaDB client - adapts to environment (local vs Heroku)
+def get_chromadb_client():
+    """Get ChromaDB client configured for the current environment."""
+    if settings.IS_HEROKU:
+        # On Heroku, use in-memory client since filesystem is ephemeral
+        # Data will be lost on restart, but that's acceptable for this use case
+        return chromadb.Client()
+    else:
+        # Local development - use persistent storage
+        return chromadb.PersistentClient(path=settings.CHROMA_PERSIST_DIRECTORY)
+
+client = get_chromadb_client()
 
 # Custom embedding function for ChromaDB
 class ChromaEmbeddingFunction:
@@ -34,6 +45,9 @@ def get_collection():
             metadata={"hnsw:space": "l2"},  # Use Euclidean distance for better differentiation
             embedding_function=ChromaEmbeddingFunction()  # Use our custom embedding function
         )
+
+# Initialize collection on startup
+collection = get_collection()
 
 async def search_keyword(query: str, limit: int = 10) -> List[dict]:
     """Search by text content using our custom embeddings."""

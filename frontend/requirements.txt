@@ -1,0 +1,2 @@
+# Frontend requirements (minimal for static file serving)
+# No additional packages needed for Python's built-in http.server

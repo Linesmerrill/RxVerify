@@ -14,6 +14,11 @@ class Settings:
     # ChromaDB Configuration
     CHROMADB_PATH: str = os.getenv("CHROMADB_PATH", "./chroma_db")
     CHROMADB_COLLECTION: str = os.getenv("CHROMADB_COLLECTION", "drug_docs")
+    CHROMA_PERSIST_DIRECTORY: str = os.getenv("CHROMA_PERSIST_DIRECTORY", "./chroma_db")
+    
+    # Environment detection
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+    IS_HEROKU: bool = os.getenv("DYNO") is not None
     
     # API Configuration
     API_HOST: str = os.getenv("API_HOST", "0.0.0.0")

@@ -259,6 +259,177 @@ class RxListDatabase:
                 "common_uses": ["Bacterial infections", "UTI", "Respiratory infections", "Skin infections"],
                 "description": "Broad-spectrum fluoroquinolone antibiotic",
                 "search_terms": ["ciprofloxacin", "cipro"]
+            },
+            {
+                "name": "Tacrine",
+                "generic_name": "Tacrine",
+                "brand_names": ["Cognex"],
+                "drug_class": "Cholinesterase Inhibitor",
+                "common_uses": ["Alzheimer's disease", "Dementia", "Memory improvement"],
+                "description": "Cholinesterase inhibitor for Alzheimer's disease treatment",
+                "search_terms": ["tacrine", "cognex"]
+            },
+            {
+                "name": "Tamoxifen",
+                "generic_name": "Tamoxifen",
+                "brand_names": ["Nolvadex", "Soltamox"],
+                "drug_class": "Selective Estrogen Receptor Modulator",
+                "common_uses": ["Breast cancer treatment", "Breast cancer prevention", "Hormone therapy"],
+                "description": "Selective estrogen receptor modulator for breast cancer",
+                "search_terms": ["tamoxifen", "nolvadex", "soltamox"]
+            },
+            {
+                "name": "Tadalafil",
+                "generic_name": "Tadalafil",
+                "brand_names": ["Cialis", "Adcirca"],
+                "drug_class": "Phosphodiesterase-5 Inhibitor",
+                "common_uses": ["Erectile dysfunction", "Pulmonary hypertension", "Benign prostatic hyperplasia"],
+                "description": "Phosphodiesterase-5 inhibitor for erectile dysfunction and pulmonary hypertension",
+                "search_terms": ["tadalafil", "cialis", "adcirca"]
+            },
+            {
+                "name": "Tamsulosin",
+                "generic_name": "Tamsulosin",
+                "brand_names": ["Flomax"],
+                "drug_class": "Alpha-1 Blocker",
+                "common_uses": ["Benign prostatic hyperplasia", "Urinary symptoms", "Prostate enlargement"],
+                "description": "Alpha-1 adrenergic blocker for prostate conditions",
+                "search_terms": ["tamsulosin", "flomax"]
+            },
+            {
+                "name": "Temazepam",
+                "generic_name": "Temazepam",
+                "brand_names": ["Restoril"],
+                "drug_class": "Benzodiazepine",
+                "common_uses": ["Insomnia", "Sleep disorders", "Anxiety"],
+                "description": "Benzodiazepine for sleep disorders",
+                "search_terms": ["temazepam", "restoril"]
+            },
+            {
+                "name": "Terazosin",
+                "generic_name": "Terazosin",
+                "brand_names": ["Hytrin"],
+                "drug_class": "Alpha-1 Blocker",
+                "common_uses": ["High blood pressure", "Benign prostatic hyperplasia", "Urinary symptoms"],
+                "description": "Alpha-1 adrenergic blocker for hypertension and prostate conditions",
+                "search_terms": ["terazosin", "hytrin"]
+            },
+            {
+                "name": "Tetracycline",
+                "generic_name": "Tetracycline",
+                "brand_names": ["Sumycin", "Achromycin"],
+                "drug_class": "Tetracycline Antibiotic",
+                "common_uses": ["Bacterial infections", "Acne", "Respiratory infections", "Skin infections"],
+                "description": "Broad-spectrum tetracycline antibiotic",
+                "search_terms": ["tetracycline", "sumycin", "achromycin"]
+            },
+            {
+                "name": "Theophylline",
+                "generic_name": "Theophylline",
+                "brand_names": ["Theo-24", "Uniphyl"],
+                "drug_class": "Bronchodilator",
+                "common_uses": ["Asthma", "COPD", "Bronchospasm", "Breathing problems"],
+                "description": "Bronchodilator for respiratory conditions",
+                "search_terms": ["theophylline", "theo-24", "uniphyl"]
+            },
+            {
+                "name": "Tolterodine",
+                "generic_name": "Tolterodine",
+                "brand_names": ["Detrol", "Detrol LA"],
+                "drug_class": "Anticholinergic",
+                "common_uses": ["Overactive bladder", "Urinary incontinence", "Frequent urination"],
+                "description": "Anticholinergic for overactive bladder treatment",
+                "search_terms": ["tolterodine", "detrol"]
+            },
+            {
+                "name": "Topiramate",
+                "generic_name": "Topiramate",
+                "brand_names": ["Topamax"],
+                "drug_class": "Anticonvulsant",
+                "common_uses": ["Seizures", "Migraine prevention", "Epilepsy", "Weight loss"],
+                "description": "Anticonvulsant for seizures and migraine prevention",
+                "search_terms": ["topiramate", "topamax"]
+            },
+            {
+                "name": "Trazodone",
+                "generic_name": "Trazodone",
+                "brand_names": ["Desyrel"],
+                "drug_class": "Serotonin Antagonist and Reuptake Inhibitor",
+                "common_uses": ["Depression", "Insomnia", "Anxiety", "Sleep disorders"],
+                "description": "Antidepressant with sedative properties",
+                "search_terms": ["trazodone", "desyrel"]
+            },
+            {
+                "name": "Triamcinolone",
+                "generic_name": "Triamcinolone",
+                "brand_names": ["Kenalog", "Aristocort"],
+                "drug_class": "Corticosteroid",
+                "common_uses": ["Inflammation", "Allergic reactions", "Skin conditions", "Arthritis"],
+                "description": "Corticosteroid for inflammation and allergic conditions",
+                "search_terms": ["triamcinolone", "kenalog", "aristocort"]
+            },
+            {
+                "name": "Trimethoprim",
+                "generic_name": "Trimethoprim",
+                "brand_names": ["Proloprim", "Trimpex"],
+                "drug_class": "Antibiotic",
+                "common_uses": ["Bacterial infections", "UTI", "Respiratory infections"],
+                "description": "Antibiotic for bacterial infections",
+                "search_terms": ["trimethoprim", "proloprim", "trimpex"]
+            },
+            {
+                "name": "Valacyclovir",
+                "generic_name": "Valacyclovir",
+                "brand_names": ["Valtrex"],
+                "drug_class": "Antiviral",
+                "common_uses": ["Herpes simplex", "Shingles", "Cold sores", "Genital herpes"],
+                "description": "Antiviral for herpes virus infections",
+                "search_terms": ["valacyclovir", "valtrex"]
+            },
+            {
+                "name": "Valsartan",
+                "generic_name": "Valsartan",
+                "brand_names": ["Diovan"],
+                "drug_class": "Angiotensin Receptor Blocker",
+                "common_uses": ["High blood pressure", "Heart failure", "Heart attack prevention"],
+                "description": "Angiotensin receptor blocker for cardiovascular conditions",
+                "search_terms": ["valsartan", "diovan"]
+            },
+            {
+                "name": "Venlafaxine",
+                "generic_name": "Venlafaxine",
+                "brand_names": ["Effexor", "Effexor XR"],
+                "drug_class": "Serotonin-Norepinephrine Reuptake Inhibitor",
+                "common_uses": ["Depression", "Anxiety", "Panic disorder", "Social anxiety"],
+                "description": "SNRI antidepressant for depression and anxiety",
+                "search_terms": ["venlafaxine", "effexor"]
+            },
+            {
+                "name": "Verapamil",
+                "generic_name": "Verapamil",
+                "brand_names": ["Calan", "Verelan"],
+                "drug_class": "Calcium Channel Blocker",
+                "common_uses": ["High blood pressure", "Chest pain", "Heart rhythm disorders", "Migraine prevention"],
+                "description": "Calcium channel blocker for cardiovascular conditions",
+                "search_terms": ["verapamil", "calan", "verelan"]
+            },
+            {
+                "name": "Warfarin",
+                "generic_name": "Warfarin",
+                "brand_names": ["Coumadin", "Jantoven"],
+                "drug_class": "Anticoagulant",
+                "common_uses": ["Blood clot prevention", "Stroke prevention", "Heart attack prevention", "Atrial fibrillation"],
+                "description": "Anticoagulant for blood clot prevention",
+                "search_terms": ["warfarin", "coumadin", "jantoven"]
+            },
+            {
+                "name": "Zolpidem",
+                "generic_name": "Zolpidem",
+                "brand_names": ["Ambien", "Ambien CR"],
+                "drug_class": "Non-benzodiazepine Hypnotic",
+                "common_uses": ["Insomnia", "Sleep disorders", "Sleep initiation"],
+                "description": "Non-benzodiazepine hypnotic for sleep disorders",
+                "search_terms": ["zolpidem", "ambien"]
             }
         ]
         
@@ -279,15 +450,15 @@ class RxListDatabase:
             ))
 
     def search_drugs(self, query: str, limit: int = 10) -> List[DrugSearchResult]:
-        """Search for drugs matching the query."""
-        if not query or len(query.strip()) < 2:
+        """Search for drugs matching the query with optimized real-time autocomplete."""
+        if not query or len(query.strip()) < 1:  # Allow single character searches
             return []
         
         query = query.strip().lower()
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
-        # Search in multiple fields with relevance scoring
+        # Enhanced search with better partial matching and relevance scoring
         cursor.execute("""
             SELECT name, generic_name, brand_names, drug_class, common_uses, description, search_terms
             FROM drugs
@@ -305,18 +476,19 @@ class RxListDatabase:
                     WHEN LOWER(search_terms) LIKE ? THEN 5
                     ELSE 6
                 END,
+                LENGTH(name),
                 name
             LIMIT ?
         """, (
-            f"%{query}%",  # name LIKE
-            f"%{query}%",  # generic_name LIKE
-            f"%{query}%",  # brand_names LIKE
-            f"%{query}%",  # search_terms LIKE
+            f"{query}%",   # name starts with
+            f"{query}%",   # generic_name starts with
+            f"%{query}%",  # brand_names contains
+            f"%{query}%",  # search_terms contains
             query,         # exact name match
             f"{query}%",   # name starts with
-            f"%{query}%",  # generic_name LIKE
-            f"%{query}%",  # brand_names LIKE
-            f"%{query}%",  # search_terms LIKE
+            f"{query}%",   # generic_name starts with
+            f"%{query}%",  # brand_names contains
+            f"%{query}%",  # search_terms contains
             limit
         ))
         

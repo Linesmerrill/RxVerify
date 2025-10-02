@@ -28,7 +28,7 @@ class MedicationSearchService:
         """
         start_time = time.time()
         
-        if not query or len(query.strip()) < 2:
+        if not query or len(query.strip()) < 1:  # Allow single character searches for real-time autocomplete
             return []
         
         query = query.strip().lower()

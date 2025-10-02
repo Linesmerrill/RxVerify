@@ -787,3 +787,21 @@
 2025-10-02 12:51:46,013 - root - INFO - Processing medication search: ivermectin...
 2025-10-02 12:51:46,016 - app.search_service - INFO - Cache search completed in 2.87ms for query: 'ivermectin'
 2025-10-02 12:51:50,044 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 12:57:48,467 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-02 12:57:48,468 - app.rxlist_database - INFO - RxList database initialized at rxlist_database.db
+2025-10-02 12:57:48,468 - app.rxlist_database - INFO - RxList database already contains 39 drugs
+2025-10-02 12:57:48,472 - app.search_service - INFO - Cache search completed in 3.49ms for query: 'ta'
+2025-10-02 12:57:48,475 - app.search_service - INFO - RxList search completed in 2.68ms for query: 'tac'
+2025-10-02 12:57:56,408 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 12:57:59,363 - root - INFO - Processing medication search: ta...
+2025-10-02 12:57:59,366 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-02 12:57:59,367 - app.rxlist_database - INFO - RxList database initialized at rxlist_database.db
+2025-10-02 12:57:59,368 - app.rxlist_database - INFO - RxList database already contains 39 drugs
+2025-10-02 12:57:59,372 - app.search_service - INFO - Cache search completed in 3.79ms for query: 'ta'
+2025-10-02 12:58:02,247 - root - INFO - Processing medication search: tac...
+2025-10-02 12:58:02,249 - app.search_service - INFO - Cache search completed in 1.48ms for query: 'tac'
+2025-10-02 12:58:05,648 - root - INFO - Processing medication search: tacrine...
+2025-10-02 12:58:05,650 - app.search_service - INFO - Cache search completed in 1.30ms for query: 'tacrine'
+2025-10-02 12:58:09,039 - root - INFO - Processing medication search: t...
+2025-10-02 12:58:09,081 - app.search_service - INFO - RxList search completed in 40.94ms for query: 't'
+2025-10-02 12:58:12,120 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client

@@ -3,7 +3,10 @@ let app;
 
 class RxVerifyApp {
     constructor() {
-        this.apiBaseUrl = 'http://localhost:8000';
+        // Use environment-specific API URL
+        this.apiBaseUrl = window.location.hostname === 'localhost' 
+            ? 'https://rx-verify-api-e68bdd74c056.herokuapp.com' 
+            : 'https://rx-verify-api-e68bdd74c056.herokuapp.com';
         this.currentQuery = null;
         this.searchTimeout = null;
         this.currentTab = 'ask';
@@ -14,7 +17,11 @@ class RxVerifyApp {
         this.setupEventListeners();
         this.setupCharacterCounter();
         this.checkSystemStatus();
-        this.showToast('Welcome to RxVerify! 🚀', 'success');
+        // Only show welcome toast if it's the first visit (not a reload)
+        if (!sessionStorage.getItem('rxverify_visited')) {
+            this.showToast('Welcome to RxVerify! 🚀', 'success');
+            sessionStorage.setItem('rxverify_visited', 'true');
+        }
     }
 
     setupEventListeners() {
@@ -466,19 +473,40 @@ class RxVerifyApp {
     async checkSystemStatus() {
         try {
             const response = await this.callAPI('/health');
-            const statusIndicator = document.querySelector('.w-2.h-2.bg-green-400');
+            const statusIndicator = document.querySelector('.w-2.h-2.bg-green-400, .w-2.h-2.bg-red-400');
+            const statusText = document.querySelector('.flex.items-center.space-x-2 span');
             
             if (response.ok) {
-                statusIndicator.classList.remove('bg-red-400');
-                statusIndicator.classList.add('bg-green-400');
+                // Backend is healthy
+                if (statusIndicator) {
+                    statusIndicator.classList.remove('bg-red-400');
+                    statusIndicator.classList.add('bg-green-400');
+                }
+                if (statusText) {
+                    statusText.textContent = 'System Online';
+                }
             } else {
+                // Backend returned error
+                if (statusIndicator) {
+                    statusIndicator.classList.remove('bg-green-400');
+                    statusIndicator.classList.add('bg-red-400');
+                }
+                if (statusText) {
+                    statusText.textContent = 'System Offline';
+                }
+            }
+        } catch (error) {
+            // Backend is unreachable
+            const statusIndicator = document.querySelector('.w-2.h-2.bg-green-400, .w-2.h-2.bg-red-400');
+            const statusText = document.querySelector('.flex.items-center.space-x-2 span');
+            
+            if (statusIndicator) {
                 statusIndicator.classList.remove('bg-green-400');
                 statusIndicator.classList.add('bg-red-400');
             }
-        } catch (error) {
-            const statusIndicator = document.querySelector('.w-2.h-2.bg-green-400');
-            statusIndicator.classList.remove('bg-green-400');
-            statusIndicator.classList.add('bg-red-400');
+            if (statusText) {
+                statusText.textContent = 'System Offline';
+            }
         }
     }
 
@@ -501,7 +529,7 @@ class RxVerifyApp {
                 this.showToast('Unable to get system status', 'error');
             }
         } catch (error) {
-            this.showToast('System status check failed', 'error');
+            this.showToast('System status check failed - Backend may be offline', 'error');
         }
     }
 

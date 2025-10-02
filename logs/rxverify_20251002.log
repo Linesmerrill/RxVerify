@@ -805,3 +805,13 @@
 2025-10-02 12:58:09,039 - root - INFO - Processing medication search: t...
 2025-10-02 12:58:09,081 - app.search_service - INFO - RxList search completed in 40.94ms for query: 't'
 2025-10-02 12:58:12,120 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 16:08:24,444 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-02 16:08:24,445 - app.rxlist_database - INFO - RxList database initialized at rxlist_database.db
+2025-10-02 16:08:24,446 - app.rxlist_database - INFO - RxList database already contains 4467 drugs
+2025-10-02 16:08:24,467 - app.search_service - INFO - RxList search completed in 21.01ms for query: 'a'
+2025-10-02 16:08:24,469 - app.search_service - INFO - Cache search completed in 1.76ms for query: 'tyl'
+2025-10-02 16:08:24,484 - app.search_service - INFO - RxList search completed in 14.82ms for query: 'ibu'
+2025-10-02 16:08:24,498 - app.search_service - INFO - RxList search completed in 13.15ms for query: 'met'
+2025-10-02 16:08:24,499 - app.search_service - INFO - Cache search completed in 0.90ms for query: 'lis'
+2025-10-02 16:08:24,512 - app.search_service - INFO - RxList search completed in 12.84ms for query: 'sim'
+2025-10-02 16:08:28,867 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled

@@ -37,3 +37,21 @@ class RetrievedDoc(BaseModel):
     title: Optional[str]
     text: str
     score: float
+
+class SearchRequest(BaseModel):
+    query: str
+    limit: int = 10
+
+class DrugSearchResult(BaseModel):
+    rxcui: str
+    name: str
+    generic_name: Optional[str] = None
+    brand_names: List[str] = []
+    common_uses: List[str] = []
+    drug_class: Optional[str] = None
+    source: str
+
+class SearchResponse(BaseModel):
+    results: List[DrugSearchResult]
+    total_found: int
+    processing_time_ms: float

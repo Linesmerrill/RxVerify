@@ -1,0 +1,745 @@
+2025-10-02 09:58:37,897 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 09:59:18,372 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 09:59:30,180 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 09:59:46,889 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:00:57,169 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:06:07,069 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:06:09,113 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:06:37,296 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:06:39,208 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:06:40,776 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:06:42,293 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:06:47,450 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:06:49,306 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:06:55,778 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:06:57,363 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:08:12,966 - root - INFO - Processing medication search: atorvastatin...
+2025-10-02 10:08:12,967 - app.search_service - ERROR - RxNorm search failed: Request URL is missing an 'http://' or 'https://' protocol.
+2025-10-02 10:08:12,967 - app.search_service - INFO - Medication search completed in 0.69ms for query: 'atorvastatin'
+2025-10-02 10:08:20,807 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:08:22,667 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:08:23,377 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:08:24,908 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:08:25,921 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:08:27,416 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:08:27,649 - root - INFO - Processing medication search: atorvastatin...
+2025-10-02 10:08:28,505 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:08:28,974 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/262095/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:29,110 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/262095/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:29,559 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2631867/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:29,670 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2631867/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:29,745 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/617314/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:29,835 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/617314/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:29,917 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/617318/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:30,024 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/617318/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:30,133 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/617320/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:30,217 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/617320/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:30,290 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/750199/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:30,363 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/750199/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:30,436 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/750203/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:30,511 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/750203/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:30,585 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/750207/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:30,658 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/750207/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:30,731 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/750211/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:30,803 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/750211/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:30,873 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/750215/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:30,946 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/750215/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,027 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1422086/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,101 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1422086/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,174 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1422093/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,248 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1422093/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,322 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1422096/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,394 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1422096/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,467 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1422099/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,540 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1422099/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,612 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/259255/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,685 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/259255/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,759 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2630760/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,831 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2630760/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,905 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/404011/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:31,981 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/404011/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:32,054 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/404013/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:32,129 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/404013/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:32,202 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/597967/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:32,275 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/597967/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:32,349 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/597971/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:32,423 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/597971/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:32,423 - app.search_service - INFO - Medication search completed in 4774.50ms for query: 'atorvastatin'
+2025-10-02 10:08:34,565 - root - INFO - Processing medication search: tylenol...
+2025-10-02 10:08:34,640 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=tylenol&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:08:34,714 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243440/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:34,788 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243440/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:34,860 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1738139/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:34,933 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1738139/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:35,006 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/209387/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:35,078 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/209387/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:35,150 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/209459/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:35,224 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/209459/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:35,306 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2178758/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:35,380 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2178758/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:35,454 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2374361/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:35,527 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2374361/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:35,528 - app.search_service - INFO - Medication search completed in 962.86ms for query: 'tylenol'
+2025-10-02 10:08:37,699 - root - INFO - Processing medication search: metformin...
+2025-10-02 10:08:37,778 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metformin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:08:37,851 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043567/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:37,925 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043567/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:37,998 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043574/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:38,070 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043574/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:38,144 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043582/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:38,219 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043582/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:38,293 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243026/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:38,366 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243026/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:38,438 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243033/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:38,513 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243033/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:38,587 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243040/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:38,660 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243040/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:38,731 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043563/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:38,804 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043563/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:38,880 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043570/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:38,959 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043570/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:39,031 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043578/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:39,104 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043578/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:39,178 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243020/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:39,252 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243020/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:39,325 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243027/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:39,399 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243027/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:39,471 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243034/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:08:39,547 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243034/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:08:39,547 - app.search_service - INFO - Medication search completed in 1848.25ms for query: 'metformin'
+2025-10-02 10:08:48,745 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:08:51,277 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:12:44,206 - root - INFO - Processing medication search: aspirin...
+2025-10-02 10:12:44,704 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=aspirin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:12:44,809 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2047428/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:44,911 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2047428/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:45,012 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1730187/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:45,086 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1730187/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:45,161 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2047427/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:45,233 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2047427/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:45,306 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2565492/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:45,404 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2565492/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:45,476 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2664074/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:45,551 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2664074/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:45,630 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/904664/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:45,703 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/904664/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:45,790 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/904668/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:45,862 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/904668/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:45,935 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1052416/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,010 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1052416/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,082 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1052678/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,157 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1052678/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,232 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1053327/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,303 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1053327/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,375 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1101754/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,449 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1101754/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,522 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1189781/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,594 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1189781/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,669 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1247397/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,742 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1247397/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,818 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/103863/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,892 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/103863/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:46,967 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/103954/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:47,039 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/103954/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:47,114 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/104474/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:47,188 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/104474/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:47,259 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/104475/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:47,334 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/104475/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:47,410 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/104899/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:47,487 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/104899/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:47,560 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/106809/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:12:47,637 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/106809/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:12:47,641 - app.search_service - INFO - Medication search completed in 3434.20ms for query: 'aspirin'
+2025-10-02 10:12:51,485 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:12:53,774 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:12:57,008 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:12:58,647 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:12:59,743 - root - INFO - Processing medication search: aspirin...
+2025-10-02 10:13:00,193 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=aspirin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:13:00,273 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2047428/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:00,348 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2047428/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:00,423 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1730187/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:00,498 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1730187/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:00,573 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2047427/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:00,650 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2047427/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:00,727 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2565492/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:00,801 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2565492/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:00,874 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2664074/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:00,948 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2664074/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,021 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/904664/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,095 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/904664/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,169 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/904668/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,245 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/904668/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,317 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1052416/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,395 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1052416/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,470 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1052678/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,542 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1052678/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,618 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1053327/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,691 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1053327/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,766 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1101754/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,841 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1101754/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,913 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1189781/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:01,988 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1189781/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:02,064 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1247397/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:02,137 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1247397/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:02,210 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/103863/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:02,285 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/103863/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:02,358 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/103954/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:02,434 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/103954/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:02,506 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/104474/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:02,582 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/104474/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:02,902 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/104475/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:02,977 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/104475/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:03,050 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/104899/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:03,125 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/104899/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:03,200 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/106809/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:13:03,273 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/106809/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:13:03,274 - app.search_service - INFO - Medication search completed in 3530.84ms for query: 'aspirin'
+2025-10-02 10:13:08,751 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:13:10,786 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:13:29,990 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:13:33,746 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:13:38,914 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:14:13,864 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:17:04,339 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:17:35,610 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:18:17,270 - root - INFO - Processing medication search: ibuprofen...
+2025-10-02 10:18:17,724 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ibuprofen&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:18:17,818 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1100070/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:18:17,920 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1100070/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,023 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1101919/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,097 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1101919/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,173 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1300267/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,247 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1300267/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,320 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/153008/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,395 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/153008/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,471 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1049589/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,544 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1049589/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,618 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1100066/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,691 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1100066/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,764 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1292323/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,837 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1292323/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,914 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1297390/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,988 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1297390/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:18:18,990 - app.search_service - INFO - Medication search completed in 1719.67ms for query: 'ibuprofen'
+2025-10-02 10:27:19,882 - root - INFO - Processing medication search: tylenol...
+2025-10-02 10:27:20,457 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=tylenol&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:27:20,575 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243440/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:20,647 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243440/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:20,720 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1738139/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:20,793 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1738139/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:20,868 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/209387/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:20,941 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/209387/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:21,012 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/209459/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:21,086 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/209459/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:21,158 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2178758/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:21,231 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2178758/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:21,310 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2374361/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:21,397 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2374361/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:21,397 - app.search_service - INFO - Medication search completed in 1514.65ms for query: 'tylenol'
+2025-10-02 10:27:34,760 - root - INFO - Processing medication search: ty...
+2025-10-02 10:27:35,193 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ty&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:27:35,218 - app.search_service - INFO - Medication search completed in 455.07ms for query: 'ty'
+2025-10-02 10:27:37,229 - root - INFO - Processing medication search: tyle...
+2025-10-02 10:27:37,367 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=tyle&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:27:37,368 - app.search_service - INFO - Medication search completed in 138.26ms for query: 'tyle'
+2025-10-02 10:27:38,954 - root - INFO - Processing medication search: tylenol...
+2025-10-02 10:27:39,030 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=tylenol&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:27:39,111 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243440/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:39,201 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1243440/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:39,315 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1738139/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:39,420 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1738139/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:39,494 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/209387/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:39,588 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/209387/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:39,666 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/209459/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:39,739 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/209459/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:39,812 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2178758/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:39,888 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2178758/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:39,963 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2374361/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:40,036 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2374361/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:40,108 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/828555/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:40,184 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/828555/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:40,256 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/828557/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:27:40,331 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/828557/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:27:40,331 - app.search_service - INFO - Medication search completed in 1376.81ms for query: 'tylenol'
+2025-10-02 10:27:45,918 - root - INFO - Processing medication search: tyl...
+2025-10-02 10:27:46,380 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=tyl&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:27:46,380 - app.search_service - INFO - Medication search completed in 462.60ms for query: 'tyl'
+2025-10-02 10:28:38,392 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:28:40,303 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:29:10,024 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:29:11,931 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:29:13,505 - root - INFO - Processing medication search: tyl...
+2025-10-02 10:29:13,505 - app.search_service - INFO - Local search completed in 0.35ms for query: 'tyl'
+2025-10-02 10:29:16,833 - root - INFO - Processing medication search: ibu...
+2025-10-02 10:29:16,834 - app.search_service - INFO - Local search completed in 0.10ms for query: 'ibu'
+2025-10-02 10:29:20,681 - root - INFO - Processing medication search: met...
+2025-10-02 10:29:20,681 - app.search_service - INFO - Local search completed in 0.05ms for query: 'met'
+2025-10-02 10:29:33,732 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:29:36,113 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:29:39,407 - root - INFO - Processing medication search: ty...
+2025-10-02 10:29:40,051 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ty&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:29:40,052 - app.search_service - INFO - RxNorm search completed in 645.55ms for query: 'ty'
+2025-10-02 10:29:41,234 - root - INFO - Processing medication search: tyl...
+2025-10-02 10:29:41,234 - app.search_service - INFO - Local search completed in 0.41ms for query: 'tyl'
+2025-10-02 10:30:57,744 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:30:59,741 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:31:05,298 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:31:07,064 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:31:13,628 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:31:15,324 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:31:22,390 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:31:23,947 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:31:26,836 - root - INFO - Processing medication search: tyl...
+2025-10-02 10:31:26,836 - app.search_service - INFO - Local search completed in 0.39ms for query: 'tyl'
+2025-10-02 10:31:31,779 - root - INFO - Processing medication search: ibu...
+2025-10-02 10:31:31,780 - app.search_service - INFO - Local search completed in 0.14ms for query: 'ibu'
+2025-10-02 10:31:40,565 - root - INFO - Processing medication search: ato...
+2025-10-02 10:31:40,565 - app.search_service - INFO - Local search completed in 0.07ms for query: 'ato'
+2025-10-02 10:31:57,391 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:31:59,683 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:32:05,729 - root - INFO - Processing medication search: ty...
+2025-10-02 10:32:06,455 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ty&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:06,472 - app.search_service - INFO - RxNorm search completed in 742.34ms for query: 'ty'
+2025-10-02 10:32:07,334 - root - INFO - Processing medication search: tyl...
+2025-10-02 10:32:07,335 - app.search_service - INFO - Local search completed in 0.56ms for query: 'tyl'
+2025-10-02 10:32:15,297 - root - INFO - Processing medication search: iver...
+2025-10-02 10:32:15,703 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=iver&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:15,710 - app.search_service - INFO - RxNorm search completed in 412.94ms for query: 'iver'
+2025-10-02 10:32:16,887 - root - INFO - Processing medication search: iverm...
+2025-10-02 10:32:16,966 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=iverm&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:16,967 - app.search_service - INFO - RxNorm search completed in 79.30ms for query: 'iverm'
+2025-10-02 10:32:17,772 - root - INFO - Processing medication search: iverme...
+2025-10-02 10:32:17,850 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=iverme&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:17,851 - app.search_service - INFO - RxNorm search completed in 79.26ms for query: 'iverme'
+2025-10-02 10:32:18,499 - root - INFO - Processing medication search: ivermec...
+2025-10-02 10:32:18,658 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ivermec&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:18,659 - app.search_service - INFO - RxNorm search completed in 159.47ms for query: 'ivermec'
+2025-10-02 10:32:19,481 - root - INFO - Processing medication search: ivermect...
+2025-10-02 10:32:19,579 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ivermect&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:19,580 - app.search_service - INFO - RxNorm search completed in 98.09ms for query: 'ivermect'
+2025-10-02 10:32:20,191 - root - INFO - Processing medication search: ivermecti...
+2025-10-02 10:32:20,272 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ivermecti&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:20,296 - app.search_service - INFO - RxNorm search completed in 104.26ms for query: 'ivermecti'
+2025-10-02 10:32:21,914 - root - INFO - Processing medication search: ivermectin...
+2025-10-02 10:32:22,037 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ivermectin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:22,146 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006637/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:22,248 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006637/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:22,358 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006643/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:22,825 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006643/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:22,924 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006647/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:23,032 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006647/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:23,168 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1010448/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:23,270 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1010448/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:23,343 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043446/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:23,417 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043446/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:23,499 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1047479/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:23,572 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1047479/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:23,645 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1050951/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:23,717 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1050951/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:23,791 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1298427/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:23,865 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1298427/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:23,941 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363490/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,017 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363490/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,094 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1373244/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,171 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1373244/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,243 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1423674/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,319 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1423674/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,393 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1423676/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,467 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1423676/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,541 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1423678/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,614 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1423678/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,687 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1430119/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,763 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1430119/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,838 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1435578/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,913 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1435578/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:24,989 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546164/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:25,064 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546164/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:25,139 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1549085/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:25,212 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1549085/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:25,285 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1592802/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:25,360 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1592802/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:25,442 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598073/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:25,515 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598073/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:25,588 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2121105/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:25,662 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2121105/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:25,737 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006632/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:25,811 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006632/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:25,886 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006641/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:25,963 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006641/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:26,038 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006645/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:26,112 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006645/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:26,186 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1246673/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:26,259 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1246673/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:26,331 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363363/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:26,405 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363363/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:26,480 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546195/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:26,555 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546195/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:26,629 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598068/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:26,715 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598068/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:26,790 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/199998/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:26,866 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/199998/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:26,939 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205730/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,014 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205730/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,089 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205739/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,163 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205739/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,237 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205743/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,310 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205743/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,385 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205747/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,460 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205747/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,538 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/311207/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,612 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/311207/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,687 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/855488/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,763 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/855488/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,844 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895883/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,920 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895883/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:27,995 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895893/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:28,070 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895893/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:28,144 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895899/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:28,218 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895899/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:28,299 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895905/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:28,373 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895905/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:28,446 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/896966/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:28,520 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/896966/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:28,596 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/902282/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:28,670 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/902282/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:28,672 - app.search_service - INFO - RxNorm search completed in 6756.88ms for query: 'ivermectin'
+2025-10-02 10:32:39,238 - root - INFO - Processing medication search: iverm...
+2025-10-02 10:32:39,648 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=iverm&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:39,649 - app.search_service - INFO - RxNorm search completed in 409.74ms for query: 'iverm'
+2025-10-02 10:32:40,634 - root - INFO - Processing medication search: iver...
+2025-10-02 10:32:40,713 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=iver&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:40,714 - app.search_service - INFO - RxNorm search completed in 79.50ms for query: 'iver'
+2025-10-02 10:32:49,530 - root - INFO - Processing medication search: iverme...
+2025-10-02 10:32:50,207 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=iverme&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:50,207 - app.search_service - INFO - RxNorm search completed in 677.06ms for query: 'iverme'
+2025-10-02 10:32:50,354 - root - INFO - Processing medication search: ivermextin...
+2025-10-02 10:32:50,433 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ivermextin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:50,434 - app.search_service - INFO - RxNorm search completed in 80.36ms for query: 'ivermextin'
+2025-10-02 10:32:51,297 - root - INFO - Processing medication search: iverme...
+2025-10-02 10:32:51,379 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=iverme&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:51,379 - app.search_service - INFO - RxNorm search completed in 82.37ms for query: 'iverme'
+2025-10-02 10:32:52,362 - root - INFO - Processing medication search: ivermectin...
+2025-10-02 10:32:52,456 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ivermectin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:32:52,532 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006637/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:52,610 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006637/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:52,699 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006643/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:52,818 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006643/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:52,896 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006647/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:52,970 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006647/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,042 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1010448/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,116 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1010448/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,189 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043446/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,263 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043446/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,335 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1047479/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,410 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1047479/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,482 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1050951/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,556 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1050951/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,629 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1298427/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,702 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1298427/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,777 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363490/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,852 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363490/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,926 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1373244/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:53,999 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1373244/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:54,072 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1423674/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:54,147 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1423674/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:54,220 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1423676/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:54,295 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1423676/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:54,372 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1423678/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:54,445 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1423678/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:54,517 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1430119/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:54,590 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1430119/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:54,662 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1435578/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:54,737 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1435578/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:54,810 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546164/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:54,884 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546164/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:54,957 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1549085/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:55,032 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1549085/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:55,106 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1592802/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:55,181 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1592802/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:55,260 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598073/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:55,334 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598073/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:55,408 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2121105/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:55,481 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2121105/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:55,555 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006632/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:55,629 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006632/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:55,706 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006641/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:55,778 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006641/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:55,852 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006645/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:55,928 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006645/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,001 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1246673/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,075 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1246673/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,149 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363363/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,222 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363363/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,295 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546195/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,367 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546195/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,440 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598068/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,512 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598068/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,586 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/199998/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,659 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/199998/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,732 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205730/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,805 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205730/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,879 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205739/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:56,950 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205739/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,027 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205743/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,101 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205743/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,175 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205747/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,249 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205747/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,321 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/311207/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,393 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/311207/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,466 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/855488/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,540 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/855488/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,611 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895883/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,686 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895883/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,758 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895893/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,829 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895893/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,901 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895899/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:57,973 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895899/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:58,046 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895905/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:58,119 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/895905/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:58,190 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/896966/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:58,261 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/896966/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:58,334 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/902282/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:32:58,407 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/902282/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:32:58,408 - app.search_service - INFO - RxNorm search completed in 6045.17ms for query: 'ivermectin'
+2025-10-02 10:35:57,464 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:35:59,449 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:38:24,742 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:38:26,761 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:38:27,065 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:38:28,643 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:38:36,418 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:38:38,068 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:38:42,107 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:38:43,758 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:38:48,325 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:38:50,030 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:38:52,678 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:38:54,290 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:39:01,364 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:39:03,117 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:39:08,530 - root - INFO - Processing medication search: ivermectin...
+2025-10-02 10:39:08,541 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-02 10:39:09,091 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ivermectin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:39:09,277 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006637/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:09,361 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006637/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:09,437 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006643/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:09,511 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006643/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:09,586 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006647/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:09,665 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006647/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:09,740 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1010448/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:09,816 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1010448/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:09,891 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043446/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:09,969 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043446/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:10,043 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1047479/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:10,116 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1047479/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:10,188 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1050951/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:10,261 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1050951/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:10,333 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1298427/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:10,406 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1298427/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:10,477 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363490/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:10,551 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363490/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:10,626 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1373244/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:10,702 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1373244/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:10,775 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006632/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:10,850 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006632/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:10,927 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006641/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,001 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006641/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,073 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006645/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,145 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006645/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,218 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1246673/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,291 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1246673/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,363 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363363/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,435 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363363/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,507 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546195/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,583 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546195/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,658 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598068/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,731 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598068/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,805 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/199998/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,879 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/199998/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:11,952 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205730/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:12,027 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205730/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:12,100 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205739/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:39:12,176 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205739/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:39:12,182 - app.search_service - INFO - RxNorm search completed in 3638.07ms for query: 'ivermectin'
+2025-10-02 10:39:18,470 - root - INFO - Processing medication search: ivermectin...
+2025-10-02 10:39:18,475 - app.search_service - INFO - Cache search completed in 5.29ms for query: 'ivermectin'
+2025-10-02 10:39:23,666 - root - INFO - Processing medication search: tyl...
+2025-10-02 10:39:23,668 - app.search_service - INFO - Local search completed in 1.41ms for query: 'tyl'
+2025-10-02 10:39:25,686 - root - INFO - Processing medication search: tyl...
+2025-10-02 10:39:25,688 - app.search_service - INFO - Cache search completed in 1.61ms for query: 'tyl'
+2025-10-02 10:39:38,744 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:39:40,871 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:40:22,544 - root - INFO - Processing medication search: li...
+2025-10-02 10:40:22,547 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-02 10:40:23,019 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=li&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:40:23,021 - app.search_service - INFO - RxNorm search completed in 473.18ms for query: 'li'
+2025-10-02 10:40:23,081 - root - INFO - Processing medication search: lip...
+2025-10-02 10:40:23,085 - app.search_service - INFO - Local search completed in 3.76ms for query: 'lip'
+2025-10-02 10:40:30,418 - root - INFO - Processing medication search: ator...
+2025-10-02 10:40:30,422 - app.search_service - INFO - Cache search completed in 3.97ms for query: 'ator'
+2025-10-02 10:40:35,710 - root - INFO - Processing medication search: ty...
+2025-10-02 10:40:35,712 - app.search_service - INFO - Cache search completed in 1.55ms for query: 'ty'
+2025-10-02 10:40:39,584 - root - INFO - Processing medication search: iver...
+2025-10-02 10:40:39,593 - app.search_service - INFO - Cache search completed in 8.44ms for query: 'iver'
+2025-10-02 10:40:47,914 - root - INFO - Processing medication search: can...
+2025-10-02 10:40:48,382 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=can&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:40:48,382 - app.search_service - INFO - RxNorm search completed in 468.44ms for query: 'can'
+2025-10-02 10:40:49,575 - root - INFO - Processing medication search: cand...
+2025-10-02 10:40:49,656 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=cand&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:40:49,657 - app.search_service - INFO - RxNorm search completed in 81.50ms for query: 'cand'
+2025-10-02 10:40:50,577 - root - INFO - Processing medication search: candy...
+2025-10-02 10:40:50,657 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=candy&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:40:50,658 - app.search_service - INFO - RxNorm search completed in 80.65ms for query: 'candy'
+2025-10-02 10:40:55,915 - root - INFO - Processing medication search: iver...
+2025-10-02 10:40:55,921 - app.search_service - INFO - Cache search completed in 5.00ms for query: 'iver'
+2025-10-02 10:41:50,947 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:41:53,395 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:41:54,811 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:41:56,409 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:42:31,456 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:42:33,436 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:42:43,226 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-02 10:42:43,228 - app.medication_cache - INFO - Medication cache cleared
+2025-10-02 10:42:47,222 - root - INFO - Processing medication search: ivermectin...
+2025-10-02 10:42:48,019 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ivermectin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:42:48,110 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006637/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:48,212 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006637/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:48,288 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006643/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:48,364 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006643/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:48,441 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006647/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:48,512 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006647/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:48,588 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1010448/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:48,665 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1010448/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:48,739 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043446/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:48,814 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043446/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:48,886 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1047479/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:48,959 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1047479/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,031 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1050951/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,103 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1050951/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,175 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1298427/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,248 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1298427/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,322 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363490/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,398 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363490/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,472 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1373244/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,542 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1373244/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,615 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006632/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,689 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006632/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,762 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006641/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,833 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006641/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,904 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006645/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:49,974 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006645/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:50,044 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1246673/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:50,118 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1246673/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:50,189 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363363/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:50,260 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363363/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:50,330 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546195/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:50,642 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546195/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:50,713 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598068/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:50,783 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598068/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:50,854 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/199998/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:50,924 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/199998/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:50,996 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205730/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:51,069 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205730/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:51,141 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205739/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:42:51,213 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205739/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:42:51,217 - app.search_service - INFO - RxNorm search completed in 3994.73ms for query: 'ivermectin'
+2025-10-02 10:42:55,511 - root - INFO - Processing medication search: iver...
+2025-10-02 10:42:55,513 - app.search_service - INFO - Cache search completed in 2.12ms for query: 'iver'
+2025-10-02 10:43:08,156 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:43:10,164 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:43:11,281 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-02 10:43:11,283 - app.medication_cache - INFO - Medication cache cleared
+2025-10-02 10:43:16,860 - root - INFO - Processing medication search: ivermectin...
+2025-10-02 10:43:17,307 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ivermectin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:43:17,400 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006637/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:17,475 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006637/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:17,549 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006643/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:17,622 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006643/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:17,699 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006647/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:17,772 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006647/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:17,846 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1010448/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:17,918 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1010448/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:17,991 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043446/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:18,068 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043446/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:18,140 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1047479/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:18,213 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1047479/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:18,287 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1050951/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:18,361 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1050951/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:18,433 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1298427/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:18,506 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1298427/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:18,578 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363490/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:18,651 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363490/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:18,726 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1373244/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:18,796 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1373244/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:18,868 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006632/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:18,940 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006632/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,015 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006641/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,085 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006641/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,157 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006645/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,228 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1006645/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,305 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1246673/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,378 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1246673/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,453 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363363/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,526 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1363363/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,598 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546195/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,670 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1546195/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,743 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598068/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,817 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1598068/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,890 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/199998/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:19,963 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/199998/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:20,036 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205730/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:20,106 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205730/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:20,178 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205739/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:43:20,249 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/2205739/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:43:20,254 - app.search_service - INFO - RxNorm search completed in 3393.47ms for query: 'ivermectin'
+2025-10-02 10:43:23,908 - root - INFO - Processing medication search: iver...
+2025-10-02 10:43:23,910 - app.search_service - INFO - Cache search completed in 1.77ms for query: 'iver'
+2025-10-02 10:43:48,248 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:43:50,293 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:44:03,627 - root - INFO - Processing medication search: ty...
+2025-10-02 10:44:03,632 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-02 10:44:04,201 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ty&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:44:04,203 - app.search_service - INFO - RxNorm search completed in 570.17ms for query: 'ty'
+2025-10-02 10:44:05,408 - root - INFO - Processing medication search: tyl...
+2025-10-02 10:44:05,412 - app.search_service - INFO - Local search completed in 3.31ms for query: 'tyl'
+2025-10-02 10:44:07,392 - root - INFO - Processing medication search: ty...
+2025-10-02 10:44:07,395 - app.search_service - INFO - Cache search completed in 2.13ms for query: 'ty'
+2025-10-02 10:44:10,932 - root - INFO - Processing medication search: iver...
+2025-10-02 10:44:10,935 - app.search_service - INFO - Cache search completed in 2.43ms for query: 'iver'
+2025-10-02 10:44:21,841 - root - INFO - Processing medication search: ive...
+2025-10-02 10:44:21,843 - app.search_service - INFO - Cache search completed in 2.15ms for query: 'ive'
+2025-10-02 10:44:23,339 - root - INFO - Processing medication search: ivo...
+2025-10-02 10:44:23,761 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ivo&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:44:23,764 - app.search_service - INFO - RxNorm search completed in 424.17ms for query: 'ivo'
+2025-10-02 10:44:24,746 - root - INFO - Processing medication search: ivome...
+2025-10-02 10:44:24,846 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ivome&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:44:24,847 - app.search_service - INFO - RxNorm search completed in 100.07ms for query: 'ivome'
+2025-10-02 10:44:25,438 - root - INFO - Processing medication search: ivomec...
+2025-10-02 10:44:25,525 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ivomec&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-02 10:44:25,604 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1010448/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:44:25,694 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1010448/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:44:25,804 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043446/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:44:25,900 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/1043446/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:44:26,014 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/995493/properties.json "HTTP/1.1 200 OK"
+2025-10-02 10:44:26,114 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/rxcui/995493/related.json?tty=BN "HTTP/1.1 200 OK"
+2025-10-02 10:44:26,116 - app.search_service - INFO - RxNorm search completed in 677.60ms for query: 'ivomec'
+2025-10-02 10:45:04,503 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:45:06,760 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:45:45,961 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:45:48,111 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:46:10,647 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:46:12,514 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:46:29,485 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:46:31,440 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:46:43,066 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:46:44,699 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:46:46,268 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:47:19,321 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:47:21,393 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:47:42,402 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:47:44,449 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:48:03,541 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:48:05,432 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-02 10:48:15,127 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-02 10:48:17,608 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled

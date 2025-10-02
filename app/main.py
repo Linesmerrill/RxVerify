@@ -10,6 +10,8 @@ from app.monitoring import monitor, get_system_status
 from app.logging import logger
 from app.config import settings
 from app.medical_apis import close_medical_api_client
+from app.search_service import get_search_service
+from app.medication_cache import get_medication_cache
 
 # Validate settings
 settings.validate()
@@ -55,6 +57,15 @@ class QueryResponse(BaseModel):
     cross_validation: list  # Cross-validation findings
     search_debug: dict  # Search debugging information
 
+class SearchRequest(BaseModel):
+    query: str
+    limit: int = 10
+
+class SearchResponse(BaseModel):
+    results: list
+    total_found: int
+    processing_time_ms: float
+
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     """Add processing time to response headers."""
@@ -68,6 +79,35 @@ async def add_process_time_header(request: Request, call_next):
 async def health():
     """Basic health check endpoint."""
     return {"status": "healthy", "timestamp": time.time()}
+
+@app.get("/cache/stats")
+async def get_cache_stats():
+    """Get medication cache statistics."""
+    try:
+        cache = get_medication_cache()
+        stats = cache.get_cache_stats()
+        return {
+            "status": "success",
+            "cache_stats": stats,
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        logger.error(f"Failed to get cache stats: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get cache stats: {str(e)}")
+
+@app.post("/cache/clear")
+async def clear_cache():
+    """Clear the medication cache."""
+    try:
+        cache = get_medication_cache()
+        success = cache.clear_cache()
+        if success:
+            return {"status": "success", "message": "Cache cleared successfully"}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to clear cache")
+    except Exception as e:
+        logger.error(f"Failed to clear cache: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to clear cache: {str(e)}")
 
 @app.get("/status")
 async def status():
@@ -163,6 +203,55 @@ async def query(q: Query, request: Request):
         raise HTTPException(
             status_code=500, 
             detail=f"Query processing failed: {str(e)}"
+        )
+
+@app.post("/search", response_model=SearchResponse)
+async def search_medications(request: SearchRequest):
+    """Fast medication search endpoint for autocomplete functionality."""
+    start_time = time.time()
+    
+    try:
+        logger.info(f"Processing medication search: {request.query[:50]}...")
+        
+        # Get search service
+        search_service = await get_search_service()
+        
+        # Perform search
+        results = await search_service.search_medications(request.query, request.limit)
+        
+        # Calculate processing time
+        processing_time = (time.time() - start_time) * 1000
+        
+        # Record successful request
+        monitor.record_request(success=True)
+        
+        # Convert results to dict format for JSON response
+        results_dict = []
+        for result in results:
+            results_dict.append({
+                "rxcui": result.rxcui,
+                "name": result.name,
+                "generic_name": result.generic_name,
+                "brand_names": result.brand_names,
+                "common_uses": result.common_uses,
+                "drug_class": result.drug_class,
+                "source": result.source
+            })
+        
+        return SearchResponse(
+            results=results_dict,
+            total_found=len(results),
+            processing_time_ms=round(processing_time, 2)
+        )
+        
+    except Exception as e:
+        # Record failed request
+        monitor.record_request(success=False)
+        
+        logger.error(f"Medication search failed: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Medication search failed: {str(e)}"
         )
 
 @app.exception_handler(Exception)

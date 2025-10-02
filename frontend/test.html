@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test switchTab</title>
+</head>
+<body>
+    <h1>Test switchTab Function</h1>
+    <button onclick="switchTab('ask')">Test Ask Tab</button>
+    <button onclick="switchTab('search')">Test Search Tab</button>
+    
+    <script>
+        // Define functions immediately to prevent "not defined" errors
+        window.switchTab = function(tabName) {
+            console.log('switchTab called with:', tabName);
+            alert('switchTab called with: ' + tabName);
+        };
+    </script>
+    
+    <script>
+        console.log('switchTab function available:', typeof window.switchTab);
+    </script>
+</body>
+</html>

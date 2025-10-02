@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug RxVerify</title>
+</head>
+<body>
+    <h1>Debug RxVerify App</h1>
+    <button onclick="testSwitchTab()">Test switchTab</button>
+    <div id="debug"></div>
+    
+    <script>
+        function testSwitchTab() {
+            console.log('Testing switchTab...');
+            console.log('window.app exists:', !!window.app);
+            console.log('window.app.switchTab exists:', !!(window.app && window.app.switchTab));
+            
+            if (window.app && window.app.switchTab) {
+                window.app.switchTab('search');
+            } else {
+                console.log('App not ready');
+            }
+        }
+        
+        // Monitor app initialization
+        let checkCount = 0;
+        const checkApp = () => {
+            checkCount++;
+            document.getElementById('debug').innerHTML = `
+                <p>Check ${checkCount}: window.app = ${!!window.app}</p>
+                <p>window.app.switchTab = ${!!(window.app && window.app.switchTab)}</p>
+            `;
+            
+            if (!window.app && checkCount < 20) {
+                setTimeout(checkApp, 500);
+            }
+        };
+        
+        // Start checking
+        setTimeout(checkApp, 100);
+    </script>
+    
+    <script src="app.js"></script>
+</body>
+</html>

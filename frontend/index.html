@@ -101,8 +101,38 @@
             </div>
         </div>
 
-        <!-- Query Input Section -->
-        <div class="max-w-4xl mx-auto mb-12">
+        <!-- Tab Navigation -->
+        <div class="max-w-4xl mx-auto mb-8">
+            <div class="flex space-x-1 bg-gray-100 p-1 rounded-xl">
+                <button 
+                    id="askTab" 
+                    class="tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-primary-600 shadow-sm"
+                    onclick="switchTab('ask')"
+                >
+                    <div class="flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Ask Questions</span>
+                    </div>
+                </button>
+                <button 
+                    id="searchTab" 
+                    class="tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900"
+                    onclick="switchTab('search')"
+                >
+                    <div class="flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <span>Drug Search</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Ask Questions Tab Content -->
+        <div id="askTabContent" class="max-w-4xl mx-auto mb-12">
             <div class="glass-effect rounded-2xl p-8 shadow-xl">
                 <div class="flex items-center space-x-4 mb-6">
                     <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
@@ -178,6 +208,60 @@
                                 <option value="detailed">Detailed</option>
                             </select>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Drug Search Tab Content -->
+        <div id="searchTabContent" class="max-w-4xl mx-auto mb-12 hidden">
+            <div class="glass-effect rounded-2xl p-8 shadow-xl">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900">Search Medications</h3>
+                        <p class="text-gray-600">Find drugs by name, generic name, or brand name with autocomplete</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            placeholder="Type medication name (e.g., atorvastatin, Lipitor, acetaminophen, Tylenol)"
+                            class="w-full px-4 py-4 pl-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 text-gray-700 placeholder-gray-400"
+                        />
+                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <div id="searchLoading" class="absolute right-4 top-1/2 transform -translate-y-1/2 hidden">
+                            <div class="animate-spin w-5 h-5 border-2 border-green-600 border-t-transparent rounded-full"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Search Results -->
+                    <div id="searchResults" class="hidden">
+                        <div class="space-y-3">
+                            <!-- Results will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- No Results -->
+                    <div id="noResults" class="hidden text-center py-8">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.709M15 6.709A7.962 7.962 0 0112 5c-2.34 0-4.29 1.009-5.824 2.709"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No medications found</h3>
+                        <p class="text-gray-600">Try searching with a different name or check your spelling.</p>
                     </div>
                 </div>
             </div>
@@ -337,6 +421,243 @@
 
     <!-- Toast Notifications -->
     <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <!-- Simple tab switching - no complex initialization needed -->
+    <script>
+        function switchTab(tabName) {
+            console.log('Switching to tab:', tabName);
+            
+            // Get tab buttons
+            const askTab = document.getElementById('askTab');
+            const searchTab = document.getElementById('searchTab');
+            const askContent = document.getElementById('askTabContent');
+            const searchContent = document.getElementById('searchTabContent');
+            
+            if (tabName === 'ask') {
+                // Update button styles
+                askTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-primary-600 shadow-sm';
+                searchTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
+                
+                // Show/hide content
+                askContent.classList.remove('hidden');
+                searchContent.classList.add('hidden');
+            } else if (tabName === 'search') {
+                // Update button styles
+                searchTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-green-600 shadow-sm';
+                askTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
+                
+                // Show/hide content
+                searchContent.classList.remove('hidden');
+                askContent.classList.add('hidden');
+            }
+        }
+        
+        function setExampleQuery(question) {
+            const input = document.getElementById('questionInput');
+            if (input) {
+                input.value = question;
+                input.focus();
+            }
+        }
+        
+        function resetForm() {
+            const input = document.getElementById('questionInput');
+            if (input) {
+                input.value = '';
+            }
+        }
+        
+        // Add search functionality directly
+        let searchTimeout;
+        
+        function handleSearchInput(query) {
+            console.log('Search input:', query);
+            
+            // Clear previous timeout
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+            
+            // Hide previous results
+            hideSearchResults();
+            
+            if (query.length < 2) {
+                return;
+            }
+            
+            // Show loading
+            showSearchLoading(true);
+            
+            // Debounce search
+            searchTimeout = setTimeout(() => {
+                performSearch(query);
+            }, 300);
+        }
+        
+        async function performSearch(query) {
+            try {
+                console.log('Performing search for:', query);
+                const response = await fetch('http://localhost:8000/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        limit: 10
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Search failed: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Search results:', data);
+                displaySearchResults(data.results);
+                
+            } catch (error) {
+                console.error('Search error:', error);
+                hideSearchResults();
+            } finally {
+                showSearchLoading(false);
+            }
+        }
+        
+        function displaySearchResults(results) {
+            const resultsContainer = document.getElementById('searchResults');
+            const noResults = document.getElementById('noResults');
+            
+            if (results.length === 0) {
+                resultsContainer.classList.add('hidden');
+                noResults.classList.remove('hidden');
+                return;
+            }
+            
+            noResults.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            
+            const resultsDiv = resultsContainer.querySelector('.space-y-3');
+            resultsDiv.innerHTML = '';
+            
+            results.forEach(result => {
+                const resultElement = createSearchResultElement(result);
+                resultsDiv.appendChild(resultElement);
+            });
+        }
+        
+        function createSearchResultElement(result) {
+            const div = document.createElement('div');
+            div.className = 'bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200 cursor-pointer';
+            
+            // Create drug name and class
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'flex items-start justify-between mb-2';
+            
+            const nameInfo = document.createElement('div');
+            nameInfo.className = 'flex-1';
+            
+            const drugName = document.createElement('h4');
+            drugName.className = 'font-semibold text-gray-900 text-lg';
+            drugName.textContent = result.name;
+            
+            const genericName = document.createElement('p');
+            genericName.className = 'text-sm text-gray-600 mt-1';
+            if (result.generic_name && result.generic_name !== result.name) {
+                genericName.textContent = `Generic: ${result.generic_name}`;
+            }
+            
+            nameInfo.appendChild(drugName);
+            if (result.generic_name && result.generic_name !== result.name) {
+                nameInfo.appendChild(genericName);
+            }
+            
+            const drugClass = document.createElement('div');
+            drugClass.className = 'text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full';
+            drugClass.textContent = result.drug_class || 'Medication';
+            
+            nameDiv.appendChild(nameInfo);
+            nameDiv.appendChild(drugClass);
+            
+            // Create brand names
+            let brandNamesDiv = '';
+            if (result.brand_names && result.brand_names.length > 0) {
+                brandNamesDiv = `
+                    <div class="mb-2">
+                        <span class="text-xs font-medium text-gray-500">Brand names:</span>
+                        <span class="text-sm text-gray-700 ml-1">${result.brand_names.join(', ')}</span>
+                    </div>
+                `;
+            }
+            
+            // Create common uses
+            let usesDiv = '';
+            if (result.common_uses && result.common_uses.length > 0) {
+                usesDiv = `
+                    <div class="mb-2">
+                        <span class="text-xs font-medium text-gray-500">Common uses:</span>
+                        <div class="flex flex-wrap gap-1 mt-1">
+                            ${result.common_uses.map(use => 
+                                `<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">${use}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Create RxCUI info
+            const rxcuiDiv = document.createElement('div');
+            rxcuiDiv.className = 'text-xs text-gray-400 mt-2';
+            rxcuiDiv.textContent = `RxCUI: ${result.rxcui}`;
+            
+            div.innerHTML = `
+                ${nameDiv.outerHTML}
+                ${brandNamesDiv}
+                ${usesDiv}
+                ${rxcuiDiv.outerHTML}
+            `;
+            
+            // Add click handler to search for this drug
+            div.addEventListener('click', () => {
+                switchTab('ask');
+                const questionInput = document.getElementById('questionInput');
+                if (questionInput) {
+                    questionInput.value = `Tell me about ${result.name}`;
+                    questionInput.focus();
+                }
+            });
+            
+            return div;
+        }
+        
+        function showSearchLoading(show) {
+            const loading = document.getElementById('searchLoading');
+            if (loading) {
+                if (show) {
+                    loading.classList.remove('hidden');
+                } else {
+                    loading.classList.add('hidden');
+                }
+            }
+        }
+        
+        function hideSearchResults() {
+            const resultsContainer = document.getElementById('searchResults');
+            const noResults = document.getElementById('noResults');
+            if (resultsContainer) resultsContainer.classList.add('hidden');
+            if (noResults) noResults.classList.add('hidden');
+        }
+        
+        // Set up search input listener when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    handleSearchInput(e.target.value);
+                });
+            }
+        });
+    </script>
 
     <script src="app.js"></script>
 </body>

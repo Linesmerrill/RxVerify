@@ -1,8 +1,12 @@
 // RxVerify Frontend Application
+let app;
+
 class RxVerifyApp {
     constructor() {
         this.apiBaseUrl = 'http://localhost:8000';
         this.currentQuery = null;
+        this.searchTimeout = null;
+        this.currentTab = 'ask';
         this.init();
     }
 
@@ -42,6 +46,11 @@ class RxVerifyApp {
                 e.preventDefault();
                 this.submitQuery();
             }
+        });
+
+        // Search input with debounced search
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            this.handleSearchInput(e.target.value);
         });
     }
 
@@ -712,6 +721,209 @@ class RxVerifyApp {
         }, 5000);
     }
 
+    // Tab switching functionality
+    switchTab(tabName) {
+        this.currentTab = tabName;
+        
+        // Update tab buttons
+        const askTab = document.getElementById('askTab');
+        const searchTab = document.getElementById('searchTab');
+        const askContent = document.getElementById('askTabContent');
+        const searchContent = document.getElementById('searchTabContent');
+        
+        if (tabName === 'ask') {
+            askTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-primary-600 shadow-sm';
+            searchTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
+            askContent.classList.remove('hidden');
+            searchContent.classList.add('hidden');
+        } else {
+            searchTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-green-600 shadow-sm';
+            askTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
+            searchContent.classList.remove('hidden');
+            askContent.classList.add('hidden');
+        }
+    }
+
+    // Search functionality
+    handleSearchInput(query) {
+        // Clear previous timeout
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+        }
+        
+        // Hide previous results
+        this.hideSearchResults();
+        
+        if (query.length < 2) {
+            return;
+        }
+        
+        // Show loading
+        this.showSearchLoading(true);
+        
+        // Debounce search
+        this.searchTimeout = setTimeout(() => {
+            this.performSearch(query);
+        }, 300);
+    }
+
+    async performSearch(query) {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/search`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: query,
+                    limit: 10
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Search failed: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            this.displaySearchResults(data.results);
+            
+        } catch (error) {
+            console.error('Search error:', error);
+            this.showToast('Search failed. Please try again.', 'error');
+            this.hideSearchResults();
+        } finally {
+            this.showSearchLoading(false);
+        }
+    }
+
+    displaySearchResults(results) {
+        const resultsContainer = document.getElementById('searchResults');
+        const noResults = document.getElementById('noResults');
+        
+        if (results.length === 0) {
+            resultsContainer.classList.add('hidden');
+            noResults.classList.remove('hidden');
+            return;
+        }
+        
+        noResults.classList.add('hidden');
+        resultsContainer.classList.remove('hidden');
+        
+        const resultsDiv = resultsContainer.querySelector('.space-y-3');
+        resultsDiv.innerHTML = '';
+        
+        results.forEach(result => {
+            const resultElement = this.createSearchResultElement(result);
+            resultsDiv.appendChild(resultElement);
+        });
+    }
+
+    createSearchResultElement(result) {
+        const div = document.createElement('div');
+        div.className = 'bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200 cursor-pointer';
+        
+        // Create drug name and class
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'flex items-start justify-between mb-2';
+        
+        const nameInfo = document.createElement('div');
+        nameInfo.className = 'flex-1';
+        
+        const drugName = document.createElement('h4');
+        drugName.className = 'font-semibold text-gray-900 text-lg';
+        drugName.textContent = result.name;
+        
+        const genericName = document.createElement('p');
+        genericName.className = 'text-sm text-gray-600 mt-1';
+        if (result.generic_name && result.generic_name !== result.name) {
+            genericName.textContent = `Generic: ${result.generic_name}`;
+        }
+        
+        nameInfo.appendChild(drugName);
+        if (result.generic_name && result.generic_name !== result.name) {
+            nameInfo.appendChild(genericName);
+        }
+        
+        const drugClass = document.createElement('div');
+        drugClass.className = 'text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full';
+        drugClass.textContent = result.drug_class || 'Medication';
+        
+        nameDiv.appendChild(nameInfo);
+        nameDiv.appendChild(drugClass);
+        
+        // Create brand names
+        let brandNamesDiv = '';
+        if (result.brand_names && result.brand_names.length > 0) {
+            brandNamesDiv = `
+                <div class="mb-2">
+                    <span class="text-xs font-medium text-gray-500">Brand names:</span>
+                    <span class="text-sm text-gray-700 ml-1">${result.brand_names.join(', ')}</span>
+                </div>
+            `;
+        }
+        
+        // Create common uses
+        let usesDiv = '';
+        if (result.common_uses && result.common_uses.length > 0) {
+            usesDiv = `
+                <div class="mb-2">
+                    <span class="text-xs font-medium text-gray-500">Common uses:</span>
+                    <div class="flex flex-wrap gap-1 mt-1">
+                        ${result.common_uses.map(use => 
+                            `<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">${use}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Create RxCUI info
+        const rxcuiDiv = document.createElement('div');
+        rxcuiDiv.className = 'text-xs text-gray-400 mt-2';
+        rxcuiDiv.textContent = `RxCUI: ${result.rxcui}`;
+        
+        div.innerHTML = `
+            ${nameDiv.outerHTML}
+            ${brandNamesDiv}
+            ${usesDiv}
+            ${rxcuiDiv.outerHTML}
+        `;
+        
+        // Add click handler to search for this drug
+        div.addEventListener('click', () => {
+            this.searchForDrug(result.name);
+        });
+        
+        return div;
+    }
+
+    searchForDrug(drugName) {
+        // Switch to ask tab and populate the question
+        this.switchTab('ask');
+        const questionInput = document.getElementById('questionInput');
+        questionInput.value = `Tell me about ${drugName}`;
+        this.updateCharacterCount(questionInput.value.length);
+        
+        // Focus on the input
+        questionInput.focus();
+        
+        this.showToast(`Searching for information about ${drugName}...`, 'info');
+    }
+
+    showSearchLoading(show) {
+        const loading = document.getElementById('searchLoading');
+        if (show) {
+            loading.classList.remove('hidden');
+        } else {
+            loading.classList.add('hidden');
+        }
+    }
+
+    hideSearchResults() {
+        document.getElementById('searchResults').classList.add('hidden');
+        document.getElementById('noResults').classList.add('hidden');
+    }
+
     resetForm() {
         document.getElementById('questionInput').value = '';
         document.getElementById('advancedSearch').checked = false;
@@ -723,20 +935,8 @@ class RxVerifyApp {
     }
 }
 
-// Global functions for HTML onclick handlers
-function setExampleQuery(question) {
-    document.getElementById('questionInput').value = question;
-    document.getElementById('questionInput').focus();
-    app.updateCharacterCount(question.length);
-    app.showToast('Example query loaded! Try it out.', 'info');
-}
-
-function resetForm() {
-    app.resetForm();
-}
-
 // Initialize the application
-let app;
+
 document.addEventListener('DOMContentLoaded', () => {
     app = new RxVerifyApp();
 });

@@ -284,6 +284,44 @@ async def clear_rxlist_database():
         logger.error(f"Failed to clear RxList database: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to clear RxList database: {str(e)}")
 
+@app.post("/rxlist/ingest")
+async def ingest_rxlist_data(drug_data: List[Dict]):
+    """Ingest scraped RxList drug data into the database."""
+    try:
+        rxlist_db = get_rxlist_database()
+        inserted_count = 0
+        skipped_count = 0
+        
+        for drug in drug_data:
+            try:
+                success = rxlist_db.add_drug(
+                    name=drug.get('name'),
+                    generic_name=drug.get('generic_name'),
+                    brand_names=drug.get('brand_names', []),
+                    drug_class=drug.get('drug_class'),
+                    common_uses=drug.get('common_uses', []),
+                    description=drug.get('description'),
+                    search_terms=drug.get('search_terms', [])
+                )
+                if success:
+                    inserted_count += 1
+                else:
+                    skipped_count += 1
+            except Exception as e:
+                logger.error(f"Error ingesting drug {drug.get('name', 'unknown')}: {str(e)}")
+                skipped_count += 1
+        
+        stats = rxlist_db.get_drug_stats()
+        return {
+            "status": "success",
+            "message": f"Ingested {inserted_count} drugs, skipped {skipped_count} duplicates",
+            "total_drugs": stats['total_drugs'],
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        logger.error(f"Failed to ingest RxList data: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to ingest RxList data: {str(e)}")
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     """Global exception handler for unhandled errors."""

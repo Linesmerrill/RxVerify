@@ -253,8 +253,8 @@ class RxListScraper:
             
             # Look for drug class information
             class_patterns = [
-                'drug class', 'medication class', 'therapeutic class',
-                'pharmacological class', 'class:', 'type:'
+                'drug class:', 'medication class:', 'therapeutic class:',
+                'pharmacological class:', 'class:', 'type:'
             ]
             
             text_content = soup.get_text().lower()
@@ -263,8 +263,17 @@ class RxListScraper:
                     # Try to extract the class information
                     class_info = self.extract_after_pattern(text_content, pattern)
                     if class_info:
-                        drug_data['drug_class'] = class_info.title()
-                        break
+                        # Clean up the extracted class info
+                        class_info = class_info.strip()
+                        # Remove leading colons, commas, and extra whitespace
+                        while class_info.startswith((':', ',', ' ')):
+                            class_info = class_info[1:].strip()
+                        # Remove trailing colons and commas
+                        while class_info.endswith((':', ',')):
+                            class_info = class_info[:-1].strip()
+                        if class_info:
+                            drug_data['drug_class'] = class_info.title()
+                            break
             
             # Look for common uses/indications
             use_patterns = [

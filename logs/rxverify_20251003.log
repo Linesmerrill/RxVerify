@@ -1,0 +1,61 @@
+2025-10-03 07:48:35,361 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 08:49:02,956 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 08:49:04,776 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 08:49:20,530 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-03 08:49:20,531 - app.rxlist_database - INFO - RxList database initialized at rxlist_database.db
+2025-10-03 08:49:20,531 - app.rxlist_database - INFO - RxList database already contains 4466 drugs
+2025-10-03 08:49:20,552 - app.search_service - INFO - RxList search completed in 20.37ms for query: 'a'
+2025-10-03 08:49:20,554 - app.search_service - INFO - Cache search completed in 1.31ms for query: 'tyl'
+2025-10-03 08:49:20,558 - app.search_service - INFO - Cache search completed in 4.44ms for query: 'ibu'
+2025-10-03 08:49:20,562 - app.search_service - INFO - Cache search completed in 3.41ms for query: 'met'
+2025-10-03 08:49:20,563 - app.search_service - INFO - Cache search completed in 0.98ms for query: 'lis'
+2025-10-03 08:49:20,570 - app.search_service - INFO - Cache search completed in 7.05ms for query: 'sim'
+2025-10-03 09:03:58,645 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:04:02,208 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:04:10,550 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:04:13,526 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:04:14,739 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:04:16,368 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:04:24,124 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:04:25,929 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:04:27,253 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:04:28,726 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:06:29,812 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:06:31,681 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:12:21,250 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:12:23,314 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:12:24,975 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:12:31,723 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:12:33,384 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:12:38,245 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:12:39,890 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:12:40,598 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:12:42,080 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:13:29,285 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:13:31,358 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:19:58,476 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:20:02,578 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:20:06,536 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:20:08,779 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:20:25,134 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:20:28,563 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:20:35,043 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:20:37,304 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:20:39,687 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:21:27,651 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:21:29,814 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:36:36,873 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:41:24,585 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:44:42,190 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:44:44,293 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:46:52,309 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:46:54,513 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:46:56,377 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:46:59,207 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:47:01,516 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:47:06,994 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:47:08,590 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:47:12,538 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-03 09:47:12,539 - app.rxlist_database - INFO - RxList database initialized at rxlist_database.db
+2025-10-03 09:47:12,540 - app.rxlist_database - INFO - RxList database already contains 4500 drugs
+2025-10-03 09:47:12,562 - app.search_service - INFO - RxList search completed in 21.50ms for query: 'baci'

@@ -815,3 +815,4 @@
 2025-10-02 16:08:24,499 - app.search_service - INFO - Cache search completed in 0.90ms for query: 'lis'
 2025-10-02 16:08:24,512 - app.search_service - INFO - RxList search completed in 12.84ms for query: 'sim'
 2025-10-02 16:08:28,867 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 07:48:33,280 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client

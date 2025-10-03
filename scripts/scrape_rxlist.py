@@ -10,11 +10,12 @@ import re
 import time
 import json
 import logging
+import sys
 from typing import List, Dict, Optional, Set
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
-import sys
 import os
+from asyncio import Lock
 
 # Add the project root to the Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -22,16 +23,57 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.rxlist_database import get_rxlist_database
 from app.models import Source
 
+class ProgressBar:
+    """Simple progress bar for terminal output"""
+    
+    def __init__(self, total: int, width: int = 50):
+        self.total = total
+        self.width = width
+        self.current = 0
+        self.start_time = time.time()
+    
+    def update(self, current: int, inserted: int = 0, skipped: int = 0):
+        """Update progress bar with current progress"""
+        self.current = current
+        percentage = (current / self.total) * 100
+        
+        # Calculate progress bar
+        filled = int((current / self.total) * self.width)
+        bar = '█' * filled + '░' * (self.width - filled)
+        
+        # Calculate elapsed time and ETA
+        elapsed = time.time() - self.start_time
+        if current > 0:
+            eta = (elapsed / current) * (self.total - current)
+            eta_str = f"ETA: {int(eta//60)}m {int(eta%60)}s"
+        else:
+            eta_str = "ETA: --:--"
+        
+        # Format the progress bar
+        progress_str = f"\r[{bar}] {current}/{self.total} ({percentage:.1f}%) | Inserted: {inserted} | Skipped: {skipped} | {eta_str}"
+        
+        # Write to stdout and flush
+        sys.stdout.write(progress_str)
+        sys.stdout.flush()
+    
+    def finish(self, inserted: int, skipped: int):
+        """Finish the progress bar"""
+        elapsed = time.time() - self.start_time
+        print(f"\n✅ Completed! Inserted: {inserted} | Skipped: {skipped} | Time: {int(elapsed//60)}m {int(elapsed%60)}s")
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 class RxListScraper:
-    def __init__(self):
+    def __init__(self, max_concurrent: int = 10):
         self.base_url = "https://www.rxlist.com"
         self.session = None
         self.scraped_drugs = set()
         self.drug_data = []
+        self.max_concurrent = max_concurrent  # Maximum concurrent operations
+        self.db_lock = Lock()  # Mutex for database operations
+        self.stats_lock = Lock()  # Mutex for statistics updates
         
     async def __aenter__(self):
         """Async context manager entry"""
@@ -106,7 +148,11 @@ class RxListScraper:
         skip_patterns = [
             'javascript:', 'mailto:', '#', 'tel:',
             'drugs/alpha_', 'drugs/', 'tools/', 'dictionary/',
-            'slideshows/', 'images/', 'quizzes/'
+            'slideshows/', 'images/', 'quizzes/', 'generic_drugs/',
+            'drug_classification/', 'drugs_comparison/', 'supplements/',
+            'drug-interaction-checker', 'pill-identification', 'drug-medical-dictionary',
+            'drug-slideshows', 'image_gallery', 'quizzes_a-z', 'about_us',
+            'contact_us', 'terms_and_conditions', 'privacy_policy', 'advertising'
         ]
         
         for pattern in skip_patterns:
@@ -118,8 +164,12 @@ class RxListScraper:
             return False
         
         # Skip navigation elements
-        nav_words = ['home', 'about', 'contact', 'privacy', 'terms', 'advertising']
+        nav_words = ['home', 'about', 'contact', 'privacy', 'terms', 'advertising', 'drugs a-z']
         if text.lower() in nav_words:
+            return False
+        
+        # Skip single letter links (A, B, C, etc.)
+        if len(text) == 1 and text.isalpha():
             return False
         
         # Look for drug-like patterns in the URL
@@ -297,8 +347,52 @@ class RxListScraper:
         except:
             pass
         return []
+
+    async def process_single_drug(self, drug_link: Dict, progress_bar: ProgressBar, stats: Dict) -> bool:
+        """Process a single drug with thread-safe database operations"""
+        try:
+            # Skip if already scraped (idempotent)
+            if drug_link['url'] in self.scraped_drugs:
+                async with self.stats_lock:
+                    stats['skipped'] += 1
+                return False
+                
+            drug_data = await self.scrape_drug_page(drug_link)
+            if drug_data:
+                # Thread-safe database insertion
+                async with self.db_lock:
+                    db = get_rxlist_database()
+                    success = db.add_drug(
+                        name=drug_data['name'],
+                        generic_name=drug_data.get('generic_name'),
+                        brand_names=drug_data.get('brand_names', []),
+                        drug_class=drug_data.get('drug_class'),
+                        common_uses=drug_data.get('common_uses', []),
+                        description=drug_data.get('description'),
+                        search_terms=drug_data.get('search_terms', [])
+                    )
+                    
+                    if success:
+                        async with self.stats_lock:
+                            stats['inserted'] += 1
+                        logger.info(f"Added drug to RxList database: {drug_data['name']}")
+                        return True
+                    else:
+                        async with self.stats_lock:
+                            stats['skipped'] += 1
+                        return False
+            else:
+                async with self.stats_lock:
+                    stats['skipped'] += 1
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error processing drug {drug_link.get('name', 'unknown')}: {str(e)}")
+            async with self.stats_lock:
+                stats['skipped'] += 1
+            return False
     
-    async def scrape_all_drugs(self) -> List[Dict]:
+    async def scrape_all_drugs(self) -> int:
         """Scrape all drugs from RxList"""
         logger.info("Starting comprehensive RxList scraping...")
         
@@ -318,60 +412,64 @@ class RxListScraper:
         
         logger.info(f"Total drug links found: {len(all_drug_links)}")
         
-        # Scrape individual drug pages (all drugs)
-        scraped_drugs = []
-        for i, drug_link in enumerate(all_drug_links):  # Process all drugs
-            drug_data = await self.scrape_drug_page(drug_link)
-            if drug_data:
-                scraped_drugs.append(drug_data)
-            
-            # Progress update
-            if (i + 1) % 50 == 0:
-                logger.info(f"Scraped {i + 1}/{len(all_drug_links)} drugs")
-            
-            # Small delay to be respectful (reduced for faster processing)
-            await asyncio.sleep(0.1)
+        # Initialize progress bar and statistics
+        progress_bar = ProgressBar(len(all_drug_links))
+        print(f"\n🚀 Starting to scrape {len(all_drug_links)} drugs with {self.max_concurrent} parallel workers...")
         
-        logger.info(f"Successfully scraped {len(scraped_drugs)} drugs")
-        return scraped_drugs
+        # Shared statistics dictionary
+        stats = {'inserted': 0, 'skipped': 0, 'processed': 0}
+        
+        # Create semaphore to limit concurrent operations
+        semaphore = asyncio.Semaphore(self.max_concurrent)
+        
+        async def process_drug_with_semaphore(drug_link: Dict, index: int):
+            """Process a single drug with semaphore limiting"""
+            async with semaphore:
+                success = await self.process_single_drug(drug_link, progress_bar, stats)
+                stats['processed'] = index + 1
+                
+                # Update progress bar (thread-safe)
+                async with self.stats_lock:
+                    progress_bar.update(stats['processed'], stats['inserted'], stats['skipped'])
+                
+                # Small delay to be respectful
+                await asyncio.sleep(0.05)
+                return success
+        
+        # Create tasks for parallel processing
+        tasks = [
+            process_drug_with_semaphore(drug_link, i) 
+            for i, drug_link in enumerate(all_drug_links)
+        ]
+        
+        # Process all drugs in parallel
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        # Count successful results
+        scraped_count = sum(1 for result in results if result is True)
+        skipped_count = stats['skipped']
+        
+        # Finish progress bar
+        progress_bar.finish(scraped_count, skipped_count)
+        logger.info(f"Successfully scraped and inserted {scraped_count} drugs, skipped {skipped_count} already processed")
+        return scraped_count
 
 async def main():
     """Main function to run the scraper"""
     logger.info("Starting RxList drug scraper...")
     
-    # Clear existing database
+    # Get database instance (don't clear - make it idempotent)
     db = get_rxlist_database()
-    db.clear_database()
-    logger.info("Cleared existing database")
+    stats = db.get_drug_stats()
+    logger.info(f"Starting with {stats['total_drugs']} existing drugs in database")
     
-    async with RxListScraper() as scraper:
-        # Scrape all drugs
-        scraped_drugs = await scraper.scrape_all_drugs()
-        
-        # Add drugs to database
-        logger.info(f"Adding {len(scraped_drugs)} drugs to database...")
-        for drug in scraped_drugs:
-            try:
-                db.add_drug(
-                    name=drug['name'],
-                    generic_name=drug.get('generic_name'),
-                    brand_names=drug.get('brand_names', []),
-                    drug_class=drug.get('drug_class'),
-                    common_uses=drug.get('common_uses', []),
-                    description=drug.get('description'),
-                    search_terms=drug.get('search_terms', [])
-                )
-            except Exception as e:
-                logger.error(f"Error adding drug {drug.get('name', 'unknown')}: {str(e)}")
+    async with RxListScraper(max_concurrent=15) as scraper:
+        # Scrape all drugs and insert immediately
+        scraped_count = await scraper.scrape_all_drugs()
         
         # Get final stats
         stats = db.get_drug_stats()
         logger.info(f"Database populated with {stats['total_drugs']} drugs")
-        
-        # Save scraped data to JSON for backup
-        with open('scraped_drugs.json', 'w') as f:
-            json.dump(scraped_drugs, f, indent=2)
-        logger.info("Saved scraped data to scraped_drugs.json")
 
 if __name__ == "__main__":
     asyncio.run(main())

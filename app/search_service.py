@@ -44,11 +44,13 @@ class MedicationSearchService:
             # 2. Search RxList database (primary source)
             rxlist_results = self._rxlist_database.search_drugs(query, limit)
             if rxlist_results:
-                # Cache the RxList results for future searches
-                self._medication_cache.cache_medications(rxlist_results)
+                # Deduplicate RxList results before returning
+                deduplicated_results = self._deduplicate_results(rxlist_results)
+                # Cache the deduplicated results for future searches
+                self._medication_cache.cache_medications(deduplicated_results)
                 processing_time = (time.time() - start_time) * 1000
                 logger.info(f"RxList search completed in {processing_time:.2f}ms for query: '{query}'")
-                return rxlist_results
+                return deduplicated_results
             
             # 3. Try local fallback for common drugs and partial matches
             local_results = self._search_local_drugs(query, limit)
@@ -650,6 +652,29 @@ class MedicationSearchService:
                 consolidated.append(consolidated_result)
         
         return consolidated
+    
+    def _deduplicate_results(self, results: List[DrugSearchResult]) -> List[DrugSearchResult]:
+        """Remove exact duplicates from search results."""
+        if not results:
+            return results
+        
+        seen = set()
+        deduplicated = []
+        
+        for result in results:
+            # Create a unique key based on name, generic_name, and brand_names
+            key = (
+                result.name.lower().strip(),
+                result.generic_name.lower().strip() if result.generic_name else "",
+                tuple(sorted(result.brand_names)) if result.brand_names else ()
+            )
+            
+            if key not in seen:
+                seen.add(key)
+                deduplicated.append(result)
+        
+        logger.debug(f"Deduplicated {len(results)} results to {len(deduplicated)} unique results")
+        return deduplicated
     
     def _merge_medications(self, medications: List[DrugSearchResult]) -> DrugSearchResult:
         """Merge multiple medications with same common uses into one result."""

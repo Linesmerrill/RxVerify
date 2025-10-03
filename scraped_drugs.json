@@ -1,22 +1,5 @@
 [
   {
-    "name": "Slideshows",
-    "generic_name": null,
-    "brand_names": [],
-    "drug_class": null,
-    "common_uses": [
-      "Pain",
-      "Inflammation",
-      "Fever",
-      "Infection",
-      "Bacterial"
-    ],
-    "description": "Treatments and Tips to Ease Pain and Other Symptoms",
-    "search_terms": [
-      "slideshows"
-    ]
-  },
-  {
     "name": "A-Methapred (Methylprednisolone Sodium Succinate)",
     "generic_name": "A-Methapred",
     "brand_names": [

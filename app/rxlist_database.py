@@ -527,6 +527,11 @@ class RxListDatabase:
         now = time.time()
         search_terms = search_terms or []
         
+        # Clean drug class formatting - remove leading colons, commas, and extra whitespace
+        if drug_class:
+            import re
+            drug_class = re.sub(r'^[:,\s]+', '', drug_class).strip()
+        
         # Add name and generic name to search terms if not already present
         if name.lower() not in [term.lower() for term in search_terms]:
             search_terms.append(name)

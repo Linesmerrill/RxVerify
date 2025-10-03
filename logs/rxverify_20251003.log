@@ -59,3 +59,7 @@
 2025-10-03 09:47:12,539 - app.rxlist_database - INFO - RxList database initialized at rxlist_database.db
 2025-10-03 09:47:12,540 - app.rxlist_database - INFO - RxList database already contains 4500 drugs
 2025-10-03 09:47:12,562 - app.search_service - INFO - RxList search completed in 21.50ms for query: 'baci'
+2025-10-03 09:48:37,168 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:48:39,218 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-03 09:48:53,485 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-03 09:48:55,480 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled

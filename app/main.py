@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import time
+from typing import List, Dict, Optional
 from app.retriever import retrieve
 from app.crosscheck import unify_with_crosscheck
 from app.llm import generate_drug_response

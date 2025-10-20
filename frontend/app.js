@@ -5,7 +5,7 @@ class RxVerifyApp {
     constructor() {
         // Use environment-specific API URL
         this.apiBaseUrl = window.location.hostname === 'localhost' 
-            ? 'https://rx-verify-api-e68bdd74c056.herokuapp.com' 
+            ? 'http://localhost:8000' 
             : 'https://rx-verify-api-e68bdd74c056.herokuapp.com';
         this.currentQuery = null;
         this.searchTimeout = null;
@@ -797,6 +797,9 @@ class RxVerifyApp {
 
     async performSearch(query) {
         try {
+            // Store current search query for feedback
+            this.currentSearchQuery = query;
+            
             const response = await fetch(`${this.apiBaseUrl}/search`, {
                 method: 'POST',
                 headers: {
@@ -848,7 +851,7 @@ class RxVerifyApp {
 
     createSearchResultElement(result) {
         const div = document.createElement('div');
-        div.className = 'bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200 cursor-pointer';
+        div.className = 'bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200';
         
         // Create drug name and class
         const nameDiv = document.createElement('div');
@@ -905,22 +908,63 @@ class RxVerifyApp {
             `;
         }
         
+        // Create feedback section
+        const feedbackDiv = document.createElement('div');
+        feedbackDiv.className = 'flex items-center justify-between mt-3 pt-2 border-t border-gray-100';
+        
+        const feedbackButtons = document.createElement('div');
+        feedbackButtons.className = 'flex items-center space-x-2';
+        
+        const thumbsUpBtn = document.createElement('button');
+        thumbsUpBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors';
+        thumbsUpBtn.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+            </svg>
+            <span>Helpful</span>
+        `;
+        
+        const thumbsDownBtn = document.createElement('button');
+        thumbsDownBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors';
+        thumbsDownBtn.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.737 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.096c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path>
+            </svg>
+            <span>Not helpful</span>
+        `;
+        
+        // Add feedback event listeners
+        thumbsUpBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.submitFeedback(result.name, this.currentSearchQuery, true);
+            this.showToast('Thank you for your feedback! 👍', 'success');
+        });
+        
+        thumbsDownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.submitFeedback(result.name, this.currentSearchQuery, false);
+            this.showToast('Thank you for your feedback! 👎', 'info');
+        });
+        
+        feedbackButtons.appendChild(thumbsUpBtn);
+        feedbackButtons.appendChild(thumbsDownBtn);
+        
         // Create RxCUI info
         const rxcuiDiv = document.createElement('div');
-        rxcuiDiv.className = 'text-xs text-gray-400 mt-2';
+        rxcuiDiv.className = 'text-xs text-gray-400';
         rxcuiDiv.textContent = `RxCUI: ${result.rxcui}`;
+        
+        feedbackDiv.appendChild(feedbackButtons);
+        feedbackDiv.appendChild(rxcuiDiv);
         
         div.innerHTML = `
             ${nameDiv.outerHTML}
             ${brandNamesDiv}
             ${usesDiv}
-            ${rxcuiDiv.outerHTML}
+            ${feedbackDiv.outerHTML}
         `;
         
-        // Add click handler to search for this drug
-        div.addEventListener('click', () => {
-            this.searchForDrug(result.name);
-        });
+        // No click handler - these are just search results for feedback
         
         return div;
     }
@@ -952,6 +996,55 @@ class RxVerifyApp {
         document.getElementById('noResults').classList.add('hidden');
     }
 
+    async submitFeedback(drugName, query, isPositive) {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/feedback`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    drug_name: drugName,
+                    query: query,
+                    is_positive: isPositive,
+                    user_id: this.getUserId(),
+                    session_id: this.getSessionId()
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Feedback submission failed: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log('Feedback submitted successfully:', data);
+            
+        } catch (error) {
+            console.error('Feedback submission error:', error);
+            // Don't show error toast for feedback failures to avoid annoying users
+        }
+    }
+
+    getUserId() {
+        // Generate or retrieve user ID (could be stored in localStorage)
+        let userId = localStorage.getItem('rxverify_user_id');
+        if (!userId) {
+            userId = 'user_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('rxverify_user_id', userId);
+        }
+        return userId;
+    }
+
+    getSessionId() {
+        // Generate or retrieve session ID
+        let sessionId = sessionStorage.getItem('rxverify_session_id');
+        if (!sessionId) {
+            sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
+            sessionStorage.setItem('rxverify_session_id', sessionId);
+        }
+        return sessionId;
+    }
+
     resetForm() {
         document.getElementById('questionInput').value = '';
         document.getElementById('advancedSearch').checked = false;
@@ -967,6 +1060,8 @@ class RxVerifyApp {
 
 document.addEventListener('DOMContentLoaded', () => {
     app = new RxVerifyApp();
+    // Make app globally available for index.html
+    window.rxVerifyApp = app;
 });
 
 // Add some nice keyboard shortcuts

@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RxVerify - Multi-Database Drug Assistant</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link href="https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/outline/index.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/solid/index.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -105,8 +110,20 @@
         <div class="max-w-4xl mx-auto mb-8">
             <div class="flex space-x-1 bg-gray-100 p-1 rounded-xl">
                 <button 
+                    id="searchTab" 
+                    class="tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-green-600 shadow-sm"
+                    onclick="switchTab('search')"
+                >
+                    <div class="flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <span>Drug Search</span>
+                    </div>
+                </button>
+                <button 
                     id="askTab" 
-                    class="tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-primary-600 shadow-sm"
+                    class="tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900"
                     onclick="switchTab('ask')"
                 >
                     <div class="flex items-center justify-center space-x-2">
@@ -117,22 +134,34 @@
                     </div>
                 </button>
                 <button 
-                    id="searchTab" 
+                    id="feedbackTab" 
                     class="tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900"
-                    onclick="switchTab('search')"
+                    onclick="switchTab('feedback')"
                 >
                     <div class="flex items-center justify-center space-x-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
-                        <span>Drug Search</span>
+                        <span>Feedback Analytics</span>
+                    </div>
+                </button>
+                <button 
+                    id="adminTab" 
+                    class="tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900"
+                    onclick="switchTab('admin')"
+                >
+                    <div class="flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <span>Admin Dashboard</span>
                     </div>
                 </button>
             </div>
         </div>
 
         <!-- Ask Questions Tab Content -->
-        <div id="askTabContent" class="max-w-4xl mx-auto mb-12">
+        <div id="askTabContent" class="max-w-4xl mx-auto mb-12 hidden">
             <div class="glass-effect rounded-2xl p-8 shadow-xl">
                 <div class="flex items-center space-x-4 mb-6">
                     <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
@@ -214,7 +243,7 @@
         </div>
 
         <!-- Drug Search Tab Content -->
-        <div id="searchTabContent" class="max-w-4xl mx-auto mb-12 hidden">
+        <div id="searchTabContent" class="max-w-4xl mx-auto mb-12">
             <div class="glass-effect rounded-2xl p-8 shadow-xl">
                 <div class="flex items-center space-x-4 mb-6">
                     <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
@@ -223,8 +252,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-xl font-semibold text-gray-900">Search Medications</h3>
-                        <p class="text-gray-600">Find drugs by name, generic name, or brand name with autocomplete</p>
+                        <h3 class="text-xl font-semibold text-gray-900">Search Post-Discharge Medications</h3>
+                        <p class="text-gray-600">Find oral medications commonly prescribed after hospital stays with AI-powered search</p>
                     </div>
                 </div>
                 
@@ -233,7 +262,7 @@
                         <input 
                             type="text" 
                             id="searchInput" 
-                            placeholder="Type medication name (e.g., atorvastatin, Lipitor, acetaminophen, Tylenol)"
+                            placeholder="Type medication name (e.g., atorvastatin, metformin, lisinopril) - focuses on oral medications"
                             class="w-full px-4 py-4 pl-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 text-gray-700 placeholder-gray-400"
                         />
                         <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
@@ -360,51 +389,311 @@
             </div>
         </div>
 
+        <!-- Feedback Analytics Tab Content -->
+        <div id="feedbackTabContent" class="max-w-6xl mx-auto mb-12 hidden">
+            <div class="glass-effect rounded-2xl p-8 shadow-xl">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900">Feedback Analytics</h3>
+                        <p class="text-gray-600">View ratings, trends, and manage feedback data</p>
+                    </div>
+                </div>
+
+                <!-- Feedback Stats Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-green-50 rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-green-600">Total Feedback</p>
+                                <p id="totalFeedback" class="text-2xl font-bold text-green-900">-</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-blue-600">Positive Ratings</p>
+                                <p id="positiveRatings" class="text-2xl font-bold text-blue-900">-</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-red-50 rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-red-600">Negative Ratings</p>
+                                <p id="negativeRatings" class="text-2xl font-bold text-red-900">-</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.737 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.096c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feedback Management -->
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-lg font-semibold text-gray-900">Feedback Management</h4>
+                        <button onclick="loadFeedbackData()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Refresh Data
+                        </button>
+                    </div>
+
+                    <!-- Feedback List -->
+                    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Drug Name</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Query</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="feedbackTableBody" class="bg-white divide-y divide-gray-200">
+                                    <!-- Feedback data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Debug Actions -->
+                    <div class="bg-yellow-50 rounded-xl p-6">
+                        <h5 class="text-lg font-semibold text-yellow-800 mb-4">Debug Actions</h5>
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="clearAllFeedback()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                                Clear All Feedback
+                            </button>
+                            <button onclick="exportFeedbackData()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                                Export Feedback Data
+                            </button>
+                            <button onclick="importFeedbackData()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                                Import Feedback Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard Tab Content -->
+        <div id="adminTabContent" class="max-w-7xl mx-auto mb-12 hidden">
+            <div class="glass-effect rounded-2xl p-8 shadow-xl">
+                <div class="flex items-center space-x-4 mb-8">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900">Admin Dashboard</h3>
+                        <p class="text-gray-600">Comprehensive system analytics and monitoring</p>
+                    </div>
+                    <div class="ml-auto">
+                        <button onclick="refreshAdminData()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors flex items-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            <span>Refresh All</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- System Overview Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-100 text-sm font-medium">Total Requests</p>
+                                <p id="totalRequests" class="text-3xl font-bold">-</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-400 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-100 text-sm font-medium">Success Rate</p>
+                                <p id="successRate" class="text-3xl font-bold">-</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-400 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-6 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-purple-100 text-sm font-medium">Cache Hit Rate</p>
+                                <p id="cacheHitRate" class="text-3xl font-bold">-</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-400 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-6 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-orange-100 text-sm font-medium">Avg Response Time</p>
+                                <p id="avgResponseTime" class="text-3xl font-bold">-</p>
+                            </div>
+                            <div class="w-12 h-12 bg-orange-400 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <!-- Feedback Distribution Chart -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Feedback Distribution</h4>
+                        <div class="relative h-64">
+                            <canvas id="feedbackChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Request Trends Chart -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Request Trends (Last 24h)</h4>
+                        <div class="relative h-64">
+                            <canvas id="trendsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Statistics -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Medication Cache</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Entries:</span>
+                                <span id="cacheEntries" class="font-semibold">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Cache Size:</span>
+                                <span id="cacheSize" class="font-semibold">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Last Updated:</span>
+                                <span id="cacheLastUpdated" class="font-semibold">-</span>
+                            </div>
+                        </div>
+                        <button onclick="clearMedicationCache()" class="w-full mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                            Clear Cache
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">RxList Database</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Drugs:</span>
+                                <span id="rxlistDrugs" class="font-semibold">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Database Size:</span>
+                                <span id="rxlistSize" class="font-semibold">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Last Updated:</span>
+                                <span id="rxlistLastUpdated" class="font-semibold">-</span>
+                            </div>
+                        </div>
+                        <button onclick="clearRxlistDatabase()" class="w-full mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                            Clear Database
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">System Health</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Backend Status:</span>
+                                <span id="backendStatus" class="font-semibold text-green-600">✓ Healthy</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Frontend Status:</span>
+                                <span id="frontendStatus" class="font-semibold text-green-600">✓ Healthy</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">API Status:</span>
+                                <span id="apiStatus" class="font-semibold text-green-600">✓ Healthy</span>
+                            </div>
+                        </div>
+                        <button onclick="checkSystemHealth()" class="w-full mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                            Check Health
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Query</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Response Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentActivityBody" class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                        Loading recent activity...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Example Queries -->
         <div class="max-w-4xl mx-auto mt-12">
             <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Try These Example Queries</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <button onclick="setExampleQuery('What are the side effects of atorvastatin?')" class="p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all duration-200 text-left">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <div class="font-medium text-gray-900">Side Effects</div>
-                            <div class="text-sm text-gray-500">Learn about medication risks</div>
-                        </div>
-                    </div>
-                </button>
-
-                <button onclick="setExampleQuery('How does metformin interact with other diabetes medications?')" class="p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all duration-200 text-left">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <div class="font-medium text-gray-900">Drug Interactions</div>
-                            <div class="text-sm text-gray-500">Check compatibility</div>
-                        </div>
-                    </div>
-                </button>
-
-                <button onclick="setExampleQuery('What is the recommended dosage for lisinopril in adults with hypertension?')" class="p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all duration-200 text-left">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <div class="font-medium text-gray-900">Dosage Information</div>
-                            <div class="text-sm text-gray-500">Proper medication amounts</div>
-                        </div>
-                    </div>
-                </button>
+            <div id="exampleQueries" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Dynamic content will be inserted here -->
             </div>
         </div>
     </main>
@@ -430,25 +719,527 @@
             // Get tab buttons
             const askTab = document.getElementById('askTab');
             const searchTab = document.getElementById('searchTab');
+            const feedbackTab = document.getElementById('feedbackTab');
+            const adminTab = document.getElementById('adminTab');
             const askContent = document.getElementById('askTabContent');
             const searchContent = document.getElementById('searchTabContent');
+            const feedbackContent = document.getElementById('feedbackTabContent');
+            const adminContent = document.getElementById('adminTabContent');
+            
+            // Reset all tab styles
+            askTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
+            searchTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
+            feedbackTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
+            adminTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
+            
+            // Hide all content
+            askContent.classList.add('hidden');
+            searchContent.classList.add('hidden');
+            feedbackContent.classList.add('hidden');
+            adminContent.classList.add('hidden');
             
             if (tabName === 'ask') {
                 // Update button styles
                 askTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-primary-600 shadow-sm';
-                searchTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
                 
-                // Show/hide content
+                // Show content
                 askContent.classList.remove('hidden');
-                searchContent.classList.add('hidden');
+                
+                // Update example queries for Ask Questions tab
+                updateExampleQueries('ask');
             } else if (tabName === 'search') {
                 // Update button styles
                 searchTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-green-600 shadow-sm';
-                askTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
                 
-                // Show/hide content
+                // Show content
                 searchContent.classList.remove('hidden');
-                askContent.classList.add('hidden');
+                
+                // Update example queries for Drug Search tab
+                updateExampleQueries('search');
+            } else if (tabName === 'feedback') {
+                // Update button styles
+                feedbackTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-purple-600 shadow-sm';
+                
+                // Show content
+                feedbackContent.classList.remove('hidden');
+                
+                // Load feedback data when switching to feedback tab
+                loadFeedbackData();
+            } else if (tabName === 'admin') {
+                // Update button styles
+                adminTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-indigo-600 shadow-sm';
+                
+                // Show content
+                adminContent.classList.remove('hidden');
+                
+                // Load admin data when switching to admin tab
+                loadAdminData();
+            }
+        }
+        
+        function updateExampleQueries(tabName) {
+            const exampleQueriesContainer = document.getElementById('exampleQueries');
+            
+            if (tabName === 'ask') {
+                // Example queries for Ask Questions tab
+                exampleQueriesContainer.innerHTML = `
+                    <button onclick="setExampleQuery('What are the side effects of atorvastatin?')" class="p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all duration-200 text-left">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">Side Effects</div>
+                                <div class="text-sm text-gray-500">Learn about medication risks</div>
+                            </div>
+                        </div>
+                    </button>
+
+                    <button onclick="setExampleQuery('How does metformin interact with other diabetes medications?')" class="p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all duration-200 text-left">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">Drug Interactions</div>
+                                <div class="text-sm text-gray-500">Check compatibility</div>
+                            </div>
+                        </div>
+                    </button>
+
+                    <button onclick="setExampleQuery('What is the recommended dosage for lisinopril in adults with hypertension?')" class="p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all duration-200 text-left">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">Dosage Information</div>
+                                <div class="text-sm text-gray-500">Proper medication amounts</div>
+                            </div>
+                        </div>
+                    </button>
+                `;
+            } else if (tabName === 'search') {
+                // Example queries for Drug Search tab
+                exampleQueriesContainer.innerHTML = `
+                    <button onclick="setSearchExample('metformin')" class="p-4 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:shadow-md transition-all duration-200 text-left">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">Metformin</div>
+                                <div class="text-sm text-gray-500">Type 2 diabetes medication</div>
+                            </div>
+                        </div>
+                    </button>
+
+                    <button onclick="setSearchExample('atorvastatin')" class="p-4 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:shadow-md transition-all duration-200 text-left">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">Atorvastatin</div>
+                                <div class="text-sm text-gray-500">Cholesterol medication</div>
+                            </div>
+                        </div>
+                    </button>
+
+                    <button onclick="setSearchExample('lisinopril')" class="p-4 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:shadow-md transition-all duration-200 text-left">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">Lisinopril</div>
+                                <div class="text-sm text-gray-500">Blood pressure medication</div>
+                            </div>
+                        </div>
+                    </button>
+                `;
+            }
+        }
+        
+        function setSearchExample(drugName) {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = drugName;
+                handleSearchInput(drugName);
+            }
+        }
+        
+        // Feedback Analytics Functions
+        async function loadFeedbackData() {
+            try {
+                const response = await fetch('/feedback/stats');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateFeedbackStats(data.stats);
+                    updateFeedbackTable(data.feedback_list || []);
+                } else {
+                    console.error('Failed to load feedback data:', data.message);
+                }
+            } catch (error) {
+                console.error('Error loading feedback data:', error);
+            }
+        }
+        
+        function updateFeedbackStats(stats) {
+            document.getElementById('totalFeedback').textContent = stats.total_feedback || 0;
+            document.getElementById('positiveRatings').textContent = stats.positive_ratings || 0;
+            document.getElementById('negativeRatings').textContent = stats.negative_ratings || 0;
+        }
+        
+        function updateFeedbackTable(feedbackList) {
+            const tbody = document.getElementById('feedbackTableBody');
+            tbody.innerHTML = '';
+            
+            if (feedbackList.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                            No feedback data available
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            feedbackList.forEach(feedback => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        ${feedback.drug_name || 'N/A'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${feedback.query || 'N/A'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${feedback.is_positive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${feedback.is_positive ? 'Positive' : 'Negative'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${feedback.score ? feedback.score.toFixed(2) : 'N/A'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="removeFeedback('${feedback.drug_name}', '${feedback.query}')" class="text-red-600 hover:text-red-900">
+                            Remove
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        async function removeFeedback(drugName, query) {
+            if (!confirm(`Are you sure you want to remove feedback for "${drugName}" with query "${query}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/feedback/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        drug_name: drugName,
+                        query: query
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showToast('Feedback removed successfully', 'success');
+                    loadFeedbackData(); // Refresh the data
+                } else {
+                    showToast('Failed to remove feedback: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error removing feedback:', error);
+                showToast('Error removing feedback', 'error');
+            }
+        }
+        
+        async function clearAllFeedback() {
+            if (!confirm('Are you sure you want to clear ALL feedback data? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/feedback/clear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showToast('All feedback cleared successfully', 'success');
+                    loadFeedbackData(); // Refresh the data
+                } else {
+                    showToast('Failed to clear feedback: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error clearing feedback:', error);
+                showToast('Error clearing feedback', 'error');
+            }
+        }
+        
+        function exportFeedbackData() {
+            // This would export the feedback data as JSON
+            showToast('Export functionality coming soon', 'info');
+        }
+        
+        function importFeedbackData() {
+            // This would allow importing feedback data from a file
+            showToast('Import functionality coming soon', 'info');
+        }
+        
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+            
+            toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg mb-2 transition-all duration-300`;
+            toast.textContent = message;
+            
+            const container = document.getElementById('toastContainer');
+            container.appendChild(toast);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+        
+        // Admin Dashboard Functions
+        let feedbackChart = null;
+        let trendsChart = null;
+        
+        async function loadAdminData() {
+            try {
+                // Load all admin data in parallel
+                const [systemStatus, cacheStats, rxlistStats, feedbackStats] = await Promise.all([
+                    fetch('/status').then(r => r.json()),
+                    fetch('/cache/stats').then(r => r.json()),
+                    fetch('/rxlist/stats').then(r => r.json()),
+                    fetch('/feedback/stats').then(r => r.json())
+                ]);
+                
+                updateSystemOverview(systemStatus, feedbackStats);
+                updateDatabaseStats(cacheStats, rxlistStats);
+                updateCharts(feedbackStats);
+                updateRecentActivity();
+                
+            } catch (error) {
+                console.error('Error loading admin data:', error);
+                showToast('Failed to load admin data', 'error');
+            }
+        }
+        
+        function updateSystemOverview(systemStatus, feedbackStats) {
+            // Update overview cards
+            document.getElementById('totalRequests').textContent = systemStatus.monitoring?.total_requests || 0;
+            document.getElementById('successRate').textContent = 
+                systemStatus.monitoring?.success_rate ? `${(systemStatus.monitoring.success_rate * 100).toFixed(1)}%` : 'N/A';
+            document.getElementById('cacheHitRate').textContent = 
+                systemStatus.monitoring?.cache_hit_rate ? `${(systemStatus.monitoring.cache_hit_rate * 100).toFixed(1)}%` : 'N/A';
+            document.getElementById('avgResponseTime').textContent = 
+                systemStatus.monitoring?.avg_response_time ? `${systemStatus.monitoring.avg_response_time.toFixed(0)}ms` : 'N/A';
+        }
+        
+        function updateDatabaseStats(cacheStats, rxlistStats) {
+            // Update cache stats
+            if (cacheStats.cache_stats) {
+                document.getElementById('cacheEntries').textContent = cacheStats.cache_stats.total_entries || 0;
+                document.getElementById('cacheSize').textContent = cacheStats.cache_stats.cache_size || 'N/A';
+                document.getElementById('cacheLastUpdated').textContent = 
+                    cacheStats.cache_stats.last_updated ? new Date(cacheStats.cache_stats.last_updated).toLocaleString() : 'N/A';
+            }
+            
+            // Update RxList stats
+            if (rxlistStats.rxlist_stats) {
+                document.getElementById('rxlistDrugs').textContent = rxlistStats.rxlist_stats.total_drugs || 0;
+                document.getElementById('rxlistSize').textContent = rxlistStats.rxlist_stats.database_size || 'N/A';
+                document.getElementById('rxlistLastUpdated').textContent = 
+                    rxlistStats.rxlist_stats.last_updated ? new Date(rxlistStats.rxlist_stats.last_updated).toLocaleString() : 'N/A';
+            }
+        }
+        
+        function updateCharts(feedbackStats) {
+            // Update feedback distribution chart
+            if (feedbackChart) {
+                feedbackChart.destroy();
+            }
+            
+            const feedbackCtx = document.getElementById('feedbackChart').getContext('2d');
+            feedbackChart = new Chart(feedbackCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Positive', 'Negative'],
+                    datasets: [{
+                        data: [
+                            feedbackStats.stats?.positive_ratings || 0,
+                            feedbackStats.stats?.negative_ratings || 0
+                        ],
+                        backgroundColor: ['#10B981', '#EF4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Update trends chart (mock data for now)
+            if (trendsChart) {
+                trendsChart.destroy();
+            }
+            
+            const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+            trendsChart = new Chart(trendsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    datasets: [{
+                        label: 'Requests',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateRecentActivity() {
+            // Mock recent activity data
+            const tbody = document.getElementById('recentActivityBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${new Date().toLocaleTimeString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Search</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">atorvastatin</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Success
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1.2s</td>
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${new Date(Date.now() - 300000).toLocaleTimeString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Query</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">side effects of metformin</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Success
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2.1s</td>
+                </tr>
+            `;
+        }
+        
+        async function refreshAdminData() {
+            showToast('Refreshing admin data...', 'info');
+            await loadAdminData();
+            showToast('Admin data refreshed successfully', 'success');
+        }
+        
+        async function clearMedicationCache() {
+            if (!confirm('Are you sure you want to clear the medication cache?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/cache/clear', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showToast('Medication cache cleared successfully', 'success');
+                    loadAdminData(); // Refresh data
+                } else {
+                    showToast('Failed to clear cache', 'error');
+                }
+            } catch (error) {
+                console.error('Error clearing cache:', error);
+                showToast('Error clearing cache', 'error');
+            }
+        }
+        
+        async function clearRxlistDatabase() {
+            if (!confirm('Are you sure you want to clear the RxList database?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/rxlist/clear', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showToast('RxList database cleared successfully', 'success');
+                    loadAdminData(); // Refresh data
+                } else {
+                    showToast('Failed to clear database', 'error');
+                }
+            } catch (error) {
+                console.error('Error clearing database:', error);
+                showToast('Error clearing database', 'error');
+            }
+        }
+        
+        async function checkSystemHealth() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (data.status === 'healthy') {
+                    showToast('System health check passed', 'success');
+                    document.getElementById('backendStatus').textContent = '✓ Healthy';
+                    document.getElementById('backendStatus').className = 'font-semibold text-green-600';
+                } else {
+                    showToast('System health check failed', 'error');
+                    document.getElementById('backendStatus').textContent = '✗ Unhealthy';
+                    document.getElementById('backendStatus').className = 'font-semibold text-red-600';
+                }
+            } catch (error) {
+                console.error('Error checking system health:', error);
+                showToast('Error checking system health', 'error');
+                document.getElementById('backendStatus').textContent = '✗ Error';
+                document.getElementById('backendStatus').className = 'font-semibold text-red-600';
             }
         }
         
@@ -498,8 +1289,8 @@
             try {
                 console.log('Performing search for:', query);
                     const response = await fetch(window.location.hostname === 'localhost' 
-                        ? 'http://localhost:8000/search' 
-                        : 'https://rx-verify-api-e68bdd74c056.herokuapp.com/search', {
+                        ? `http://localhost:8000/search?t=${Date.now()}` 
+                        : `https://rx-verify-api-e68bdd74c056.herokuapp.com/search?t=${Date.now()}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -527,6 +1318,7 @@
         }
         
         function displaySearchResults(results) {
+            // Always use the fallback implementation with feedback buttons
             const resultsContainer = document.getElementById('searchResults');
             const noResults = document.getElementById('noResults');
             
@@ -549,8 +1341,9 @@
         }
         
         function createSearchResultElement(result) {
+            // Always use the fallback implementation with feedback buttons
             const div = document.createElement('div');
-            div.className = 'bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200 cursor-pointer';
+            div.className = 'bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200';
             
             // Create drug name and class
             const nameDiv = document.createElement('div');
@@ -607,6 +1400,42 @@
                 `;
             }
             
+            // Create feedback buttons
+            const feedbackButtons = document.createElement('div');
+            feedbackButtons.className = 'flex items-center space-x-2 mt-2';
+            
+            const thumbsUpBtn = document.createElement('button');
+            thumbsUpBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors';
+            thumbsUpBtn.innerHTML = `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                </svg>
+                <span>Helpful</span>
+            `;
+            
+            const thumbsDownBtn = document.createElement('button');
+            thumbsDownBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors';
+            thumbsDownBtn.innerHTML = `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.737 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.096c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path>
+                </svg>
+                <span>Not helpful</span>
+            `;
+            
+            // Add feedback event listeners
+            thumbsUpBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                submitFeedback(result.name, 'fallback', true);
+            });
+            
+            thumbsDownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                submitFeedback(result.name, 'fallback', false);
+            });
+            
+            feedbackButtons.appendChild(thumbsUpBtn);
+            feedbackButtons.appendChild(thumbsDownBtn);
+            
             // Create RxCUI info
             const rxcuiDiv = document.createElement('div');
             rxcuiDiv.className = 'text-xs text-gray-400 mt-2';
@@ -616,18 +1445,11 @@
                 ${nameDiv.outerHTML}
                 ${brandNamesDiv}
                 ${usesDiv}
+                ${feedbackButtons.outerHTML}
                 ${rxcuiDiv.outerHTML}
             `;
             
-            // Add click handler to search for this drug
-            div.addEventListener('click', () => {
-                switchTab('ask');
-                const questionInput = document.getElementById('questionInput');
-                if (questionInput) {
-                    questionInput.value = `Tell me about ${result.name}`;
-                    questionInput.focus();
-                }
-            });
+            // No click handler - these are just search results for feedback
             
             return div;
         }
@@ -650,6 +1472,32 @@
             if (noResults) noResults.classList.add('hidden');
         }
         
+        function submitFeedback(drugName, query, isPositive) {
+            // Submit feedback to the backend
+            fetch('/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    drug_name: drugName,
+                    query: query,
+                    is_positive: isPositive
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Feedback submitted successfully:', data.message);
+                } else {
+                    console.error('Feedback submission failed:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting feedback:', error);
+            });
+        }
+        
         // Set up search input listener when DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
             const searchInput = document.getElementById('searchInput');
@@ -658,9 +1506,12 @@
                     handleSearchInput(e.target.value);
                 });
             }
+            
+            // Set default tab to search
+            switchTab('search');
         });
     </script>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=6"></script>
 </body>
 </html>

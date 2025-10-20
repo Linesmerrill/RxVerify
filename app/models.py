@@ -51,8 +51,31 @@ class DrugSearchResult(BaseModel):
     common_uses: List[str] = []
     drug_class: Optional[str] = None
     source: str
+    feedback_score: Optional[float] = None
+    is_oral_medication: bool = True
+    discharge_relevance_score: Optional[float] = None
 
 class SearchResponse(BaseModel):
     results: List[DrugSearchResult]
     total_found: int
     processing_time_ms: float
+
+class FeedbackRequest(BaseModel):
+    drug_name: str
+    query: str
+    is_positive: bool
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
+
+class FeedbackResponse(BaseModel):
+    success: bool
+    message: str
+    updated_score: Optional[float] = None
+
+class MLPipelineUpdate(BaseModel):
+    drug_name: str
+    query: str
+    positive_feedback_count: int
+    negative_feedback_count: int
+    overall_score: float
+    last_updated: str

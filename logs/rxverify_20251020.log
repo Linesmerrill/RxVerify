@@ -15,3 +15,1130 @@
 2025-10-20 07:28:25,697 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
 2025-10-20 07:32:07,871 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
 2025-10-20 07:32:10,427 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:48:19,164 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:48:20,999 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:48:27,569 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:48:29,045 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:48:32,684 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:48:34,120 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:48:36,141 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:48:37,601 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:48:38,917 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:48:40,395 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:48:46,661 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:48:48,155 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:48:56,947 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:48:58,553 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:49:06,737 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:49:08,351 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:51:00,035 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:51:02,240 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:52:56,360 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:53:51,662 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:54:07,344 - root - INFO - Processing enhanced medication search: tyl...
+2025-10-20 07:54:07,344 - app.post_discharge_search - INFO - Searching discharge medications for: 'tyl'
+2025-10-20 07:54:07,345 - app.medical_apis - INFO - Searching all medical databases for: 'tyl' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 07:54:07,347 - app.medical_apis - INFO - DrugBank search returned 1 results for 'tyl'
+2025-10-20 07:54:07,829 - root - INFO - Processing enhanced medication search: tyle...
+2025-10-20 07:54:07,830 - app.post_discharge_search - INFO - Searching discharge medications for: 'tyle'
+2025-10-20 07:54:07,830 - app.medical_apis - INFO - Searching all medical databases for: 'tyle' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 07:54:07,830 - app.medical_apis - INFO - DrugBank search returned 1 results for 'tyle'
+2025-10-20 07:54:07,864 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Atyl&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 07:54:08,008 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Atyl&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 07:54:08,094 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'tyl'
+2025-10-20 07:54:08,235 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=tyl&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 07:54:08,236 - app.medical_apis - INFO - RxNorm search returned 0 results for 'tyl'
+2025-10-20 07:54:08,236 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=tyl&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 07:54:08,242 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=tyle&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 07:54:08,245 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=tyle&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 07:54:08,246 - app.medical_apis - INFO - RxNorm search returned 0 results for 'tyle'
+2025-10-20 07:54:08,264 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Atyle&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 07:54:08,396 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Atyle&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 07:54:08,398 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'tyle'
+2025-10-20 07:54:08,597 - root - INFO - Processing enhanced medication search: tylenol...
+2025-10-20 07:54:08,597 - app.post_discharge_search - INFO - Searching discharge medications for: 'tylenol'
+2025-10-20 07:54:08,597 - app.medical_apis - INFO - Searching all medical databases for: 'tylenol' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 07:54:08,599 - app.medical_apis - INFO - DrugBank search returned 1 results for 'tylenol'
+2025-10-20 07:54:08,676 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=tylenol&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 07:54:08,723 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Atylenol&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 07:54:08,746 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=tyle&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 07:54:08,746 - app.medical_apis - INFO - DailyMed search returned 0 results for 'tyle'
+2025-10-20 07:54:08,746 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=tylenol&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 07:54:08,747 - app.medical_apis - INFO - RxNorm search returned 3 results for 'tylenol'
+2025-10-20 07:54:10,752 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:10,753 - openai._base_client - INFO - Retrying request to /embeddings in 0.427039 seconds
+2025-10-20 07:54:12,460 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:12,461 - openai._base_client - INFO - Retrying request to /embeddings in 0.898622 seconds
+2025-10-20 07:54:14,113 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:14,119 - app.medical_apis - INFO - Total documents retrieved from all sources: 1
+2025-10-20 07:54:14,198 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:14,199 - openai._base_client - INFO - Retrying request to /embeddings in 0.431374 seconds
+2025-10-20 07:54:16,247 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:16,248 - openai._base_client - INFO - Retrying request to /embeddings in 0.831614 seconds
+2025-10-20 07:54:17,983 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:18,126 - app.post_discharge_search - INFO - Discharge medication search completed in 10296.20ms, found 0 results
+2025-10-20 07:54:18,129 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Atylenol&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 07:54:18,130 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=tyl&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 07:54:18,134 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'tylenol'
+2025-10-20 07:54:18,227 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/3d7f2097-dcab-481b-a0c3-4c2c72be5800.xml "HTTP/1.1 200 OK"
+2025-10-20 07:54:18,385 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/510b4ec0-6762-4b29-9786-e5afa7350fa3.xml "HTTP/1.1 200 OK"
+2025-10-20 07:54:18,485 - app.medical_apis - INFO - DailyMed search returned 2 results for 'tyl'
+2025-10-20 07:54:18,591 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:18,592 - openai._base_client - INFO - Retrying request to /embeddings in 0.431916 seconds
+2025-10-20 07:54:19,938 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:19,940 - openai._base_client - INFO - Retrying request to /embeddings in 0.950242 seconds
+2025-10-20 07:54:21,802 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:21,905 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:21,906 - openai._base_client - INFO - Retrying request to /embeddings in 0.462343 seconds
+2025-10-20 07:54:22,501 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:22,502 - openai._base_client - INFO - Retrying request to /embeddings in 0.914783 seconds
+2025-10-20 07:54:23,516 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:24,256 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:24,256 - openai._base_client - INFO - Retrying request to /embeddings in 0.427826 seconds
+2025-10-20 07:54:24,756 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:24,757 - openai._base_client - INFO - Retrying request to /embeddings in 0.958756 seconds
+2025-10-20 07:54:25,852 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:25,854 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 07:54:26,574 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:26,575 - openai._base_client - INFO - Retrying request to /embeddings in 0.477073 seconds
+2025-10-20 07:54:27,178 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:27,178 - openai._base_client - INFO - Retrying request to /embeddings in 0.929855 seconds
+2025-10-20 07:54:28,197 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:28,200 - app.post_discharge_search - INFO - Discharge medication search completed in 20855.74ms, found 0 results
+2025-10-20 07:54:28,201 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1243440&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 07:54:28,305 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/3af22fc8-e4e0-4863-8696-6bc1257047cb.xml "HTTP/1.1 200 OK"
+2025-10-20 07:54:28,590 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/037ec598-cba6-dbb6-e063-6394a90ac42c.xml "HTTP/1.1 200 OK"
+2025-10-20 07:54:28,781 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1738139&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 07:54:29,032 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=209387&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 07:54:29,118 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/398d8996-b522-a3cd-e063-6394a90ac2c8.xml "HTTP/1.1 200 OK"
+2025-10-20 07:54:29,201 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01f41fae-4abb-4b96-ab09-a7d3dfc286cd.xml "HTTP/1.1 200 OK"
+2025-10-20 07:54:29,206 - app.medical_apis - INFO - DailyMed search returned 4 results for 'tylenol'
+2025-10-20 07:54:29,266 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:29,267 - openai._base_client - INFO - Retrying request to /embeddings in 0.432589 seconds
+2025-10-20 07:54:29,760 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:29,760 - openai._base_client - INFO - Retrying request to /embeddings in 0.763234 seconds
+2025-10-20 07:54:30,614 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:30,707 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:30,708 - openai._base_client - INFO - Retrying request to /embeddings in 0.387332 seconds
+2025-10-20 07:54:31,171 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:31,171 - openai._base_client - INFO - Retrying request to /embeddings in 0.989975 seconds
+2025-10-20 07:54:32,242 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:32,319 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:32,319 - openai._base_client - INFO - Retrying request to /embeddings in 0.499803 seconds
+2025-10-20 07:54:32,882 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:32,883 - openai._base_client - INFO - Retrying request to /embeddings in 0.858179 seconds
+2025-10-20 07:54:33,845 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:33,935 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:33,936 - openai._base_client - INFO - Retrying request to /embeddings in 0.480631 seconds
+2025-10-20 07:54:34,552 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:34,553 - openai._base_client - INFO - Retrying request to /embeddings in 0.893815 seconds
+2025-10-20 07:54:35,542 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:36,540 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:36,541 - openai._base_client - INFO - Retrying request to /embeddings in 0.486247 seconds
+2025-10-20 07:54:37,120 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:37,120 - openai._base_client - INFO - Retrying request to /embeddings in 0.946473 seconds
+2025-10-20 07:54:38,164 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:38,236 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:38,237 - openai._base_client - INFO - Retrying request to /embeddings in 0.429545 seconds
+2025-10-20 07:54:38,759 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:38,759 - openai._base_client - INFO - Retrying request to /embeddings in 0.911879 seconds
+2025-10-20 07:54:39,774 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:39,875 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:39,876 - openai._base_client - INFO - Retrying request to /embeddings in 0.383262 seconds
+2025-10-20 07:54:40,346 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:40,347 - openai._base_client - INFO - Retrying request to /embeddings in 0.924609 seconds
+2025-10-20 07:54:41,322 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:41,417 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:41,417 - openai._base_client - INFO - Retrying request to /embeddings in 0.388488 seconds
+2025-10-20 07:54:41,853 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:41,853 - openai._base_client - INFO - Retrying request to /embeddings in 0.830346 seconds
+2025-10-20 07:54:42,751 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:42,753 - app.medical_apis - INFO - Total documents retrieved from all sources: 8
+2025-10-20 07:54:42,848 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:42,849 - openai._base_client - INFO - Retrying request to /embeddings in 0.408628 seconds
+2025-10-20 07:54:43,324 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:43,324 - openai._base_client - INFO - Retrying request to /embeddings in 0.987743 seconds
+2025-10-20 07:54:44,404 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 429 Too Many Requests"
+2025-10-20 07:54:44,416 - app.post_discharge_search - INFO - Discharge medication search completed in 35818.82ms, found 3 results
+2025-10-20 07:54:58,461 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:55:00,234 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:55:14,178 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:55:15,907 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:55:30,456 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:55:32,283 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:55:38,448 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:55:40,449 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:55:43,079 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:55:44,724 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:55:47,753 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:55:49,337 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:56:02,673 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:56:04,462 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:56:25,070 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:56:26,900 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:56:58,400 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:57:00,313 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:57:07,891 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:57:09,668 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:57:37,546 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:57:39,079 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:57:57,477 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:57:59,931 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:59:13,208 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:59:15,005 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:59:20,571 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:59:22,113 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:59:25,651 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:59:27,124 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:59:33,082 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:59:34,626 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:59:36,241 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:59:37,790 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:59:40,317 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:59:42,653 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:59:50,028 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:59:51,752 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:59:57,206 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 07:59:58,862 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:00:04,117 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:00:05,626 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:00:13,905 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:00:15,576 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:00:18,913 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:00:20,467 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:00:23,193 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:00:24,683 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:00:28,619 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:00:30,117 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:00:31,125 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:00:32,646 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:00:33,356 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:00:34,961 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:00:35,164 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:02:05,835 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:02:19,157 - root - INFO - Processing enhanced medication search: ty...
+2025-10-20 08:02:19,157 - app.post_discharge_search - INFO - Searching discharge medications for: 'ty'
+2025-10-20 08:02:19,157 - app.medical_apis - INFO - Searching all medical databases for: 'ty' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:02:19,159 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ty'
+2025-10-20 08:02:19,666 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ty&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:02:19,668 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ty&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:02:19,668 - app.medical_apis - INFO - RxNorm search returned 0 results for 'ty'
+2025-10-20 08:02:19,927 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aty&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:02:20,103 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aty&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:02:20,156 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'ty'
+2025-10-20 08:02:20,496 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=ty&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:02:20,618 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/afeb4837-a759-4484-a76e-e04611c459e7.xml "HTTP/1.1 200 OK"
+2025-10-20 08:02:20,988 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/c2eb5522-8572-45f4-869d-42f9fd251bb6.xml "HTTP/1.1 200 OK"
+2025-10-20 08:02:21,030 - app.medical_apis - INFO - DailyMed search returned 2 results for 'ty'
+2025-10-20 08:02:21,046 - app.medical_apis - INFO - Total documents retrieved from all sources: 4
+2025-10-20 08:02:21,180 - app.post_discharge_search - INFO - Discharge medication search completed in 2022.23ms, found 1 results
+2025-10-20 08:02:41,340 - root - INFO - Processing enhanced medication search: ator...
+2025-10-20 08:02:41,341 - app.post_discharge_search - INFO - Searching discharge medications for: 'ator'
+2025-10-20 08:02:41,341 - app.medical_apis - INFO - Searching all medical databases for: 'ator' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:02:41,342 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ator'
+2025-10-20 08:02:41,777 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:02:41,781 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:02:41,782 - app.medical_apis - INFO - RxNorm search returned 0 results for 'ator'
+2025-10-20 08:02:41,877 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aator&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:02:42,100 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aator&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:02:42,146 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'ator'
+2025-10-20 08:02:42,520 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=ator&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:02:42,793 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/46eeb12f-7e38-4828-b7d1-26b6155bc64a.xml "HTTP/1.1 200 OK"
+2025-10-20 08:02:43,210 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/604a011e-6c64-4895-8f6e-d28f119c4c22.xml "HTTP/1.1 200 OK"
+2025-10-20 08:02:43,519 - app.medical_apis - INFO - DailyMed search returned 2 results for 'ator'
+2025-10-20 08:02:43,529 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 08:02:43,532 - app.post_discharge_search - INFO - Discharge medication search completed in 2191.16ms, found 0 results
+2025-10-20 08:03:46,163 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:03:46,164 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:03:46,164 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:03:46,165 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:03:46,633 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:03:46,635 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:03:46,636 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:03:46,637 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:03:46,794 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:03:46,796 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:03:47,207 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:03:47,442 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:03:47,534 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:03:48,270 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:03:48,858 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:03:48,934 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:03:48,950 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:03:49,001 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:03:49,001 - app.post_discharge_search - INFO - Discharge medication search completed in 2837.46ms, found 3 results
+2025-10-20 08:05:07,378 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:05:09,248 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:05:18,447 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:05:20,256 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:05:42,281 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:05:44,115 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:05:49,976 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:05:51,675 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:05:56,122 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:05:57,601 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:05:59,421 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:06:03,253 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:06:07,071 - root - INFO - Processing enhanced medication search: metformin...
+2025-10-20 08:06:07,071 - app.post_discharge_search - INFO - Searching discharge medications for: 'metformin'
+2025-10-20 08:06:07,071 - app.medical_apis - INFO - Searching all medical databases for: 'metformin' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:06:07,072 - app.medical_apis - INFO - DrugBank search returned 1 results for 'metformin'
+2025-10-20 08:06:07,686 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Ametformin&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:06:07,737 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metformin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:06:07,741 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metformin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:06:07,743 - app.medical_apis - INFO - RxNorm search returned 6 results for 'metformin'
+2025-10-20 08:06:07,903 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Ametformin&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:06:07,983 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'metformin'
+2025-10-20 08:06:08,233 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043567&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:06:08,328 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-10-20 08:06:08,919 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043574&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:06:08,997 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-10-20 08:06:09,405 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043582&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:06:09,481 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-10-20 08:06:09,584 - app.medical_apis - INFO - DailyMed search returned 3 results for 'metformin'
+2025-10-20 08:06:09,594 - app.medical_apis - INFO - Total documents retrieved from all sources: 11
+2025-10-20 08:06:09,604 - app.post_discharge_search - INFO - Discharge medication search completed in 2533.05ms, found 11 results
+2025-10-20 08:06:28,279 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:06:30,014 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:06:31,409 - root - INFO - Processing enhanced medication search: metformin...
+2025-10-20 08:06:31,409 - app.post_discharge_search - INFO - Searching discharge medications for: 'metformin'
+2025-10-20 08:06:31,409 - app.medical_apis - INFO - Searching all medical databases for: 'metformin' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:06:31,410 - app.medical_apis - INFO - DrugBank search returned 1 results for 'metformin'
+2025-10-20 08:06:31,798 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metformin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:06:31,802 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Ametformin&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:06:31,873 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metformin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:06:31,875 - app.medical_apis - INFO - RxNorm search returned 6 results for 'metformin'
+2025-10-20 08:06:31,968 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Ametformin&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:06:32,011 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'metformin'
+2025-10-20 08:06:32,309 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043567&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:06:32,453 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-10-20 08:06:33,015 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043574&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:06:33,094 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-10-20 08:06:33,389 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043582&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:06:33,469 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-10-20 08:06:33,568 - app.medical_apis - INFO - DailyMed search returned 3 results for 'metformin'
+2025-10-20 08:06:33,578 - app.medical_apis - INFO - Total documents retrieved from all sources: 11
+2025-10-20 08:06:33,588 - app.post_discharge_search - INFO - Discharge medication search completed in 2179.41ms, found 11 results
+2025-10-20 08:06:42,886 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:06:44,850 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:06:46,143 - root - INFO - Processing enhanced medication search: metformin...
+2025-10-20 08:06:46,143 - app.post_discharge_search - INFO - Searching discharge medications for: 'metformin'
+2025-10-20 08:06:46,144 - app.medical_apis - INFO - Searching all medical databases for: 'metformin' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:06:46,145 - app.medical_apis - INFO - DrugBank search returned 1 results for 'metformin'
+2025-10-20 08:06:46,664 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Ametformin&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:06:46,747 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metformin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:06:46,750 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metformin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:06:46,751 - app.medical_apis - INFO - RxNorm search returned 6 results for 'metformin'
+2025-10-20 08:06:46,916 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Ametformin&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:06:46,963 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'metformin'
+2025-10-20 08:06:47,454 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043567&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:06:47,568 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-10-20 08:06:48,282 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043574&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:06:48,374 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-10-20 08:06:48,750 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043582&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:06:48,850 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-10-20 08:06:48,953 - app.medical_apis - INFO - DailyMed search returned 3 results for 'metformin'
+2025-10-20 08:06:48,964 - app.medical_apis - INFO - Total documents retrieved from all sources: 11
+2025-10-20 08:06:48,974 - app.post_discharge_search - INFO - Discharge medication search completed in 2830.84ms, found 11 results
+2025-10-20 08:06:52,638 - root - INFO - Processing enhanced medication search: atorvastatin...
+2025-10-20 08:06:52,638 - app.post_discharge_search - INFO - Searching discharge medications for: 'atorvastatin'
+2025-10-20 08:06:52,638 - app.medical_apis - INFO - Searching all medical databases for: 'atorvastatin' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:06:52,640 - app.medical_apis - INFO - DrugBank search returned 1 results for 'atorvastatin'
+2025-10-20 08:06:53,045 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aatorvastatin&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:06:53,208 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:06:53,210 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:06:53,211 - app.medical_apis - INFO - RxNorm search returned 6 results for 'atorvastatin'
+2025-10-20 08:06:53,259 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aatorvastatin&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:06:53,350 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'atorvastatin'
+2025-10-20 08:06:53,460 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=262095&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:06:53,535 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/a60cc18b-0631-4cf0-b021-9f52224ece65.xml "HTTP/1.1 200 OK"
+2025-10-20 08:06:53,689 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/c6e131fe-e7df-4876-83f7-9156fc4e8228.xml "HTTP/1.1 200 OK"
+2025-10-20 08:06:53,898 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2631867&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:06:54,130 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=617314&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:06:54,207 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/a60cc18b-0631-4cf0-b021-9f52224ece65.xml "HTTP/1.1 200 OK"
+2025-10-20 08:06:54,356 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/c6e131fe-e7df-4876-83f7-9156fc4e8228.xml "HTTP/1.1 200 OK"
+2025-10-20 08:06:54,435 - app.medical_apis - INFO - DailyMed search returned 4 results for 'atorvastatin'
+2025-10-20 08:06:54,454 - app.medical_apis - INFO - Total documents retrieved from all sources: 11
+2025-10-20 08:06:54,461 - app.post_discharge_search - INFO - Discharge medication search completed in 1822.99ms, found 11 results
+2025-10-20 08:06:59,355 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:06:59,355 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:06:59,355 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:06:59,356 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:06:59,763 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:06:59,764 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:06:59,766 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:06:59,816 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:07:00,024 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:07:00,026 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:07:00,233 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:07:00,460 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:07:00,570 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:07:01,276 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:07:01,990 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:07:02,073 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:07:02,084 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:07:02,123 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:07:02,127 - app.post_discharge_search - INFO - Discharge medication search completed in 2771.96ms, found 9 results
+2025-10-20 08:07:48,011 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:07:48,011 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:07:48,011 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:07:48,013 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:07:48,514 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:07:48,571 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:07:48,606 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:07:48,606 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:07:48,671 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:07:48,672 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:07:49,173 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:07:49,422 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:07:49,599 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:07:50,266 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:07:50,851 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:07:50,922 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:07:50,933 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:07:50,972 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:07:50,976 - app.post_discharge_search - INFO - Discharge medication search completed in 2964.35ms, found 9 results
+2025-10-20 08:07:53,579 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:07:55,519 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:07:57,439 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:07:57,439 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:07:57,439 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:07:57,440 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:07:57,937 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:07:57,990 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:07:58,046 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:07:58,048 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:07:58,085 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:07:58,086 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:07:58,445 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:07:58,676 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:07:58,800 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:07:59,525 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:08:00,109 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:08:00,179 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:08:00,190 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:08:00,229 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:08:00,237 - app.post_discharge_search - INFO - Discharge medication search completed in 2797.66ms, found 9 results
+2025-10-20 08:08:04,001 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:08:04,002 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:08:04,002 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:08:04,003 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:08:04,481 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:08:04,483 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:08:04,532 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:08:04,546 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:08:04,669 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:08:04,739 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:08:04,741 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:08:04,862 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:08:04,946 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:08:05,338 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:08:05,926 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:08:05,998 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:08:06,014 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:08:06,056 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:08:06,060 - app.post_discharge_search - INFO - Discharge medication search completed in 2058.63ms, found 9 results
+2025-10-20 08:08:12,737 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:08:12,738 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:08:12,738 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:08:12,740 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:08:13,175 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:08:13,179 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:08:13,181 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:08:13,182 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:08:13,334 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:08:13,336 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:08:13,695 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:08:13,909 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:08:14,001 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:08:14,737 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:08:15,331 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:08:15,402 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:08:15,412 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:08:15,452 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:08:15,455 - app.post_discharge_search - INFO - Discharge medication search completed in 2717.70ms, found 9 results
+2025-10-20 08:10:41,900 - root - INFO - Processing enhanced medication search: metformin...
+2025-10-20 08:10:41,901 - app.post_discharge_search - INFO - Searching discharge medications for: 'metformin'
+2025-10-20 08:10:41,901 - app.medical_apis - INFO - Searching all medical databases for: 'metformin' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:10:41,904 - app.medical_apis - INFO - DrugBank search returned 1 results for 'metformin'
+2025-10-20 08:10:42,479 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metformin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:10:42,482 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metformin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:10:42,483 - app.medical_apis - INFO - RxNorm search returned 6 results for 'metformin'
+2025-10-20 08:10:42,503 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Ametformin&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:10:42,752 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Ametformin&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:10:42,791 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'metformin'
+2025-10-20 08:10:43,086 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043567&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:10:43,170 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-10-20 08:10:43,796 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043574&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:10:43,897 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-10-20 08:10:44,288 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1043582&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:10:44,381 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/fbd25da4-ebe6-45c9-beb8-93523d11a0b4.xml "HTTP/1.1 200 OK"
+2025-10-20 08:10:44,487 - app.medical_apis - INFO - DailyMed search returned 3 results for 'metformin'
+2025-10-20 08:10:44,498 - app.medical_apis - INFO - Total documents retrieved from all sources: 11
+2025-10-20 08:10:44,505 - app.post_discharge_search - INFO - Discharge medication search completed in 2603.71ms, found 11 results
+2025-10-20 08:10:50,053 - root - INFO - Processing feedback for metformin: positive
+2025-10-20 08:10:50,054 - app.post_discharge_search - INFO - Recorded feedback for metformin_metformin: positive (score: 0.60)
+2025-10-20 08:12:08,190 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:12:11,252 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:12:21,732 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:12:21,733 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:12:21,733 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:12:21,734 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:12:22,335 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:12:22,341 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:12:22,344 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:12:22,432 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:12:22,685 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:12:22,687 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:12:22,908 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:12:23,123 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:12:23,296 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:12:23,953 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:12:24,578 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:12:24,652 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:12:24,676 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:12:24,719 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:12:24,728 - app.post_discharge_search - INFO - Discharge medication search completed in 2995.17ms, found 9 results
+2025-10-20 08:20:07,932 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:20:11,967 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:20:16,316 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:20:16,316 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:20:16,316 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:20:16,317 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:20:16,846 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:20:16,850 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:20:16,855 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:20:17,167 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:20:17,309 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:20:17,310 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:20:17,415 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:20:17,662 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:20:17,770 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:20:18,494 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:20:19,081 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:20:19,151 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:20:19,162 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:20:19,202 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:20:19,210 - app.post_discharge_search - INFO - Discharge medication search completed in 2894.24ms, found 9 results
+2025-10-20 08:20:57,282 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:20:59,185 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:21:11,004 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:21:12,611 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:21:18,577 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:21:20,129 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:21:30,635 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:21:32,130 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:21:40,618 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:21:42,237 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:21:48,702 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:21:50,216 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:21:56,079 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:21:57,679 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:22:06,185 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:22:06,185 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:22:06,185 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:22:06,187 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:22:06,805 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:22:06,808 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:22:06,809 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:22:06,878 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:22:07,029 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:22:07,031 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:22:07,303 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:22:07,548 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:22:07,699 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:22:08,408 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:22:09,015 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:22:09,089 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:22:09,103 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:22:09,145 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:22:09,153 - app.post_discharge_search - INFO - Discharge medication search completed in 2967.41ms, found 8 results
+2025-10-20 08:22:23,221 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:22:25,100 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:22:26,654 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:22:26,654 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:22:26,654 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:22:26,655 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:22:27,061 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:22:27,063 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:22:27,100 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:22:27,359 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:22:27,534 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:22:27,535 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:22:27,586 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:22:27,835 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:22:28,082 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:22:28,800 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:22:29,534 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:22:29,613 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:22:29,626 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:22:29,668 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:22:29,676 - app.post_discharge_search - INFO - Discharge medication search completed in 3022.13ms, found 8 results
+2025-10-20 08:22:38,874 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:22:40,730 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:22:42,082 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:22:42,082 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:22:42,082 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:22:42,083 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:22:42,666 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:22:42,669 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:22:42,670 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:22:42,679 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:22:42,829 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:22:42,831 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:22:43,128 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:22:43,390 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:22:43,478 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:22:44,214 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:22:44,894 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:22:44,971 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:22:44,981 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:22:45,025 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:22:45,033 - app.post_discharge_search - INFO - Discharge medication search completed in 2950.41ms, found 7 results
+2025-10-20 08:23:48,062 - root - INFO - Processing feedback for Acetaminophen: positive
+2025-10-20 08:23:48,062 - app.post_discharge_search - INFO - Recorded feedback for acetaminophen_met: positive (score: 0.60)
+2025-10-20 08:23:51,593 - root - INFO - Processing feedback for Acetaminophen: positive
+2025-10-20 08:23:51,593 - app.post_discharge_search - INFO - Recorded feedback for acetaminophen_met: positive (score: 0.70)
+2025-10-20 08:25:27,979 - root - INFO - Processing feedback for Acetaminophen: positive
+2025-10-20 08:25:27,979 - app.post_discharge_search - INFO - Recorded feedback for acetaminophen_met: positive (score: 0.80)
+2025-10-20 08:26:08,633 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:26:10,841 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:26:57,763 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:26:57,763 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:26:57,763 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:26:57,765 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:26:58,306 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:26:58,308 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:26:58,309 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:26:58,440 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:26:58,590 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:26:58,591 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:26:58,822 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:26:59,035 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:26:59,223 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:27:00,325 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:27:00,957 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:27:01,032 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:27:01,047 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:27:01,091 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:27:01,100 - app.post_discharge_search - INFO - Discharge medication search completed in 3336.32ms, found 7 results
+2025-10-20 08:28:18,508 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:28:18,508 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:28:18,509 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:28:18,513 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:28:18,925 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:28:19,011 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:28:19,013 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:28:19,015 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:28:19,075 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:28:19,076 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:28:19,576 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:28:19,863 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:28:20,090 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:28:20,867 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:28:21,518 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:28:21,595 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:28:21,607 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:28:21,649 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:28:21,653 - app.post_discharge_search - INFO - Discharge medication search completed in 3144.46ms, found 7 results
+2025-10-20 08:33:56,098 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:33:56,099 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:33:56,099 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:33:56,102 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:33:56,629 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:33:56,630 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:33:56,632 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:33:56,684 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:33:56,867 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:33:56,869 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:33:57,197 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:33:57,449 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:33:57,564 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:33:58,285 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:33:58,898 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:33:58,973 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:33:58,992 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:33:59,039 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:33:59,044 - app.post_discharge_search - INFO - Discharge medication search completed in 2945.16ms, found 7 results
+2025-10-20 08:34:45,653 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:34:45,653 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:34:45,653 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:34:45,655 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:34:46,144 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:34:46,193 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:34:46,194 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:34:46,195 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:34:46,330 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:34:46,331 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:34:46,759 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:34:47,007 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:34:47,119 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:34:47,849 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:34:48,431 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:34:48,503 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:34:48,515 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:34:48,556 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:34:48,560 - app.post_discharge_search - INFO - Discharge medication search completed in 2906.98ms, found 7 results
+2025-10-20 08:35:16,995 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:35:19,491 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:35:33,631 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:35:35,633 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:35:36,643 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:35:36,643 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:35:36,643 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:35:36,644 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:35:37,189 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:35:37,191 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:35:37,193 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:35:37,304 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:35:37,442 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:35:37,444 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:35:37,722 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:35:37,926 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:35:38,026 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:35:38,732 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:35:39,348 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:35:39,420 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:35:39,435 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:35:39,479 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:35:39,486 - app.post_discharge_search - INFO - Discharge medication search completed in 2842.54ms, found 4 results
+2025-10-20 08:35:45,278 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:35:47,107 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:36:14,243 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:36:14,243 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:36:14,243 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:36:14,244 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:36:14,874 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:36:14,877 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:36:14,877 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:36:15,030 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:36:15,213 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:36:15,215 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:36:15,438 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:36:15,667 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:36:15,849 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:36:16,537 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:36:17,203 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:36:17,278 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:36:17,302 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:36:17,351 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:36:17,359 - app.post_discharge_search - INFO - Discharge medication search completed in 3115.36ms, found 4 results
+2025-10-20 08:37:03,848 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-20 08:37:03,849 - app.medication_cache - INFO - Medication cache cleared
+2025-10-20 08:37:23,261 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:37:23,261 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:37:23,261 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:37:23,265 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:37:23,687 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:37:23,690 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:37:23,691 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:37:23,740 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:37:23,896 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:37:23,897 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:37:24,149 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:37:24,373 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:37:24,464 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:37:25,164 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:37:25,753 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:37:25,823 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:37:25,834 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:37:25,875 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:37:25,879 - app.post_discharge_search - INFO - Discharge medication search completed in 2617.78ms, found 4 results
+2025-10-20 08:42:36,117 - root - INFO - Processing enhanced medication search: met...
+2025-10-20 08:42:36,117 - app.post_discharge_search - INFO - Searching discharge medications for: 'met'
+2025-10-20 08:42:36,117 - app.medical_apis - INFO - Searching all medical databases for: 'met' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:42:36,120 - app.medical_apis - INFO - DrugBank search returned 1 results for 'met'
+2025-10-20 08:42:36,644 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Amet&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:42:36,730 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:42:36,732 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=met&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:42:36,734 - app.medical_apis - INFO - RxNorm search returned 6 results for 'met'
+2025-10-20 08:42:37,233 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Amet&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:42:37,235 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'met'
+2025-10-20 08:42:37,298 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1014431&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:42:37,585 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1090639&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:42:37,676 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/8469d6fb-d6ef-476f-8cc3-0905192de0a8.xml "HTTP/1.1 200 OK"
+2025-10-20 08:42:38,377 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=1094087&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:42:39,009 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=met&name_type=generic&pagesize=1 "HTTP/1.1 200 OK"
+2025-10-20 08:42:39,146 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/01e7e2c7-49eb-4afb-a496-f2bd901622e9.xml "HTTP/1.1 200 OK"
+2025-10-20 08:42:39,157 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
+2025-10-20 08:42:39,197 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
+2025-10-20 08:42:39,200 - app.post_discharge_search - INFO - Discharge medication search completed in 3082.51ms, found 4 results
+2025-10-20 08:42:53,462 - root - INFO - Processing enhanced medication search: li...
+2025-10-20 08:42:53,462 - app.post_discharge_search - INFO - Searching discharge medications for: 'li'
+2025-10-20 08:42:53,462 - app.medical_apis - INFO - Searching all medical databases for: 'li' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:42:53,463 - app.medical_apis - INFO - DrugBank search returned 1 results for 'li'
+2025-10-20 08:42:53,932 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=li&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:42:53,986 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Ali&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:42:54,034 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=li&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:42:54,035 - app.medical_apis - INFO - RxNorm search returned 0 results for 'li'
+2025-10-20 08:42:54,179 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Ali&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:42:54,322 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'li'
+2025-10-20 08:42:54,817 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=li&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:42:54,967 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/1bf99b68-c8a7-d88c-e063-6294a90ad2d2.xml "HTTP/1.1 200 OK"
+2025-10-20 08:42:55,142 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/1e8aeccc-8d00-9886-e063-6394a90ad7a6.xml "HTTP/1.1 200 OK"
+2025-10-20 08:42:55,150 - app.medical_apis - INFO - DailyMed search returned 2 results for 'li'
+2025-10-20 08:42:55,162 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 08:42:55,276 - app.post_discharge_search - INFO - Discharge medication search completed in 1813.90ms, found 2 results
+2025-10-20 08:43:05,306 - root - INFO - Processing enhanced medication search: lis...
+2025-10-20 08:43:05,308 - app.post_discharge_search - INFO - Searching discharge medications for: 'lis'
+2025-10-20 08:43:05,308 - app.medical_apis - INFO - Searching all medical databases for: 'lis' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:43:05,311 - app.medical_apis - INFO - DrugBank search returned 1 results for 'lis'
+2025-10-20 08:43:05,708 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=lis&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:43:05,764 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Alis&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:43:05,810 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=lis&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:43:05,851 - app.medical_apis - INFO - RxNorm search returned 0 results for 'lis'
+2025-10-20 08:43:05,948 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Alis&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:43:06,123 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'lis'
+2025-10-20 08:43:06,336 - root - INFO - Processing enhanced medication search: lisen...
+2025-10-20 08:43:06,336 - app.post_discharge_search - INFO - Searching discharge medications for: 'lisen'
+2025-10-20 08:43:06,336 - app.medical_apis - INFO - Searching all medical databases for: 'lisen' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:43:06,339 - app.medical_apis - INFO - DrugBank search returned 1 results for 'lisen'
+2025-10-20 08:43:06,423 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=lisen&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:43:06,425 - app.medical_apis - INFO - RxNorm search returned 0 results for 'lisen'
+2025-10-20 08:43:06,437 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=lisen&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:43:06,466 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Alisen&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:43:06,550 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=lis&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:43:06,596 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Alisen&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:43:06,597 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'lisen'
+2025-10-20 08:43:06,713 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/704e4378-ca83-445c-8b45-3cfa51c1ecad.xml "HTTP/1.1 200 OK"
+2025-10-20 08:43:06,898 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=lisen&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:43:06,898 - app.medical_apis - INFO - DailyMed search returned 0 results for 'lisen'
+2025-10-20 08:43:06,900 - app.medical_apis - INFO - Total documents retrieved from all sources: 1
+2025-10-20 08:43:06,905 - app.post_discharge_search - INFO - Discharge medication search completed in 568.86ms, found 0 results
+2025-10-20 08:43:07,210 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/705582ed-da8c-418f-8bb2-fc0b74ed0a88.xml "HTTP/1.1 200 OK"
+2025-10-20 08:43:07,240 - app.medical_apis - INFO - DailyMed search returned 2 results for 'lis'
+2025-10-20 08:43:07,275 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 08:43:07,281 - app.post_discharge_search - INFO - Discharge medication search completed in 1972.98ms, found 1 results
+2025-10-20 08:43:20,887 - root - INFO - Processing enhanced medication search: lise...
+2025-10-20 08:43:20,887 - app.post_discharge_search - INFO - Searching discharge medications for: 'lise'
+2025-10-20 08:43:20,887 - app.medical_apis - INFO - Searching all medical databases for: 'lise' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:43:20,890 - app.medical_apis - INFO - DrugBank search returned 1 results for 'lise'
+2025-10-20 08:43:21,294 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Alise&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:43:21,350 - root - INFO - Processing enhanced medication search: lis...
+2025-10-20 08:43:21,350 - app.post_discharge_search - INFO - Searching discharge medications for: 'lis'
+2025-10-20 08:43:21,350 - app.medical_apis - INFO - Searching all medical databases for: 'lis' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:43:21,352 - app.medical_apis - INFO - DrugBank search returned 1 results for 'lis'
+2025-10-20 08:43:21,513 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Alise&limit=4 "HTTP/1.1 404 Not Found"
+2025-10-20 08:43:21,513 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'lise'
+2025-10-20 08:43:21,593 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=lise&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:43:21,593 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=lise&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:43:21,594 - app.medical_apis - INFO - RxNorm search returned 0 results for 'lise'
+2025-10-20 08:43:21,787 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=lis&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:43:21,787 - app.medical_apis - INFO - RxNorm search returned 0 results for 'lis'
+2025-10-20 08:43:21,821 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Alis&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:43:22,002 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Alis&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:43:22,048 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=lise&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:43:22,050 - app.medical_apis - INFO - DailyMed search returned 0 results for 'lise'
+2025-10-20 08:43:22,052 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'lis'
+2025-10-20 08:43:22,053 - app.medical_apis - INFO - Total documents retrieved from all sources: 1
+2025-10-20 08:43:22,058 - app.post_discharge_search - INFO - Discharge medication search completed in 1170.29ms, found 0 results
+2025-10-20 08:43:22,277 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=lis&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:43:22,726 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=lis&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:43:22,826 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/704e4378-ca83-445c-8b45-3cfa51c1ecad.xml "HTTP/1.1 200 OK"
+2025-10-20 08:43:23,305 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/705582ed-da8c-418f-8bb2-fc0b74ed0a88.xml "HTTP/1.1 200 OK"
+2025-10-20 08:43:23,329 - app.medical_apis - INFO - DailyMed search returned 2 results for 'lis'
+2025-10-20 08:43:23,364 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 08:43:23,370 - app.post_discharge_search - INFO - Discharge medication search completed in 2020.16ms, found 1 results
+2025-10-20 08:43:25,595 - root - INFO - Processing enhanced medication search: li...
+2025-10-20 08:43:25,595 - app.post_discharge_search - INFO - Searching discharge medications for: 'li'
+2025-10-20 08:43:25,595 - app.medical_apis - INFO - Searching all medical databases for: 'li' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:43:25,596 - app.medical_apis - INFO - DrugBank search returned 1 results for 'li'
+2025-10-20 08:43:25,681 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=li&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:43:25,720 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Ali&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:43:25,733 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=li&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:43:25,734 - app.medical_apis - INFO - RxNorm search returned 0 results for 'li'
+2025-10-20 08:43:25,894 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Ali&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:43:25,986 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'li'
+2025-10-20 08:43:26,297 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=li&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:43:26,368 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/1bf99b68-c8a7-d88c-e063-6294a90ad2d2.xml "HTTP/1.1 200 OK"
+2025-10-20 08:43:26,445 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/1e8aeccc-8d00-9886-e063-6394a90ad7a6.xml "HTTP/1.1 200 OK"
+2025-10-20 08:43:26,449 - app.medical_apis - INFO - DailyMed search returned 2 results for 'li'
+2025-10-20 08:43:26,457 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 08:43:26,461 - app.post_discharge_search - INFO - Discharge medication search completed in 865.69ms, found 2 results
+2025-10-20 08:44:20,973 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 08:44:22,967 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 08:44:23,438 - root - INFO - Processing enhanced medication search: gabapentin...
+2025-10-20 08:44:23,438 - app.post_discharge_search - INFO - Searching discharge medications for: 'gabapentin'
+2025-10-20 08:44:23,438 - app.medical_apis - INFO - Searching all medical databases for: 'gabapentin' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:44:23,440 - app.medical_apis - INFO - DrugBank search returned 1 results for 'gabapentin'
+2025-10-20 08:44:23,943 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=gabapentin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:44:23,945 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=gabapentin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:44:23,946 - app.medical_apis - INFO - RxNorm search returned 8 results for 'gabapentin'
+2025-10-20 08:44:24,065 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Agabapentin&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:44:24,321 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Agabapentin&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:44:24,411 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'gabapentin'
+2025-10-20 08:44:24,474 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2398512&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:44:24,593 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/466273b1-c9fc-3930-c94b-aa11394d5140.xml "HTTP/1.1 200 OK"
+2025-10-20 08:44:25,184 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2398511&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:44:25,261 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/466273b1-c9fc-3930-c94b-aa11394d5140.xml "HTTP/1.1 200 OK"
+2025-10-20 08:44:25,427 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=105028&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:44:25,428 - app.medical_apis - INFO - DailyMed search returned 2 results for 'gabapentin'
+2025-10-20 08:44:25,489 - app.medical_apis - INFO - Total documents retrieved from all sources: 11
+2025-10-20 08:44:25,498 - app.post_discharge_search - INFO - Discharge medication search completed in 2059.25ms, found 4 results
+2025-10-20 08:44:28,519 - root - INFO - Processing enhanced medication search: atorvastatin...
+2025-10-20 08:44:28,519 - app.post_discharge_search - INFO - Searching discharge medications for: 'atorvastatin'
+2025-10-20 08:44:28,519 - app.medical_apis - INFO - Searching all medical databases for: 'atorvastatin' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 08:44:28,521 - app.medical_apis - INFO - DrugBank search returned 1 results for 'atorvastatin'
+2025-10-20 08:44:28,597 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:44:28,598 - app.medical_apis - INFO - RxNorm search returned 6 results for 'atorvastatin'
+2025-10-20 08:44:28,637 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 08:44:28,645 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aatorvastatin&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 08:44:28,811 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aatorvastatin&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 08:44:28,822 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'atorvastatin'
+2025-10-20 08:44:28,868 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=262095&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:44:28,946 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/a60cc18b-0631-4cf0-b021-9f52224ece65.xml "HTTP/1.1 200 OK"
+2025-10-20 08:44:29,171 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/c6e131fe-e7df-4876-83f7-9156fc4e8228.xml "HTTP/1.1 200 OK"
+2025-10-20 08:44:29,381 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2631867&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:44:29,617 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=617314&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 08:44:29,695 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/a60cc18b-0631-4cf0-b021-9f52224ece65.xml "HTTP/1.1 200 OK"
+2025-10-20 08:44:29,851 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/c6e131fe-e7df-4876-83f7-9156fc4e8228.xml "HTTP/1.1 200 OK"
+2025-10-20 08:44:29,930 - app.medical_apis - INFO - DailyMed search returned 4 results for 'atorvastatin'
+2025-10-20 08:44:29,950 - app.medical_apis - INFO - Total documents retrieved from all sources: 11
+2025-10-20 09:01:37,640 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 09:01:45,952 - root - INFO - Processing enhanced medication search: atorvastatin...
+2025-10-20 09:01:45,952 - app.post_discharge_search - INFO - Searching discharge medications for: 'atorvastatin'
+2025-10-20 09:01:45,952 - app.medical_apis - INFO - Searching all medical databases for: 'atorvastatin' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:01:45,953 - app.medical_apis - INFO - DrugBank search returned 1 results for 'atorvastatin'
+2025-10-20 09:01:46,496 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:01:46,519 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aatorvastatin&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:01:46,602 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastatin&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:01:46,603 - app.medical_apis - INFO - RxNorm search returned 6 results for 'atorvastatin'
+2025-10-20 09:01:46,816 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aatorvastatin&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:01:46,917 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'atorvastatin'
+2025-10-20 09:01:47,180 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=262095&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:01:47,294 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/a60cc18b-0631-4cf0-b021-9f52224ece65.xml "HTTP/1.1 200 OK"
+2025-10-20 09:01:47,765 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/c6e131fe-e7df-4876-83f7-9156fc4e8228.xml "HTTP/1.1 200 OK"
+2025-10-20 09:01:48,038 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=2631867&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:01:48,263 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?rxcui=617314&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:01:48,341 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/a60cc18b-0631-4cf0-b021-9f52224ece65.xml "HTTP/1.1 200 OK"
+2025-10-20 09:01:48,554 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/c6e131fe-e7df-4876-83f7-9156fc4e8228.xml "HTTP/1.1 200 OK"
+2025-10-20 09:01:48,688 - app.medical_apis - INFO - DailyMed search returned 4 results for 'atorvastatin'
+2025-10-20 09:01:48,707 - app.medical_apis - INFO - Total documents retrieved from all sources: 11
+2025-10-20 09:01:48,723 - app.post_discharge_search - INFO - Discharge medication search completed in 2771.44ms, found 3 results
+2025-10-20 09:01:52,356 - root - INFO - Processing enhanced medication search: ator...
+2025-10-20 09:01:52,357 - app.post_discharge_search - INFO - Searching discharge medications for: 'ator'
+2025-10-20 09:01:52,357 - app.medical_apis - INFO - Searching all medical databases for: 'ator' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:01:52,358 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ator'
+2025-10-20 09:01:52,850 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:01:52,852 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:01:52,852 - app.medical_apis - INFO - RxNorm search returned 0 results for 'ator'
+2025-10-20 09:01:52,892 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aator&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:01:53,133 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aator&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:01:53,179 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'ator'
+2025-10-20 09:01:53,182 - root - INFO - Processing enhanced medication search: atorvas...
+2025-10-20 09:01:53,182 - app.post_discharge_search - INFO - Searching discharge medications for: 'atorvas'
+2025-10-20 09:01:53,182 - app.medical_apis - INFO - Searching all medical databases for: 'atorvas' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:01:53,184 - app.medical_apis - INFO - DrugBank search returned 1 results for 'atorvas'
+2025-10-20 09:01:53,225 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=ator&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:01:53,280 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvas&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:01:53,280 - app.medical_apis - INFO - RxNorm search returned 0 results for 'atorvas'
+2025-10-20 09:01:53,299 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/46eeb12f-7e38-4828-b7d1-26b6155bc64a.xml "HTTP/1.1 200 OK"
+2025-10-20 09:01:53,307 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aatorvas&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:01:53,312 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvas&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:01:53,442 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aatorvas&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:01:53,444 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'atorvas'
+2025-10-20 09:01:53,484 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/604a011e-6c64-4895-8f6e-d28f119c4c22.xml "HTTP/1.1 200 OK"
+2025-10-20 09:01:53,606 - app.medical_apis - INFO - DailyMed search returned 2 results for 'ator'
+2025-10-20 09:01:53,615 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 09:01:53,758 - app.post_discharge_search - INFO - Discharge medication search completed in 1401.73ms, found 2 results
+2025-10-20 09:01:54,127 - root - INFO - Processing enhanced medication search: atorvastati...
+2025-10-20 09:01:54,128 - app.post_discharge_search - INFO - Searching discharge medications for: 'atorvastati'
+2025-10-20 09:01:54,128 - app.medical_apis - INFO - Searching all medical databases for: 'atorvastati' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:01:54,129 - app.medical_apis - INFO - DrugBank search returned 1 results for 'atorvastati'
+2025-10-20 09:01:54,180 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=atorvas&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:01:54,224 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastati&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:01:54,225 - app.medical_apis - INFO - RxNorm search returned 0 results for 'atorvastati'
+2025-10-20 09:01:54,252 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aatorvastati&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:01:54,258 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/46eeb12f-7e38-4828-b7d1-26b6155bc64a.xml "HTTP/1.1 200 OK"
+2025-10-20 09:01:54,270 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=atorvastati&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:01:54,396 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aatorvastati&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:01:54,444 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'atorvastati'
+2025-10-20 09:01:54,447 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/604a011e-6c64-4895-8f6e-d28f119c4c22.xml "HTTP/1.1 200 OK"
+2025-10-20 09:01:54,573 - app.medical_apis - INFO - DailyMed search returned 2 results for 'atorvas'
+2025-10-20 09:01:54,582 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 09:01:54,592 - app.post_discharge_search - INFO - Discharge medication search completed in 1409.71ms, found 2 results
+2025-10-20 09:01:54,698 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=atorvastati&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:01:54,776 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/46eeb12f-7e38-4828-b7d1-26b6155bc64a.xml "HTTP/1.1 200 OK"
+2025-10-20 09:01:54,963 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/604a011e-6c64-4895-8f6e-d28f119c4c22.xml "HTTP/1.1 200 OK"
+2025-10-20 09:01:55,090 - app.medical_apis - INFO - DailyMed search returned 2 results for 'atorvastati'
+2025-10-20 09:01:55,101 - app.medical_apis - INFO - Total documents retrieved from all sources: 4
+2025-10-20 09:01:55,110 - app.post_discharge_search - INFO - Discharge medication search completed in 982.91ms, found 2 results
+2025-10-20 09:05:41,143 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 09:05:43,186 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 09:05:58,245 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 09:06:00,374 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 09:07:32,218 - root - INFO - Processing enhanced medication search: metfor...
+2025-10-20 09:07:32,218 - app.post_discharge_search - INFO - Searching discharge medications for: 'metfor'
+2025-10-20 09:07:32,218 - app.medical_apis - INFO - Searching all medical databases for: 'metfor' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:07:32,220 - app.medical_apis - INFO - DrugBank search returned 1 results for 'metfor'
+2025-10-20 09:07:32,693 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metfor&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:07:32,721 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=metfor&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:07:32,722 - app.medical_apis - INFO - RxNorm search returned 0 results for 'metfor'
+2025-10-20 09:07:32,745 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Ametfor&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:07:32,966 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Ametfor&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:07:32,968 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'metfor'
+2025-10-20 09:07:33,592 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=metfor&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:07:33,707 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/17050df5-9e95-4e1b-ac75-34add289b139.xml "HTTP/1.1 200 OK"
+2025-10-20 09:07:34,098 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/403349a1-ec19-8982-e063-6294a90aa060.xml "HTTP/1.1 200 OK"
+2025-10-20 09:07:34,141 - app.medical_apis - INFO - DailyMed search returned 2 results for 'metfor'
+2025-10-20 09:07:34,151 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 09:07:34,291 - app.post_discharge_search - INFO - Discharge medication search completed in 2072.35ms, found 2 results
+2025-10-20 09:10:38,597 - app.monitoring - ERROR - ChromaDB health check failed: Collection expecting embedding with dimension of 1536, got 384
+2025-10-20 09:12:02,715 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 09:12:06,287 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 09:17:37,039 - root - INFO - Processing enhanced medication search: ator...
+2025-10-20 09:17:37,039 - app.post_discharge_search - INFO - Searching discharge medications for: 'ator'
+2025-10-20 09:17:37,039 - app.medical_apis - INFO - Searching all medical databases for: 'ator' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:17:37,043 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ator'
+2025-10-20 09:17:37,573 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:17:37,576 - app.medical_apis - INFO - RxNorm search returned 0 results for 'ator'
+2025-10-20 09:17:37,576 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:17:37,712 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aator&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:17:37,950 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aator&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:17:37,999 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'ator'
+2025-10-20 09:17:38,426 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=ator&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:17:38,600 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/46eeb12f-7e38-4828-b7d1-26b6155bc64a.xml "HTTP/1.1 200 OK"
+2025-10-20 09:17:38,936 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/604a011e-6c64-4895-8f6e-d28f119c4c22.xml "HTTP/1.1 200 OK"
+2025-10-20 09:17:39,063 - app.medical_apis - INFO - DailyMed search returned 2 results for 'ator'
+2025-10-20 09:17:39,073 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 09:17:39,225 - app.post_discharge_search - INFO - Discharge medication search completed in 2185.80ms, found 2 results
+2025-10-20 09:18:19,159 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 09:18:23,125 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 09:18:29,774 - root - INFO - Processing enhanced medication search: ator...
+2025-10-20 09:18:29,774 - app.post_discharge_search - INFO - Searching discharge medications for: 'ator'
+2025-10-20 09:18:29,774 - app.medical_apis - INFO - Searching all medical databases for: 'ator' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:18:29,775 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ator'
+2025-10-20 09:18:30,307 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:18:30,367 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aator&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:18:30,592 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aator&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:18:30,636 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'ator'
+2025-10-20 09:18:30,824 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:18:30,825 - app.medical_apis - INFO - RxNorm search returned 0 results for 'ator'
+2025-10-20 09:18:31,135 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=ator&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:18:31,236 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/46eeb12f-7e38-4828-b7d1-26b6155bc64a.xml "HTTP/1.1 200 OK"
+2025-10-20 09:18:31,638 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/604a011e-6c64-4895-8f6e-d28f119c4c22.xml "HTTP/1.1 200 OK"
+2025-10-20 09:18:31,767 - app.medical_apis - INFO - DailyMed search returned 2 results for 'ator'
+2025-10-20 09:18:31,776 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 09:18:31,881 - app.post_discharge_search - INFO - Discharge medication search completed in 2106.31ms, found 2 results
+2025-10-20 09:18:50,270 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 09:18:52,079 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 09:19:00,427 - root - INFO - Processing enhanced medication search: ator...
+2025-10-20 09:19:00,428 - app.post_discharge_search - INFO - Searching discharge medications for: 'ator'
+2025-10-20 09:19:00,428 - app.medical_apis - INFO - Searching all medical databases for: 'ator' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:19:00,429 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ator'
+2025-10-20 09:19:00,782 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aator&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:19:00,819 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:19:00,828 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:19:00,828 - app.medical_apis - INFO - RxNorm search returned 0 results for 'ator'
+2025-10-20 09:19:01,056 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aator&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:19:01,139 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'ator'
+2025-10-20 09:19:01,544 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=ator&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:19:01,738 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/46eeb12f-7e38-4828-b7d1-26b6155bc64a.xml "HTTP/1.1 200 OK"
+2025-10-20 09:19:02,067 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/604a011e-6c64-4895-8f6e-d28f119c4c22.xml "HTTP/1.1 200 OK"
+2025-10-20 09:19:02,192 - app.medical_apis - INFO - DailyMed search returned 2 results for 'ator'
+2025-10-20 09:19:02,202 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 09:19:02,325 - app.post_discharge_search - INFO - Discharge medication search completed in 1897.33ms, found 2 results
+2025-10-20 09:19:24,296 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 09:19:26,596 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 09:20:41,267 - root - INFO - Processing enhanced medication search: ato...
+2025-10-20 09:20:41,268 - app.post_discharge_search - INFO - Searching discharge medications for: 'ato'
+2025-10-20 09:20:41,268 - app.medical_apis - INFO - Searching all medical databases for: 'ato' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:20:41,270 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ato'
+2025-10-20 09:20:41,888 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aato&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:20:41,897 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ato&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:20:41,898 - app.medical_apis - INFO - RxNorm search returned 0 results for 'ato'
+2025-10-20 09:20:41,928 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ato&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:20:41,954 - root - INFO - Processing enhanced medication search: ator...
+2025-10-20 09:20:41,954 - app.post_discharge_search - INFO - Searching discharge medications for: 'ator'
+2025-10-20 09:20:41,954 - app.medical_apis - INFO - Searching all medical databases for: 'ator' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:20:41,955 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ator'
+2025-10-20 09:20:42,044 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:20:42,045 - app.medical_apis - INFO - RxNorm search returned 0 results for 'ator'
+2025-10-20 09:20:42,046 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:20:42,071 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aato&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:20:42,072 - app.medical_apis - INFO - OpenFDA search returned 1 results for 'ato'
+2025-10-20 09:20:42,391 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aator&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:20:42,545 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aator&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:20:42,594 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'ator'
+2025-10-20 09:20:42,692 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=ato&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:20:42,788 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=ator&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:20:42,821 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/40331de7-819e-5965-e063-6294a90ac91d.xml "HTTP/1.1 200 OK"
+2025-10-20 09:20:42,955 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/46eeb12f-7e38-4828-b7d1-26b6155bc64a.xml "HTTP/1.1 200 OK"
+2025-10-20 09:20:43,191 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/46eeb12f-7e38-4828-b7d1-26b6155bc64a.xml "HTTP/1.1 200 OK"
+2025-10-20 09:20:43,364 - app.medical_apis - INFO - DailyMed search returned 2 results for 'ato'
+2025-10-20 09:20:43,365 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/604a011e-6c64-4895-8f6e-d28f119c4c22.xml "HTTP/1.1 200 OK"
+2025-10-20 09:20:43,389 - app.medical_apis - INFO - Total documents retrieved from all sources: 4
+2025-10-20 09:20:43,519 - app.post_discharge_search - INFO - Discharge medication search completed in 2251.25ms, found 2 results
+2025-10-20 09:20:43,585 - app.medical_apis - INFO - DailyMed search returned 2 results for 'ator'
+2025-10-20 09:20:43,595 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 09:20:43,607 - app.post_discharge_search - INFO - Discharge medication search completed in 1653.22ms, found 2 results
+2025-10-20 09:21:48,377 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-20 09:21:48,379 - app.medication_cache - INFO - Medication cache cleared
+2025-10-20 09:21:56,227 - app.medication_cache - INFO - Medication cache cleared
+2025-10-20 09:22:02,495 - root - INFO - Processing enhanced medication search: ator...
+2025-10-20 09:22:02,495 - app.post_discharge_search - INFO - Searching discharge medications for: 'ator'
+2025-10-20 09:22:02,495 - app.medical_apis - INFO - Searching all medical databases for: 'ator' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:22:02,498 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ator'
+2025-10-20 09:22:03,031 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aator&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:22:03,094 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:22:03,156 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:22:03,158 - app.medical_apis - INFO - RxNorm search returned 0 results for 'ator'
+2025-10-20 09:22:03,183 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aator&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:22:03,265 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'ator'
+2025-10-20 09:22:03,986 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=ator&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:22:04,182 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/46eeb12f-7e38-4828-b7d1-26b6155bc64a.xml "HTTP/1.1 200 OK"
+2025-10-20 09:22:04,541 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/604a011e-6c64-4895-8f6e-d28f119c4c22.xml "HTTP/1.1 200 OK"
+2025-10-20 09:22:04,666 - app.medical_apis - INFO - DailyMed search returned 2 results for 'ator'
+2025-10-20 09:22:04,675 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 09:22:04,689 - app.post_discharge_search - INFO - Discharge medication search completed in 2193.48ms, found 2 results
+2025-10-20 09:22:37,577 - root - INFO - Processing enhanced medication search: ator...
+2025-10-20 09:22:37,577 - app.post_discharge_search - INFO - Searching discharge medications for: 'ator'
+2025-10-20 09:22:37,577 - app.medical_apis - INFO - Searching all medical databases for: 'ator' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:22:37,578 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ator'
+2025-10-20 09:22:38,118 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:22:38,154 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aator&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:22:38,155 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:22:38,156 - app.medical_apis - INFO - RxNorm search returned 0 results for 'ator'
+2025-10-20 09:22:38,469 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aator&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:22:38,559 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'ator'
+2025-10-20 09:22:38,917 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=ator&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:22:39,077 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/46eeb12f-7e38-4828-b7d1-26b6155bc64a.xml "HTTP/1.1 200 OK"
+2025-10-20 09:22:39,453 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/604a011e-6c64-4895-8f6e-d28f119c4c22.xml "HTTP/1.1 200 OK"
+2025-10-20 09:22:39,577 - app.medical_apis - INFO - DailyMed search returned 2 results for 'ator'
+2025-10-20 09:22:39,586 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 09:22:39,598 - app.post_discharge_search - INFO - Discharge medication search completed in 2021.17ms, found 2 results
+2025-10-20 09:23:09,577 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
+2025-10-20 09:23:12,772 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 09:23:20,654 - root - INFO - Processing enhanced medication search: ator...
+2025-10-20 09:23:20,654 - app.post_discharge_search - INFO - Searching discharge medications for: 'ator'
+2025-10-20 09:23:20,654 - app.medical_apis - INFO - Searching all medical databases for: 'ator' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:23:20,655 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ator'
+2025-10-20 09:23:20,655 - root - INFO - Processing enhanced medication search: ator...
+2025-10-20 09:23:20,655 - app.post_discharge_search - INFO - Searching discharge medications for: 'ator'
+2025-10-20 09:23:20,655 - app.medical_apis - INFO - Searching all medical databases for: 'ator' with custom limits (DailyMed: 2, OpenFDA: 2, RxNorm: 3, DrugBank: 2)
+2025-10-20 09:23:20,657 - app.medical_apis - INFO - DrugBank search returned 1 results for 'ator'
+2025-10-20 09:23:21,385 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aator&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:23:21,448 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:23:21,449 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:23:21,450 - app.medical_apis - INFO - RxNorm search returned 0 results for 'ator'
+2025-10-20 09:23:21,504 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/label.json?search=generic_name%3Aator&limit=1 "HTTP/1.1 404 Not Found"
+2025-10-20 09:23:21,506 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:23:21,509 - httpx - INFO - HTTP Request: GET https://rxnav.nlm.nih.gov/REST/drugs.json?name=ator&allsrc=1&src=1 "HTTP/1.1 200 OK"
+2025-10-20 09:23:21,564 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aator&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:23:21,588 - app.medical_apis - INFO - RxNorm search returned 0 results for 'ator'
+2025-10-20 09:23:21,611 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'ator'
+2025-10-20 09:23:21,691 - httpx - INFO - HTTP Request: GET https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct%3Aator&limit=4 "HTTP/1.1 200 OK"
+2025-10-20 09:23:21,734 - app.medical_apis - INFO - OpenFDA search returned 0 results for 'ator'
+2025-10-20 09:23:22,314 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=ator&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:23:22,323 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls?drug_name=ator&name_type=generic&pagesize=2 "HTTP/1.1 200 OK"
+2025-10-20 09:23:22,417 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/46eeb12f-7e38-4828-b7d1-26b6155bc64a.xml "HTTP/1.1 200 OK"
+2025-10-20 09:23:22,418 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/46eeb12f-7e38-4828-b7d1-26b6155bc64a.xml "HTTP/1.1 200 OK"
+2025-10-20 09:23:22,799 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/604a011e-6c64-4895-8f6e-d28f119c4c22.xml "HTTP/1.1 200 OK"
+2025-10-20 09:23:22,858 - httpx - INFO - HTTP Request: GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/604a011e-6c64-4895-8f6e-d28f119c4c22.xml "HTTP/1.1 200 OK"
+2025-10-20 09:23:22,922 - app.medical_apis - INFO - DailyMed search returned 2 results for 'ator'
+2025-10-20 09:23:22,932 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 09:23:23,081 - app.post_discharge_search - INFO - Discharge medication search completed in 2426.13ms, found 2 results
+2025-10-20 09:23:23,140 - app.medical_apis - INFO - DailyMed search returned 2 results for 'ator'
+2025-10-20 09:23:23,150 - app.medical_apis - INFO - Total documents retrieved from all sources: 3
+2025-10-20 09:23:23,163 - app.post_discharge_search - INFO - Discharge medication search completed in 2509.35ms, found 2 results
+2025-10-20 09:23:34,818 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client

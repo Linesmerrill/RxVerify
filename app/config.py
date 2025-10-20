@@ -1,6 +1,10 @@
 """Configuration settings for MedRAG application."""
 import os
 from typing import Optional
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 class Settings:
     """Application settings loaded from environment variables."""
@@ -33,6 +37,10 @@ class Settings:
     
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_PER_MINUTE", "60"))
+    
+    # Embedding Configuration
+    DISABLE_EMBEDDINGS: bool = os.getenv("DISABLE_EMBEDDINGS", "false").lower() == "true"
+    USE_FALLBACK_EMBEDDINGS: bool = os.getenv("USE_FALLBACK_EMBEDDINGS", "false").lower() == "true"
     
     @classmethod
     def validate(cls) -> bool:

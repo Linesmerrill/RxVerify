@@ -10,6 +10,7 @@ import time
 import signal
 import subprocess
 import threading
+import psutil
 from pathlib import Path
 
 class ServerManager:
@@ -45,12 +46,47 @@ class ServerManager:
         try:
             import uvicorn
             import fastapi
+            import psutil
             return True
         except ImportError:
             print("❌ Required packages not installed!")
             print("Please install dependencies first:")
             print("  pip install -r requirements.txt")
             return False
+    
+    def kill_existing_processes(self):
+        """Kill any existing processes on ports 8000 and 8080"""
+        print("🔍 Checking for existing processes...")
+        
+        # Kill processes on port 8000 (backend)
+        self._kill_processes_on_port(8000, "Backend")
+        
+        # Kill processes on port 8080 (frontend)
+        self._kill_processes_on_port(8080, "Frontend")
+        
+        # Give processes time to die
+        time.sleep(2)
+    
+    def _kill_processes_on_port(self, port, service_name):
+        """Kill processes running on a specific port"""
+        try:
+            for proc in psutil.process_iter():
+                try:
+                    connections = proc.net_connections()
+                    if connections:
+                        for conn in connections:
+                            if conn.laddr.port == port:
+                                print(f"   🗑️  Killing existing {service_name} process (PID: {proc.pid}) on port {port}")
+                                proc.terminate()
+                                try:
+                                    proc.wait(timeout=3)
+                                except psutil.TimeoutExpired:
+                                    proc.kill()
+                                break
+                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                    pass
+        except Exception as e:
+            print(f"   ⚠️  Warning: Could not check for existing processes: {e}")
             
     def start_backend(self):
         """Start the backend server"""
@@ -79,7 +115,7 @@ class ServerManager:
             self.frontend_process = subprocess.Popen([
                 sys.executable, "server.py"
             ], cwd=frontend_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            print("✅ Frontend started (PID: {})".format(self.frontend_process.poll()))
+            print("✅ Frontend started (PID: {})".format(self.frontend_process.pid))
             return True
         except Exception as e:
             print(f"❌ Failed to start frontend: {e}")
@@ -136,6 +172,9 @@ class ServerManager:
             return False
         if not self.check_dependencies():
             return False
+        
+        # Kill any existing processes on our ports
+        self.kill_existing_processes()
             
         # Start servers
         if not self.start_backend():
@@ -191,24 +230,47 @@ class ServerManager:
         print("🛑 Shutting down servers...")
         self.running = False
         
+        # Stop backend process
         if self.backend_process:
             print("   Stopping backend...")
-            self.backend_process.terminate()
             try:
+                self.backend_process.terminate()
                 self.backend_process.wait(timeout=5)
+                print("   ✅ Backend stopped gracefully")
             except subprocess.TimeoutExpired:
+                print("   ⚠️  Backend didn't stop gracefully, forcing kill...")
                 self.backend_process.kill()
-            print("   ✅ Backend stopped")
-            
+                try:
+                    self.backend_process.wait(timeout=2)
+                    print("   ✅ Backend killed")
+                except subprocess.TimeoutExpired:
+                    print("   ❌ Failed to kill backend process")
+            except Exception as e:
+                print(f"   ❌ Error stopping backend: {e}")
+        
+        # Stop frontend process
         if self.frontend_process:
             print("   Stopping frontend...")
-            self.frontend_process.terminate()
             try:
+                self.frontend_process.terminate()
                 self.frontend_process.wait(timeout=5)
+                print("   ✅ Frontend stopped gracefully")
             except subprocess.TimeoutExpired:
+                print("   ⚠️  Frontend didn't stop gracefully, forcing kill...")
                 self.frontend_process.kill()
-            print("   ✅ Frontend stopped")
-            
+                try:
+                    self.frontend_process.wait(timeout=2)
+                    print("   ✅ Frontend killed")
+                except subprocess.TimeoutExpired:
+                    print("   ❌ Failed to kill frontend process")
+            except Exception as e:
+                print(f"   ❌ Error stopping frontend: {e}")
+        
+        # Final cleanup - kill any remaining processes on our ports
+        print("   🧹 Final cleanup...")
+        self._kill_processes_on_port(8000, "Backend")
+        self._kill_processes_on_port(8080, "Frontend")
+        
         print("✅ All servers stopped")
 
 def main():

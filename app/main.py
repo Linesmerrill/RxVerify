@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import time
 from typing import List, Dict, Optional
+from datetime import datetime
 from app.retriever import retrieve
 from app.crosscheck import unify_with_crosscheck
 from app.llm import generate_drug_response
@@ -14,6 +15,7 @@ from app.medical_apis import close_medical_api_client
 from app.search_service import get_search_service
 from app.medication_cache import get_medication_cache
 from app.rxlist_database import get_rxlist_database
+from app.post_discharge_search import get_post_discharge_search_service
 
 # Validate settings
 settings.validate()
@@ -67,6 +69,18 @@ class SearchResponse(BaseModel):
     results: list
     total_found: int
     processing_time_ms: float
+
+class FeedbackRequest(BaseModel):
+    drug_name: str
+    query: str
+    is_positive: bool
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
+
+class FeedbackResponse(BaseModel):
+    success: bool
+    message: str
+    updated_score: Optional[float] = None
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
@@ -225,17 +239,17 @@ async def query(q: Query, request: Request):
 
 @app.post("/search", response_model=SearchResponse)
 async def search_medications(request: SearchRequest):
-    """Fast medication search endpoint for autocomplete functionality."""
+    """Enhanced medication search endpoint for post-discharge medications."""
     start_time = time.time()
     
     try:
-        logger.info(f"Processing medication search: {request.query[:50]}...")
+        logger.info(f"Processing enhanced medication search: {request.query[:50]}...")
         
-        # Get search service
-        search_service = await get_search_service()
+        # Get enhanced post-discharge search service
+        search_service = await get_post_discharge_search_service()
         
-        # Perform search
-        results = await search_service.search_medications(request.query, request.limit)
+        # Perform enhanced search focused on post-discharge medications
+        results = await search_service.search_discharge_medications(request.query, request.limit)
         
         # Calculate processing time
         processing_time = (time.time() - start_time) * 1000
@@ -253,7 +267,10 @@ async def search_medications(request: SearchRequest):
                 "brand_names": result.brand_names,
                 "common_uses": result.common_uses,
                 "drug_class": result.drug_class,
-                "source": result.source
+                "source": result.source,
+                "feedback_score": getattr(result, 'feedback_score', None),
+                "is_oral_medication": getattr(result, 'is_oral_medication', True),
+                "discharge_relevance_score": getattr(result, 'discharge_relevance_score', None)
             })
         
         return SearchResponse(
@@ -266,10 +283,10 @@ async def search_medications(request: SearchRequest):
         # Record failed request
         monitor.record_request(success=False)
         
-        logger.error(f"Medication search failed: {str(e)}", exc_info=True)
+        logger.error(f"Enhanced medication search failed: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500, 
-            detail=f"Medication search failed: {str(e)}"
+            detail=f"Enhanced medication search failed: {str(e)}"
         )
 
 @app.get("/rxlist/stats")
@@ -338,6 +355,118 @@ async def ingest_rxlist_data(drug_data: List[Dict]):
     except Exception as e:
         logger.error(f"Failed to ingest RxList data: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to ingest RxList data: {str(e)}")
+
+@app.post("/feedback", response_model=FeedbackResponse)
+async def submit_feedback(feedback: FeedbackRequest):
+    """Submit user feedback for search results to improve ML pipeline."""
+    try:
+        logger.info(f"Processing feedback for {feedback.drug_name}: {'positive' if feedback.is_positive else 'negative'}")
+        
+        # Get the post-discharge search service
+        search_service = await get_post_discharge_search_service()
+        
+        # Record the feedback
+        search_service.record_feedback(feedback.drug_name, feedback.query, feedback.is_positive)
+        
+        # Get updated score
+        updated_score = search_service._feedback_scores.get(f"{feedback.drug_name}_{feedback.query}", 0.5)
+        
+        # Record successful request
+        monitor.record_request(success=True)
+        
+        return FeedbackResponse(
+            success=True,
+            message=f"Feedback recorded successfully for {feedback.drug_name}",
+            updated_score=updated_score
+        )
+        
+    except Exception as e:
+        # Record failed request
+        monitor.record_request(success=False)
+        
+        logger.error(f"Feedback submission failed: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Feedback submission failed: {str(e)}"
+        )
+
+@app.get("/feedback/stats")
+async def get_feedback_stats():
+    """Get feedback statistics for ML pipeline monitoring."""
+    try:
+        search_service = await get_post_discharge_search_service()
+        
+        # Calculate feedback statistics
+        total_feedback = len(search_service._feedback_scores)
+        positive_feedback = sum(1 for score in search_service._feedback_scores.values() if score > 0.5)
+        negative_feedback = total_feedback - positive_feedback
+        average_score = sum(search_service._feedback_scores.values()) / total_feedback if total_feedback > 0 else 0.5
+        
+        # Get detailed feedback list
+        feedback_list = []
+        for key, score in search_service._feedback_scores.items():
+            if '_' in key:
+                drug_name, query = key.rsplit('_', 1)
+                feedback_list.append({
+                    "drug_name": drug_name,
+                    "query": query,
+                    "score": score,
+                    "is_positive": score > 0.5
+                })
+        
+        return {
+            "success": True,
+            "stats": {
+                "total_feedback": total_feedback,
+                "positive_ratings": positive_feedback,
+                "negative_ratings": negative_feedback,
+                "average_score": round(average_score, 3),
+                "last_updated": datetime.now().isoformat()
+            },
+            "feedback_list": feedback_list,
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get feedback stats: {str(e)}")
+        return {"success": False, "message": str(e)}
+
+@app.post("/feedback/remove")
+async def remove_feedback(request: dict):
+    """Remove specific feedback entry."""
+    try:
+        drug_name = request.get("drug_name")
+        query = request.get("query")
+        
+        if not drug_name or not query:
+            return {"success": False, "message": "drug_name and query are required"}
+        
+        search_service = await get_post_discharge_search_service()
+        key = f"{drug_name}_{query}"
+        
+        if key in search_service._feedback_scores:
+            del search_service._feedback_scores[key]
+            logger.info(f"Removed feedback for {drug_name} with query {query}")
+            return {"success": True, "message": "Feedback removed successfully"}
+        else:
+            return {"success": False, "message": "Feedback not found"}
+            
+    except Exception as e:
+        logger.error(f"Error removing feedback: {str(e)}")
+        return {"success": False, "message": str(e)}
+
+@app.post("/feedback/clear")
+async def clear_all_feedback():
+    """Clear all feedback data."""
+    try:
+        search_service = await get_post_discharge_search_service()
+        search_service._feedback_scores.clear()
+        logger.info("Cleared all feedback data")
+        return {"success": True, "message": "All feedback cleared successfully"}
+        
+    except Exception as e:
+        logger.error(f"Error clearing feedback: {str(e)}")
+        return {"success": False, "message": str(e)}
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):

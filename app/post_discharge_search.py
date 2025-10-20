@@ -21,7 +21,7 @@ class PostDischargeSearchService:
     
     def __init__(self):
         self._medication_cache = {}
-        self._feedback_scores = {}  # Will be replaced with proper ML pipeline
+        self._feedback_counts = {}  # Store helpful/not_helpful counts per drug+query
         
         # Common post-hospital discharge medication patterns
         self._discharge_med_patterns = [
@@ -137,7 +137,7 @@ class PostDischargeSearchService:
         results = []
         for doc in search_results:
             logger.debug(f"Processing doc: title='{doc.title}', rxcui='{doc.rxcui}', source='{doc.source}'")
-            drug_result = self._convert_to_drug_search_result(doc)
+            drug_result = self._convert_to_drug_search_result(doc, query)
             if drug_result:
                 logger.debug(f"Created drug result: name='{drug_result.name}', rxcui='{drug_result.rxcui}'")
                 results.append(drug_result)
@@ -149,7 +149,7 @@ class PostDischargeSearchService:
         
         return results
     
-    def _convert_to_drug_search_result(self, doc) -> Optional[DrugSearchResult]:
+    def _convert_to_drug_search_result(self, doc, query: str) -> Optional[DrugSearchResult]:
         """Convert RetrievedDoc to DrugSearchResult."""
         try:
             # Use the title as the primary drug name (this comes from the API response)
@@ -173,6 +173,9 @@ class PostDischargeSearchService:
             drug_class = self._extract_drug_class(doc.text)
             common_uses = self._extract_common_uses(doc.text)
             
+            # Get feedback counts for this drug and query
+            feedback_counts = self.get_feedback_counts(drug_name, query)
+            
             return DrugSearchResult(
                 rxcui=doc.rxcui,
                 name=drug_name,
@@ -180,7 +183,9 @@ class PostDischargeSearchService:
                 brand_names=brand_names,
                 common_uses=common_uses,
                 drug_class=drug_class,
-                source=doc.source.value
+                source=doc.source.value,
+                helpful_count=feedback_counts["helpful"],
+                not_helpful_count=feedback_counts["not_helpful"]
             )
         except Exception as e:
             logger.error(f"Error converting doc to DrugSearchResult: {str(e)}")
@@ -726,9 +731,15 @@ class PostDischargeSearchService:
     def _apply_feedback_scoring(self, results: List[DrugSearchResult], query: str) -> List[DrugSearchResult]:
         """Apply ML feedback scoring to results."""
         for result in results:
-            # Get feedback score for this drug-query combination
-            feedback_key = f"{result.name.lower()}_{query.lower()}"
-            result.feedback_score = self._feedback_scores.get(feedback_key, 0.5)
+            # Get feedback counts for this drug-query combination
+            feedback_counts = self.get_feedback_counts(result.name, query)
+            
+            # Calculate feedback score from counts (helpful vs not_helpful ratio)
+            total_votes = feedback_counts["helpful"] + feedback_counts["not_helpful"]
+            if total_votes > 0:
+                result.feedback_score = feedback_counts["helpful"] / total_votes
+            else:
+                result.feedback_score = 0.5  # Neutral score if no feedback
             
             # Calculate discharge relevance score based on feedback and drug patterns
             result.discharge_relevance_score = self._calculate_discharge_relevance(result, query)
@@ -770,19 +781,36 @@ class PostDischargeSearchService:
         
         return sorted(results, key=relevance_score, reverse=True)
     
-    def record_feedback(self, drug_name: str, query: str, is_positive: bool):
+    def record_feedback(self, drug_name: str, query: str, is_positive: bool, is_removal: bool = False):
         """Record user feedback for ML pipeline."""
         key = f"{drug_name.lower()}_{query.lower()}"
-        current_score = self._feedback_scores.get(key, 0.5)
         
-        # Simple feedback adjustment (placeholder for ML pipeline)
-        if is_positive:
-            new_score = min(1.0, current_score + 0.1)
+        # Initialize counts if not exists
+        if key not in self._feedback_counts:
+            self._feedback_counts[key] = {"helpful": 0, "not_helpful": 0}
+        
+        # Handle removal or addition
+        if is_removal:
+            # Decrement the appropriate count (but don't go below 0)
+            if is_positive:
+                self._feedback_counts[key]["helpful"] = max(0, self._feedback_counts[key]["helpful"] - 1)
+            else:
+                self._feedback_counts[key]["not_helpful"] = max(0, self._feedback_counts[key]["not_helpful"] - 1)
+            action = "removed"
         else:
-            new_score = max(0.0, current_score - 0.1)
+            # Increment the appropriate count
+            if is_positive:
+                self._feedback_counts[key]["helpful"] += 1
+            else:
+                self._feedback_counts[key]["not_helpful"] += 1
+            action = "added"
         
-        self._feedback_scores[key] = new_score
-        logger.info(f"Recorded feedback for {key}: {'positive' if is_positive else 'negative'} (score: {new_score:.2f})")
+        logger.info(f"Recorded feedback for {key}: {action} {'helpful' if is_positive else 'not_helpful'} (counts: {self._feedback_counts[key]})")
+    
+    def get_feedback_counts(self, drug_name: str, query: str) -> Dict[str, int]:
+        """Get feedback counts for a specific drug and query."""
+        key = f"{drug_name.lower()}_{query.lower()}"
+        return self._feedback_counts.get(key, {"helpful": 0, "not_helpful": 0})
 
 # Global instance
 _post_discharge_search_service = None

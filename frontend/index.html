@@ -1264,6 +1264,9 @@
         function handleSearchInput(query) {
             console.log('Search input:', query);
             
+            // Set current search query for feedback
+            window.currentSearchQuery = query;
+            
             // Clear previous timeout
             if (searchTimeout) {
                 clearTimeout(searchTimeout);
@@ -1317,142 +1320,9 @@
             }
         }
         
-        function displaySearchResults(results) {
-            // Always use the fallback implementation with feedback buttons
-            const resultsContainer = document.getElementById('searchResults');
-            const noResults = document.getElementById('noResults');
-            
-            if (results.length === 0) {
-                resultsContainer.classList.add('hidden');
-                noResults.classList.remove('hidden');
-                return;
-            }
-            
-            noResults.classList.add('hidden');
-            resultsContainer.classList.remove('hidden');
-            
-            const resultsDiv = resultsContainer.querySelector('.space-y-3');
-            resultsDiv.innerHTML = '';
-            
-            results.forEach(result => {
-                const resultElement = createSearchResultElement(result);
-                resultsDiv.appendChild(resultElement);
-            });
-        }
+        // HTML fallback displaySearchResults removed - using app.js version
         
-        function createSearchResultElement(result) {
-            // Always use the fallback implementation with feedback buttons
-            const div = document.createElement('div');
-            div.className = 'bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200';
-            
-            // Create drug name and class
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'flex items-start justify-between mb-2';
-            
-            const nameInfo = document.createElement('div');
-            nameInfo.className = 'flex-1';
-            
-            const drugName = document.createElement('h4');
-            drugName.className = 'font-semibold text-gray-900 text-lg';
-            drugName.textContent = result.name;
-            
-            const genericName = document.createElement('p');
-            genericName.className = 'text-sm text-gray-600 mt-1';
-            if (result.generic_name && result.generic_name !== result.name) {
-                genericName.textContent = `Generic: ${result.generic_name}`;
-            }
-            
-            nameInfo.appendChild(drugName);
-            if (result.generic_name && result.generic_name !== result.name) {
-                nameInfo.appendChild(genericName);
-            }
-            
-            const drugClass = document.createElement('div');
-            drugClass.className = 'text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full';
-            drugClass.textContent = result.drug_class || 'Medication';
-            
-            nameDiv.appendChild(nameInfo);
-            nameDiv.appendChild(drugClass);
-            
-            // Create brand names
-            let brandNamesDiv = '';
-            if (result.brand_names && result.brand_names.length > 0) {
-                brandNamesDiv = `
-                    <div class="mb-2">
-                        <span class="text-xs font-medium text-gray-500">Brand names:</span>
-                        <span class="text-sm text-gray-700 ml-1">${result.brand_names.join(', ')}</span>
-                    </div>
-                `;
-            }
-            
-            // Create common uses
-            let usesDiv = '';
-            if (result.common_uses && result.common_uses.length > 0) {
-                usesDiv = `
-                    <div class="mb-2">
-                        <span class="text-xs font-medium text-gray-500">Common uses:</span>
-                        <div class="flex flex-wrap gap-1 mt-1">
-                            ${result.common_uses.map(use => 
-                                `<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">${use}</span>`
-                            ).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // Create feedback buttons
-            const feedbackButtons = document.createElement('div');
-            feedbackButtons.className = 'flex items-center space-x-2 mt-2';
-            
-            const thumbsUpBtn = document.createElement('button');
-            thumbsUpBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors';
-            thumbsUpBtn.innerHTML = `
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
-                </svg>
-                <span>Helpful</span>
-            `;
-            
-            const thumbsDownBtn = document.createElement('button');
-            thumbsDownBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors';
-            thumbsDownBtn.innerHTML = `
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.737 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.096c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path>
-                </svg>
-                <span>Not helpful</span>
-            `;
-            
-            // Add feedback event listeners
-            thumbsUpBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                submitFeedback(result.name, 'fallback', true);
-            });
-            
-            thumbsDownBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                submitFeedback(result.name, 'fallback', false);
-            });
-            
-            feedbackButtons.appendChild(thumbsUpBtn);
-            feedbackButtons.appendChild(thumbsDownBtn);
-            
-            // Create RxCUI info
-            const rxcuiDiv = document.createElement('div');
-            rxcuiDiv.className = 'text-xs text-gray-400 mt-2';
-            rxcuiDiv.textContent = `RxCUI: ${result.rxcui}`;
-            
-            div.innerHTML = `
-                ${nameDiv.outerHTML}
-                ${brandNamesDiv}
-                ${usesDiv}
-                ${feedbackButtons.outerHTML}
-                ${rxcuiDiv.outerHTML}
-            `;
-            
-            // No click handler - these are just search results for feedback
-            
-            return div;
-        }
+        // HTML fallback createSearchResultElement removed - using app.js version
         
         function showSearchLoading(show) {
             const loading = document.getElementById('searchLoading');
@@ -1472,46 +1342,17 @@
             if (noResults) noResults.classList.add('hidden');
         }
         
-        function submitFeedback(drugName, query, isPositive) {
-            // Submit feedback to the backend
-            fetch('/feedback', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    drug_name: drugName,
-                    query: query,
-                    is_positive: isPositive
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('Feedback submitted successfully:', data.message);
-                } else {
-                    console.error('Feedback submission failed:', data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error submitting feedback:', error);
-            });
-        }
+        // HTML fallback handleVote and submitFeedback removed - using app.js versions
         
         // Set up search input listener when DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.addEventListener('input', (e) => {
-                    handleSearchInput(e.target.value);
-                });
-            }
+            // Search input listener removed - using app.js version instead
             
             // Set default tab to search
             switchTab('search');
         });
     </script>
 
-    <script src="app.js?v=6"></script>
+    <script src="app.js?v=30"></script>
 </body>
 </html>

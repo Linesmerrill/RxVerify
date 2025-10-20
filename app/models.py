@@ -54,6 +54,8 @@ class DrugSearchResult(BaseModel):
     feedback_score: Optional[float] = None
     is_oral_medication: bool = True
     discharge_relevance_score: Optional[float] = None
+    helpful_count: int = 0
+    not_helpful_count: int = 0
 
 class SearchResponse(BaseModel):
     results: List[DrugSearchResult]
@@ -64,8 +66,10 @@ class FeedbackRequest(BaseModel):
     drug_name: str
     query: str
     is_positive: bool
+    is_removal: Optional[bool] = False  # New field to indicate if this is removing a vote
     user_id: Optional[str] = None
     session_id: Optional[str] = None
+    timestamp: Optional[str] = None
 
 class FeedbackResponse(BaseModel):
     success: bool

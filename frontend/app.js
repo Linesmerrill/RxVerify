@@ -1,4 +1,5 @@
 // RxVerify Frontend Application
+console.log('RxVerify app.js loaded successfully!');
 let app;
 
 class RxVerifyApp {
@@ -23,6 +24,8 @@ class RxVerifyApp {
             sessionStorage.setItem('rxverify_visited', 'true');
         }
     }
+
+    // WebSocket functionality removed to fix feedback buttons
 
     setupEventListeners() {
         // Form submission
@@ -774,6 +777,10 @@ class RxVerifyApp {
 
     // Search functionality
     handleSearchInput(query) {
+        // Set current search query for feedback
+        window.currentSearchQuery = query;
+        console.log('handleSearchInput called with query:', query);
+        
         // Clear previous timeout
         if (this.searchTimeout) {
             clearTimeout(this.searchTimeout);
@@ -850,8 +857,9 @@ class RxVerifyApp {
     }
 
     createSearchResultElement(result) {
+        console.log('Creating search result element for:', result.name);
         const div = document.createElement('div');
-        div.className = 'bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200';
+        div.className = 'search-result bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200';
         
         // Create drug name and class
         const nameDiv = document.createElement('div');
@@ -861,7 +869,7 @@ class RxVerifyApp {
         nameInfo.className = 'flex-1';
         
         const drugName = document.createElement('h4');
-        drugName.className = 'font-semibold text-gray-900 text-lg';
+        drugName.className = 'drug-name font-semibold text-gray-900 text-lg';
         drugName.textContent = result.name;
         
         const genericName = document.createElement('p');
@@ -916,35 +924,45 @@ class RxVerifyApp {
         feedbackButtons.className = 'flex items-center space-x-2';
         
         const thumbsUpBtn = document.createElement('button');
-        thumbsUpBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors';
+        thumbsUpBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors border border-transparent';
         thumbsUpBtn.innerHTML = `
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
             </svg>
             <span>Helpful</span>
+            <span class="helpful-count ml-1 text-xs font-medium">${result.helpful_count > 0 ? `(${result.helpful_count})` : ''}</span>
         `;
         
         const thumbsDownBtn = document.createElement('button');
-        thumbsDownBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors';
+        thumbsDownBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors border border-transparent';
         thumbsDownBtn.innerHTML = `
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.737 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.096c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path>
             </svg>
             <span>Not helpful</span>
+            <span class="not-helpful-count ml-1 text-xs font-medium">${result.not_helpful_count > 0 ? `(${result.not_helpful_count})` : ''}</span>
         `;
         
         // Add feedback event listeners
+        console.log('Adding event listeners to buttons for:', result.name);
+        
+        // Add proper feedback functionality
         thumbsUpBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            this.submitFeedback(result.name, this.currentSearchQuery, true);
-            this.showToast('Thank you for your feedback! 👍', 'success');
+            console.log('Helpful button clicked!', result.name);
+            const currentQuery = window.currentSearchQuery || this.currentSearchQuery || 'fallback';
+            this.handleVote(result.name, currentQuery, true, thumbsUpBtn, thumbsDownBtn);
         });
         
         thumbsDownBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            this.submitFeedback(result.name, this.currentSearchQuery, false);
-            this.showToast('Thank you for your feedback! 👎', 'info');
+            console.log('Not helpful button clicked!', result.name);
+            const currentQuery = window.currentSearchQuery || this.currentSearchQuery || 'fallback';
+            this.handleVote(result.name, currentQuery, false, thumbsUpBtn, thumbsDownBtn);
         });
+        
+        // Restore user's previous vote state
+        this.restoreVoteState(result.name, window.currentSearchQuery || this.currentSearchQuery || 'fallback', thumbsUpBtn, thumbsDownBtn);
         
         feedbackButtons.appendChild(thumbsUpBtn);
         feedbackButtons.appendChild(thumbsDownBtn);
@@ -957,12 +975,19 @@ class RxVerifyApp {
         feedbackDiv.appendChild(feedbackButtons);
         feedbackDiv.appendChild(rxcuiDiv);
         
-        div.innerHTML = `
-            ${nameDiv.outerHTML}
-            ${brandNamesDiv}
-            ${usesDiv}
-            ${feedbackDiv.outerHTML}
-        `;
+        // Use appendChild instead of innerHTML to preserve event listeners
+        div.appendChild(nameDiv);
+        if (brandNamesDiv) {
+            const brandDiv = document.createElement('div');
+            brandDiv.innerHTML = brandNamesDiv;
+            div.appendChild(brandDiv);
+        }
+        if (usesDiv) {
+            const usesDivElement = document.createElement('div');
+            usesDivElement.innerHTML = usesDiv;
+            div.appendChild(usesDivElement);
+        }
+        div.appendChild(feedbackDiv);
         
         // No click handler - these are just search results for feedback
         
@@ -996,7 +1021,7 @@ class RxVerifyApp {
         document.getElementById('noResults').classList.add('hidden');
     }
 
-    async submitFeedback(drugName, query, isPositive) {
+    async submitFeedback(drugName, query, isPositive, isRemoval = false) {
         try {
             const response = await fetch(`${this.apiBaseUrl}/feedback`, {
                 method: 'POST',
@@ -1007,8 +1032,10 @@ class RxVerifyApp {
                     drug_name: drugName,
                     query: query,
                     is_positive: isPositive,
+                    is_removal: isRemoval, // New field to indicate if this is removing a vote
                     user_id: this.getUserId(),
-                    session_id: this.getSessionId()
+                    session_id: this.getSessionId(),
+                    timestamp: new Date().toISOString()
                 })
             });
             
@@ -1023,6 +1050,70 @@ class RxVerifyApp {
             console.error('Feedback submission error:', error);
             // Don't show error toast for feedback failures to avoid annoying users
         }
+    }
+
+    restoreVoteState(drugName, query, helpfulBtn, notHelpfulBtn) {
+        const voteKey = `vote_${drugName}_${query}`;
+        const currentVote = localStorage.getItem(voteKey);
+        
+        if (currentVote === 'helpful') {
+            // User previously voted helpful - highlight the helpful button
+            helpfulBtn.className = helpfulBtn.className.replace('border-transparent', 'border-green-500 bg-green-50');
+            // Don't disable the button - allow toggle functionality
+        } else if (currentVote === 'not_helpful') {
+            // User previously voted not helpful - highlight the not helpful button
+            notHelpfulBtn.className = notHelpfulBtn.className.replace('border-transparent', 'border-red-500 bg-red-50');
+            // Don't disable the button - allow toggle functionality
+        }
+    }
+
+    handleVote(drugName, query, isPositive, helpfulBtn, notHelpfulBtn) {
+        console.log('handleVote called:', { drugName, query, isPositive });
+        const voteKey = `vote_${drugName}_${query}`;
+        const currentVote = localStorage.getItem(voteKey);
+        
+        // Check if user is clicking the same button they already pressed (toggle off)
+        if ((currentVote === 'helpful' && isPositive) || (currentVote === 'not_helpful' && !isPositive)) {
+            // Remove the vote (toggle off)
+            localStorage.removeItem(voteKey);
+            
+            // Reset both buttons to default state
+            helpfulBtn.className = helpfulBtn.className.replace('border-green-500 bg-green-50', 'border-transparent');
+            notHelpfulBtn.className = notHelpfulBtn.className.replace('border-red-500 bg-red-50', 'border-transparent');
+            helpfulBtn.disabled = false;
+            notHelpfulBtn.disabled = false;
+            
+            // Submit negative feedback to backend (to decrement count)
+            this.submitFeedback(drugName, query, isPositive, true); // true = isRemoval
+            
+            // Show success message
+            this.showToast(`Feedback removed: ${isPositive ? 'Helpful' : 'Not helpful'}`, 'info');
+            return;
+        }
+        
+        // Store the new vote in localStorage
+        localStorage.setItem(voteKey, isPositive ? 'helpful' : 'not_helpful');
+        
+        // Reset both buttons to default state first
+        helpfulBtn.className = helpfulBtn.className.replace('border-green-500 bg-green-50', 'border-transparent');
+        notHelpfulBtn.className = notHelpfulBtn.className.replace('border-red-500 bg-red-50', 'border-transparent');
+        helpfulBtn.disabled = false;
+        notHelpfulBtn.disabled = false;
+        
+        // Apply new vote state
+        if (isPositive) {
+            helpfulBtn.className = helpfulBtn.className.replace('border-transparent', 'border-green-500 bg-green-50');
+            // Don't disable the button - allow toggle functionality
+        } else {
+            notHelpfulBtn.className = notHelpfulBtn.className.replace('border-transparent', 'border-red-500 bg-red-50');
+            // Don't disable the button - allow toggle functionality
+        }
+        
+        // Submit feedback to backend
+        this.submitFeedback(drugName, query, isPositive);
+        
+        // Show success message
+        this.showToast(`Feedback recorded: ${isPositive ? 'Helpful' : 'Not helpful'}`, 'success');
     }
 
     getUserId() {

@@ -37,6 +37,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# WebSocket functionality temporarily removed to fix server crashes
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize resources on startup."""
@@ -74,8 +76,10 @@ class FeedbackRequest(BaseModel):
     drug_name: str
     query: str
     is_positive: bool
+    is_removal: Optional[bool] = False  # New field to indicate if this is removing a vote
     user_id: Optional[str] = None
     session_id: Optional[str] = None
+    timestamp: Optional[str] = None
 
 class FeedbackResponse(BaseModel):
     success: bool
@@ -95,6 +99,8 @@ async def add_process_time_header(request: Request, call_next):
 async def health():
     """Basic health check endpoint."""
     return {"status": "healthy", "timestamp": time.time()}
+
+# WebSocket endpoint temporarily removed to fix server crashes
 
 @app.get("/socket.io/")
 async def socket_io_fallback():
@@ -270,7 +276,9 @@ async def search_medications(request: SearchRequest):
                 "source": result.source,
                 "feedback_score": getattr(result, 'feedback_score', None),
                 "is_oral_medication": getattr(result, 'is_oral_medication', True),
-                "discharge_relevance_score": getattr(result, 'discharge_relevance_score', None)
+                "discharge_relevance_score": getattr(result, 'discharge_relevance_score', None),
+                "helpful_count": getattr(result, 'helpful_count', 0),
+                "not_helpful_count": getattr(result, 'not_helpful_count', 0)
             })
         
         return SearchResponse(
@@ -360,24 +368,28 @@ async def ingest_rxlist_data(drug_data: List[Dict]):
 async def submit_feedback(feedback: FeedbackRequest):
     """Submit user feedback for search results to improve ML pipeline."""
     try:
-        logger.info(f"Processing feedback for {feedback.drug_name}: {'positive' if feedback.is_positive else 'negative'}")
+        is_removal = getattr(feedback, 'is_removal', False)
+        action = "removing" if is_removal else "adding"
+        vote_type = "positive" if feedback.is_positive else "negative"
+        logger.info(f"Processing feedback for {feedback.drug_name}: {action} {vote_type} vote")
         
         # Get the post-discharge search service
         search_service = await get_post_discharge_search_service()
         
-        # Record the feedback
-        search_service.record_feedback(feedback.drug_name, feedback.query, feedback.is_positive)
+        # Record the feedback (with removal flag)
+        search_service.record_feedback(feedback.drug_name, feedback.query, feedback.is_positive, is_removal)
         
-        # Get updated score
-        updated_score = search_service._feedback_scores.get(f"{feedback.drug_name}_{feedback.query}", 0.5)
+        # Get updated counts
+        feedback_counts = search_service.get_feedback_counts(feedback.drug_name, feedback.query)
         
         # Record successful request
         monitor.record_request(success=True)
         
+        action_message = "removed" if is_removal else "recorded"
         return FeedbackResponse(
             success=True,
-            message=f"Feedback recorded successfully for {feedback.drug_name}",
-            updated_score=updated_score
+            message=f"Feedback {action_message} successfully for {feedback.drug_name}",
+            updated_score=None  # No longer using scores
         )
         
     except Exception as e:
@@ -397,30 +409,29 @@ async def get_feedback_stats():
         search_service = await get_post_discharge_search_service()
         
         # Calculate feedback statistics
-        total_feedback = len(search_service._feedback_scores)
-        positive_feedback = sum(1 for score in search_service._feedback_scores.values() if score > 0.5)
-        negative_feedback = total_feedback - positive_feedback
-        average_score = sum(search_service._feedback_scores.values()) / total_feedback if total_feedback > 0 else 0.5
+        total_helpful = sum(counts["helpful"] for counts in search_service._feedback_counts.values())
+        total_not_helpful = sum(counts["not_helpful"] for counts in search_service._feedback_counts.values())
+        total_feedback = total_helpful + total_not_helpful
         
         # Get detailed feedback list
         feedback_list = []
-        for key, score in search_service._feedback_scores.items():
+        for key, counts in search_service._feedback_counts.items():
             if '_' in key:
                 drug_name, query = key.rsplit('_', 1)
                 feedback_list.append({
                     "drug_name": drug_name,
                     "query": query,
-                    "score": score,
-                    "is_positive": score > 0.5
+                    "helpful_count": counts["helpful"],
+                    "not_helpful_count": counts["not_helpful"],
+                    "total_votes": counts["helpful"] + counts["not_helpful"]
                 })
         
         return {
             "success": True,
             "stats": {
                 "total_feedback": total_feedback,
-                "positive_ratings": positive_feedback,
-                "negative_ratings": negative_feedback,
-                "average_score": round(average_score, 3),
+                "positive_ratings": total_helpful,
+                "negative_ratings": total_not_helpful,
                 "last_updated": datetime.now().isoformat()
             },
             "feedback_list": feedback_list,
@@ -444,8 +455,8 @@ async def remove_feedback(request: dict):
         search_service = await get_post_discharge_search_service()
         key = f"{drug_name}_{query}"
         
-        if key in search_service._feedback_scores:
-            del search_service._feedback_scores[key]
+        if key in search_service._feedback_counts:
+            del search_service._feedback_counts[key]
             logger.info(f"Removed feedback for {drug_name} with query {query}")
             return {"success": True, "message": "Feedback removed successfully"}
         else:
@@ -460,7 +471,7 @@ async def clear_all_feedback():
     """Clear all feedback data."""
     try:
         search_service = await get_post_discharge_search_service()
-        search_service._feedback_scores.clear()
+        search_service._feedback_counts.clear()
         logger.info("Cleared all feedback data")
         return {"success": True, "message": "All feedback cleared successfully"}
         

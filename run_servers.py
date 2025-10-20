@@ -75,8 +75,9 @@ class ServerManager:
                 print("❌ Frontend directory not found!")
                 return False
                 
+            # Use custom server that handles Socket.IO requests gracefully
             self.frontend_process = subprocess.Popen([
-                sys.executable, "-m", "http.server", "8080"
+                sys.executable, "server.py"
             ], cwd=frontend_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             print("✅ Frontend started (PID: {})".format(self.frontend_process.poll()))
             return True

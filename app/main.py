@@ -82,6 +82,22 @@ async def health():
     """Basic health check endpoint."""
     return {"status": "healthy", "timestamp": time.time()}
 
+@app.get("/socket.io/")
+async def socket_io_fallback():
+    """Handle Socket.IO requests gracefully to prevent 404 errors."""
+    return JSONResponse(
+        status_code=200,
+        content={"message": "Socket.IO not configured - using REST API instead"}
+    )
+
+@app.get("/socket.io/{path:path}")
+async def socket_io_fallback_path(path: str):
+    """Handle Socket.IO requests with any path gracefully to prevent 404 errors."""
+    return JSONResponse(
+        status_code=200,
+        content={"message": "Socket.IO not configured - using REST API instead", "path": path}
+    )
+
 @app.get("/cache/stats")
 async def get_cache_stats():
     """Get medication cache statistics."""

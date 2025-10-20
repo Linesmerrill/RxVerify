@@ -72,3 +72,9 @@
 2025-10-03 10:30:45,581 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
 2025-10-03 10:32:22,443 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client
 2025-10-03 10:32:24,460 - root - INFO - 🚀 RxVerify starting up - Real-time medical database integration enabled
+2025-10-20 07:12:50,491 - root - INFO - Processing medication search: tylenol...
+2025-10-20 07:12:50,503 - app.medication_cache - INFO - Medication cache database initialized
+2025-10-20 07:12:50,504 - app.rxlist_database - INFO - RxList database initialized at rxlist_database.db
+2025-10-20 07:12:50,511 - app.rxlist_database - INFO - RxList database already contains 4500 drugs
+2025-10-20 07:12:50,517 - app.search_service - INFO - Cache search completed in 3.86ms for query: 'tylenol'
+2025-10-20 07:13:46,911 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client

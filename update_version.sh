@@ -36,5 +36,23 @@ sed -i.bak "s/app\.js?v=[0-9]*/app.js?v=${CACHE_VERSION}/g" frontend/index.html
 rm frontend/index.html.bak 2>/dev/null || true
 echo -e "${GREEN}✅ Updated cache-busting version to v=${CACHE_VERSION}${NC}"
 
-echo -e "${GREEN}🎉 Version update completed!${NC}"
+# Auto-commit and push changes
+echo -e "${BLUE}📝 Committing version changes...${NC}"
+
+# Add the modified files
+git add VERSION frontend/index.html
+
+# Commit with descriptive message
+git commit -m "Auto-update version to ${NEW_VERSION}
+
+- Updated VERSION file to ${NEW_VERSION}
+- Updated frontend cache-busting version to v=${CACHE_VERSION}
+- Automated version update via update_version.sh"
+
+# Push to remote repository
+echo -e "${BLUE}🚀 Pushing changes to remote repository...${NC}"
+git push
+
+echo -e "${GREEN}🎉 Version update completed and pushed!${NC}"
 echo -e "${BLUE}New version: ${NEW_VERSION}${NC}"
+echo -e "${BLUE}Cache version: v=${CACHE_VERSION}${NC}"

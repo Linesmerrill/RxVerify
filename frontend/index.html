@@ -922,10 +922,18 @@
             }
         }
         
+        // Helper function to get API base URL
+        function getApiBaseUrl() {
+            return window.location.hostname === 'localhost' 
+                ? 'http://localhost:8000' 
+                : 'https://rx-verify-api-e68bdd74c056.herokuapp.com';
+        }
+        
         // Feedback Analytics Functions
         async function loadFeedbackData() {
             try {
-                const response = await fetch('/feedback/stats');
+                const apiBaseUrl = getApiBaseUrl();
+                const response = await fetch(`${apiBaseUrl}/feedback/stats`);
                 const data = await response.json();
                 
                 if (data.success) {
@@ -993,7 +1001,8 @@
             }
             
             try {
-                const response = await fetch('/feedback/remove', {
+                const apiBaseUrl = getApiBaseUrl();
+                const response = await fetch(`${apiBaseUrl}/feedback/remove`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1023,7 +1032,8 @@
             }
             
             try {
-                const response = await fetch('/feedback/clear', {
+                const apiBaseUrl = getApiBaseUrl();
+                const response = await fetch(`${apiBaseUrl}/feedback/clear`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1075,12 +1085,14 @@
         
         async function loadAdminData() {
             try {
+                const apiBaseUrl = getApiBaseUrl();
+                
                 // Load all admin data in parallel
                 const [systemStatus, cacheStats, rxlistStats, feedbackStats] = await Promise.all([
-                    fetch('/status').then(r => r.json()),
-                    fetch('/cache/stats').then(r => r.json()),
-                    fetch('/rxlist/stats').then(r => r.json()),
-                    fetch('/feedback/stats').then(r => r.json())
+                    fetch(`${apiBaseUrl}/status`).then(r => r.json()),
+                    fetch(`${apiBaseUrl}/cache/stats`).then(r => r.json()),
+                    fetch(`${apiBaseUrl}/rxlist/stats`).then(r => r.json()),
+                    fetch(`${apiBaseUrl}/feedback/stats`).then(r => r.json())
                 ]);
                 
                 updateSystemOverview(systemStatus, feedbackStats);
@@ -1226,7 +1238,8 @@
             }
             
             try {
-                const response = await fetch('/cache/clear', { method: 'POST' });
+                const apiBaseUrl = getApiBaseUrl();
+                const response = await fetch(`${apiBaseUrl}/cache/clear`, { method: 'POST' });
                 const data = await response.json();
                 
                 if (data.status === 'success') {
@@ -1247,7 +1260,8 @@
             }
             
             try {
-                const response = await fetch('/rxlist/clear', { method: 'POST' });
+                const apiBaseUrl = getApiBaseUrl();
+                const response = await fetch(`${apiBaseUrl}/rxlist/clear`, { method: 'POST' });
                 const data = await response.json();
                 
                 if (data.status === 'success') {
@@ -1264,7 +1278,8 @@
         
         async function checkSystemHealth() {
             try {
-                const response = await fetch('/health');
+                const apiBaseUrl = getApiBaseUrl();
+                const response = await fetch(`${apiBaseUrl}/health`);
                 const data = await response.json();
                 
                 if (data.status === 'healthy') {
@@ -1444,7 +1459,7 @@
         });
     </script>
 
-    <script src="app.js?v=1761145290"></script>
+    <script src="app.js?v=37"></script>
     <!-- Footer -->
     <footer class="bg-gray-50 border-t border-gray-200 mt-16">
         <div class="container mx-auto px-6 py-6">

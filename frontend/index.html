@@ -1405,7 +1405,9 @@
             // Hide previous results
             hideSearchResults();
             
+            // If query is empty or too short, hide loading and stop
             if (query.length < 2) {
+                showSearchLoading(false);
                 return;
             }
             

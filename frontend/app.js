@@ -789,7 +789,9 @@ class RxVerifyApp {
         // Hide previous results
         this.hideSearchResults();
         
+        // If query is empty or too short, hide loading and stop
         if (query.length < 2) {
+            this.showSearchLoading(false);
             return;
         }
         

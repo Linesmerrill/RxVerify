@@ -1,10 +1,10 @@
 # RxVerify Architecture Documentation
 
-> **Comprehensive technical architecture and system design for RxVerify - Multi-Database Drug Assistant**
+> **Comprehensive technical architecture and system design for RxVerify - Post-Discharge Medication Search & Feedback-Driven ML System**
 
 ## 🏗️ **System Architecture Overview**
 
-RxVerify is built as a modern, production-ready Retrieval-Augmented Generation (RAG) system that combines vector search, AI-powered responses, and multi-source drug data validation.
+RxVerify is built as a modern, production-ready medication search system designed specifically for post-discharge medication management. It combines real-time API integration, intelligent feedback-driven learning, and comprehensive admin analytics for continuous system optimization.
 
 ## 🔄 **High-Level System Flow**
 
@@ -16,61 +16,77 @@ graph TB
         C[API Client]
     end
     
+    subgraph "Frontend Layer"
+        D[React/Vanilla JS UI]
+        E[Dark/Light Mode Toggle]
+        F[Admin Dashboard]
+        G[Feedback System]
+    end
+    
     subgraph "API Gateway"
-        D[FastAPI Application]
-        E[Rate Limiting]
-        F[CORS Middleware]
-        G[Authentication]
+        H[FastAPI Application]
+        I[CORS Middleware]
+        J[Rate Limiting]
+        K[Health Monitoring]
     end
     
     subgraph "Core Services"
-        H[Query Processing]
-        I[Vector Retrieval]
-        J[Cross-Validation]
-        K[LLM Integration]
+        L[Medication Search Service]
+        M[Feedback Management]
+        N[Admin Analytics]
+        O[Cache Management]
     end
     
-    subgraph "Data Layer"
-        L[ChromaDB Vector Store]
-        M[Embedding Service]
-        N[Cross-Reference Engine]
+    subgraph "Real-time Data Sources"
+        P[RxNorm API]
+        Q[DailyMed SPL]
+        R[OpenFDA API]
+        S[DrugBank Open Data]
     end
     
-    subgraph "Data Sources"
-        O[RxNorm API]
-        P[DailyMed SPL]
-        Q[OpenFDA API]
-        R[DrugBank Open Data]
+    subgraph "ML Pipeline"
+        T[Feedback Collection]
+        U[Result Ranking]
+        V[Performance Analytics]
+        W[Continuous Learning]
     end
     
-    subgraph "ETL Pipeline"
-        S[Data Extraction]
-        T[Data Transformation]
-        U[Data Loading]
-        V[Embedding Generation]
+    subgraph "Data Storage"
+        X[Medication Cache]
+        Y[Feedback Database]
+        Z[RxList Database]
+        AA[System Metrics]
     end
     
     A --> D
     B --> D
     C --> D
     D --> H
-    H --> I
-    I --> L
-    L --> M
-    H --> J
-    J --> N
-    H --> K
-    K --> M
+    D --> F
+    D --> G
     
-    O --> S
-    P --> S
-    Q --> S
-    R --> S
-    S --> T
+    H --> I
+    I --> J
+    J --> K
+    H --> L
+    H --> M
+    H --> N
+    H --> O
+    
+    L --> P
+    L --> Q
+    L --> R
+    L --> S
+    
+    M --> T
     T --> U
-    U --> L
     U --> V
-    V --> L
+    V --> W
+    
+    L --> X
+    M --> Y
+    O --> Z
+    N --> AA
 ```
 
 ## 🧠 **Core Application Architecture**
@@ -86,22 +102,30 @@ graph TB
     end
     
     subgraph "Business Logic Layer"
-        F[retriever.py - Search Engine]
-        G[crosscheck.py - Data Validation]
-        H[llm.py - AI Integration]
-        I[embeddings.py - Vector Generation]
+        F[post_discharge_search.py - Search Engine]
+        G[medical_apis.py - API Integration]
+        H[medication_cache.py - Cache Management]
+        I[rxlist_database.py - Local Database]
+    end
+    
+    subgraph "Feedback & ML Layer"
+        J[Feedback Collection]
+        K[ML Pipeline Integration]
+        L[Result Ranking]
+        M[Performance Analytics]
     end
     
     subgraph "Data Access Layer"
-        J[db.py - ChromaDB Client]
-        K[Vector Collections]
-        L[Metadata Indexes]
+        N[SQLite Databases]
+        O[In-Memory Cache]
+        P[File System Storage]
     end
     
     subgraph "External Services"
-        M[OpenAI API]
-        N[ChromaDB Engine]
-        O[File System]
+        Q[RxNorm API]
+        R[DailyMed API]
+        S[OpenFDA API]
+        T[DrugBank API]
     end
     
     A --> B
@@ -111,17 +135,141 @@ graph TB
     A --> F
     A --> G
     A --> H
+    A --> I
     
-    F --> I
     F --> J
-    G --> J
-    H --> M
-    I --> M
+    F --> K
+    F --> L
+    G --> Q
+    G --> R
+    G --> S
+    G --> T
     
+    H --> O
+    I --> N
     J --> N
-    J --> O
-    D --> O
-    E --> O
+    K --> M
+    M --> P
+```
+
+## 🔍 **Medication Search Flow**
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Frontend
+    participant FastAPI
+    participant SearchService
+    participant MedicalAPIs
+    participant Cache
+    participant FeedbackDB
+    
+    Client->>Frontend: Search "metformin"
+    Frontend->>FastAPI: POST /search
+    FastAPI->>SearchService: search_discharge_medications()
+    
+    SearchService->>Cache: Check cache
+    alt Cache Hit
+        Cache-->>SearchService: Return cached results
+    else Cache Miss
+        SearchService->>MedicalAPIs: Query RxNorm API
+        MedicalAPIs-->>SearchService: RxNorm results
+        SearchService->>MedicalAPIs: Query DailyMed API
+        MedicalAPIs-->>SearchService: DailyMed results
+        SearchService->>MedicalAPIs: Query OpenFDA API
+        MedicalAPIs-->>SearchService: OpenFDA results
+        SearchService->>MedicalAPIs: Query DrugBank API
+        MedicalAPIs-->>SearchService: DrugBank results
+        
+        SearchService->>SearchService: Deduplicate & combine results
+        SearchService->>Cache: Store results
+    end
+    
+    SearchService->>FeedbackDB: Get feedback scores
+    FeedbackDB-->>SearchService: Vote counts & scores
+    SearchService->>SearchService: Apply ML ranking
+    
+    SearchService-->>FastAPI: Ranked results
+    FastAPI-->>Frontend: JSON response
+    Frontend-->>Client: Display results with feedback buttons
+```
+
+## 🤖 **Feedback System Flow**
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant FastAPI
+    participant FeedbackService
+    participant FeedbackDB
+    participant MLPipeline
+    
+    User->>Frontend: Click thumbs up/down
+    Frontend->>Frontend: Update UI (localStorage)
+    Frontend->>FastAPI: POST /feedback
+    FastAPI->>FeedbackService: record_feedback()
+    
+    FeedbackService->>FeedbackDB: Store/update vote
+    FeedbackDB-->>FeedbackService: Confirmation
+    
+    FeedbackService->>MLPipeline: Update ranking algorithm
+    MLPipeline->>MLPipeline: Recalculate drug scores
+    
+    FeedbackService-->>FastAPI: Success response
+    FastAPI-->>Frontend: Feedback recorded
+    Frontend-->>User: Visual confirmation
+    
+    Note over MLPipeline: Continuous learning<br/>improves future results
+```
+
+## 📊 **Admin Dashboard & Analytics**
+
+```mermaid
+graph TB
+    subgraph "Admin Interface"
+        A[Admin Dropdown Menu]
+        B[Feedback Analytics Tab]
+        C[System Dashboard Tab]
+    end
+    
+    subgraph "Analytics Components"
+        D[Feedback Trends Chart]
+        E[System Health Metrics]
+        F[Cache Statistics]
+        G[Search Performance]
+    end
+    
+    subgraph "Management Actions"
+        H[Clear Feedback Data]
+        I[Clear Medication Cache]
+        J[Clear RxList Database]
+        K[System Health Check]
+    end
+    
+    subgraph "Data Sources"
+        L[Feedback Database]
+        M[System Metrics]
+        N[Cache Statistics]
+        O[Performance Logs]
+    end
+    
+    A --> B
+    A --> C
+    B --> D
+    C --> E
+    C --> F
+    C --> G
+    
+    B --> H
+    C --> I
+    C --> J
+    C --> K
+    
+    D --> L
+    E --> M
+    F --> N
+    G --> O
 ```
 
 ## 🔍 **Query Processing Flow**
@@ -166,104 +314,106 @@ sequenceDiagram
 
 ```mermaid
 graph TB
-    subgraph "ChromaDB Vector Store"
-        A[Collection: drug_docs]
-        B[Vector Index: HNSW]
-        C[Metadata Indexes]
-        D[Document Storage]
+    subgraph "SQLite Databases"
+        A[medication_cache.db]
+        B[rxlist_database.db]
+        C[feedback_data.db]
     end
     
-    subgraph "Document Structure"
-        E[Document ID: source_id]
-        F[Text Content]
-        G[Vector Embedding: 384d]
-        H[Metadata Fields]
+    subgraph "Database Schemas"
+        D[Medication Cache Schema]
+        E[RxList Schema]
+        F[Feedback Schema]
     end
     
-    subgraph "Metadata Schema"
-        I[rxcui: String]
-        J[source: Enum]
-        K[id: String]
-        L[url: String]
-        M[title: String]
-        N[timestamp: DateTime]
+    subgraph "Cache Structure"
+        G[In-Memory Cache]
+        H[TTL Management]
+        I[Cache Statistics]
     end
     
-    subgraph "Vector Operations"
-        O[Cosine Similarity]
-        P[Euclidean Distance]
-        Q[Manhattan Distance]
-        R[Hybrid Search]
+    subgraph "File System Storage"
+        J[Log Files]
+        K[Configuration Files]
+        L[Static Assets]
     end
     
-    A --> B
-    A --> C
+    subgraph "Data Operations"
+        M[CRUD Operations]
+        N[Query Optimization]
+        O[Data Validation]
+        P[Backup & Recovery]
+    end
+    
     A --> D
-    D --> E
-    D --> F
-    D --> G
-    D --> H
-    H --> I
-    H --> J
-    H --> K
-    H --> L
-    H --> M
-    H --> N
+    B --> E
+    C --> F
     
-    B --> O
-    B --> P
-    B --> Q
-    B --> R
+    D --> G
+    E --> G
+    F --> G
+    
+    G --> H
+    H --> I
+    
+    J --> M
+    K --> M
+    L --> M
+    
+    M --> N
+    N --> O
+    O --> P
 ```
 
-## 🔄 **ETL Pipeline Architecture**
+## 🔄 **Real-time API Integration Pipeline**
 
 ```mermaid
 graph TB
-    subgraph "Data Sources"
-        A[RxNorm RRF Files]
-        B[DailyMed SPL XML]
-        C[OpenFDA REST API]
-        D[DrugBank CSV/XML]
+    subgraph "API Clients"
+        A[RxNorm HTTP Client]
+        B[DailyMed HTTP Client]
+        C[OpenFDA HTTP Client]
+        D[DrugBank HTTP Client]
     end
     
-    subgraph "Extraction Layer"
-        E[HTTP Clients]
-        F[File Readers]
-        G[API Wrappers]
-        H[Rate Limiters]
+    subgraph "Request Processing"
+        E[Query Normalization]
+        F[Partial Name Expansion]
+        G[Rate Limiting]
+        H[Error Handling]
     end
     
-    subgraph "Transformation Layer"
-        I[Data Parsers]
-        J[Field Mappers]
-        K[Data Cleaners]
-        L[RxCUI Normalizers]
+    subgraph "Data Processing"
+        I[Response Parsing]
+        J[Data Validation]
+        K[Deduplication Logic]
+        L[Result Ranking]
     end
     
-    subgraph "Loading Layer"
-        M[ChromaDB Client]
-        N[Batch Processors]
-        O[Error Handlers]
-        P[Progress Trackers]
+    subgraph "Caching Layer"
+        M[Medication Cache]
+        N[TTL Management]
+        O[Cache Invalidation]
+        P[Performance Optimization]
     end
     
-    subgraph "Embedding Pipeline"
-        Q[Text Chunking]
-        R[OpenAI Embeddings]
-        S[Vector Storage]
-        T[Metadata Indexing]
+    subgraph "Output Generation"
+        Q[Structured Results]
+        R[Feedback Integration]
+        S[ML Ranking]
+        T[JSON Response]
     end
     
-    A --> F
-    B --> F
+    A --> E
+    B --> E
     C --> E
-    D --> F
+    D --> E
     
-    E --> G
-    F --> I
-    G --> I
+    E --> F
+    F --> G
+    G --> H
     
+    H --> I
     I --> J
     J --> K
     K --> L
@@ -273,11 +423,75 @@ graph TB
     N --> O
     O --> P
     
-    L --> Q
+    P --> Q
     Q --> R
     R --> S
     S --> T
-    T --> M
+```
+
+## 🚀 **Deployment Architecture**
+
+```mermaid
+graph TB
+    subgraph "Development Environment"
+        A[Local Development]
+        B[Virtual Environment]
+        C[Local Databases]
+        D[Test Data]
+    end
+    
+    subgraph "Automated Deployment"
+        E[deploy.sh Script]
+        F[update_version.sh]
+        G[Automated Versioning]
+        H[Git Integration]
+    end
+    
+    subgraph "Heroku Production"
+        I[Frontend App]
+        J[Backend App]
+        K[Environment Variables]
+        L[Buildpacks]
+    end
+    
+    subgraph "Version Management"
+        M[Timestamp-based Versions]
+        N[Cache-busting]
+        O[Auto-commit/Push]
+        P[Deployment Tracking]
+    end
+    
+    subgraph "CI/CD Pipeline"
+        Q[Git Repository]
+        R[Automated Testing]
+        S[Version Updates]
+        T[Heroku Deployment]
+    end
+    
+    A --> B
+    B --> C
+    C --> D
+    
+    E --> F
+    F --> G
+    G --> H
+    
+    H --> I
+    H --> J
+    I --> K
+    J --> K
+    K --> L
+    
+    G --> M
+    M --> N
+    N --> O
+    O --> P
+    
+    Q --> R
+    R --> S
+    S --> T
+    T --> I
+    T --> J
 ```
 
 ## 🔐 **Security & Access Control**
@@ -485,48 +699,50 @@ graph LR
 ```mermaid
 graph TB
     subgraph "Response Time Breakdown"
-        A[Query Processing: 50ms]
-        B[Vector Search: 100ms]
-        C[Cross-Validation: 50ms]
-        D[LLM Generation: 1000-2000ms]
-        E[Total: 1200-2200ms]
+        A[Query Processing: 10-50ms]
+        B[API Calls: 200-800ms]
+        C[Cache Lookup: 1-5ms]
+        D[Deduplication: 5-20ms]
+        E[ML Ranking: 10-30ms]
+        F[Total: 250-900ms]
     end
     
     subgraph "Throughput Metrics"
-        F[Concurrent Requests: 10-50]
-        G[Queries per Second: 5-20]
-        H[Peak Load: 100 QPS]
+        G[Concurrent Requests: 20-100]
+        H[Searches per Second: 10-50]
+        I[Peak Load: 200 QPS]
     end
     
     subgraph "Resource Usage"
-        I[Memory: 500MB-2GB]
-        J[CPU: 1-4 cores]
-        K[Disk: 1-10GB]
-        L[Network: 1-10 Mbps]
+        J[Memory: 200MB-1GB]
+        K[CPU: 1-2 cores]
+        L[Disk: 100MB-1GB]
+        M[Network: 1-5 Mbps]
     end
     
     subgraph "Scalability Factors"
-        M[Vector Index Size]
-        N[LLM API Rate Limits]
-        O[ChromaDB Performance]
-        P[Network Latency]
+        N[API Rate Limits]
+        O[Cache Hit Ratio]
+        P[Database Performance]
+        Q[Network Latency]
     end
     
-    A --> E
-    B --> E
-    C --> E
-    D --> E
+    A --> F
+    B --> F
+    C --> F
+    D --> F
+    E --> F
     
-    F --> G
     G --> H
+    H --> I
     
-    I --> J
     J --> K
     K --> L
+    L --> M
     
-    M --> O
     N --> O
     O --> P
+    P --> Q
 ```
 
 ## 🔄 **Data Flow Patterns**
@@ -584,55 +800,61 @@ graph TB
 
 ## 🎯 **Key Design Principles**
 
-### **1. Separation of Concerns**
-- **API Layer**: Handles HTTP requests, validation, and responses
-- **Business Logic**: Manages drug data processing and AI integration
-- **Data Layer**: Handles storage, retrieval, and vector operations
-- **Infrastructure**: Manages configuration, logging, and monitoring
+### **1. Real-time Data Integration**
+- **Live API Queries**: Direct integration with medical databases for current information
+- **Intelligent Caching**: Smart caching strategies to balance freshness and performance
+- **Partial Name Support**: Automatic expansion of common drug prefixes for better UX
+- **Deduplication Logic**: Combines duplicate results with different dosages
 
-### **2. Async-First Design**
-- All I/O operations are asynchronous
-- Non-blocking API endpoints
-- Efficient resource utilization
-- Scalable request handling
+### **2. Feedback-Driven Learning**
+- **User Feedback Collection**: Thumbs up/down voting system for continuous improvement
+- **ML Pipeline Integration**: Feedback feeds into result ranking and optimization
+- **Real-time Analytics**: Admin dashboard with feedback trends and system metrics
+- **Performance Tracking**: Comprehensive monitoring of search quality and user satisfaction
 
-### **3. Fault Tolerance**
-- Graceful degradation when services are unavailable
-- Comprehensive error handling and logging
-- Fallback mechanisms for critical failures
-- Health checks and monitoring
+### **3. Post-Discharge Focus**
+- **Curated Results**: Prioritizes oral medications typically prescribed after hospital stays
+- **Clinical Relevance**: Filters out IV medications, formulas, and non-discharge medications
+- **RxCUI Integration**: Direct links to authoritative drug information sources
+- **Comprehensive Information**: Drug class, common uses, and dosage information
 
-### **4. Data Consistency**
-- Cross-source validation and unification
-- Conflict detection and reporting
-- Source attribution and citations
-- Audit trail for all operations
+### **4. Modern User Experience**
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+- **Dark/Light Mode**: System preference detection with manual override
+- **Progressive Web App**: PWA capabilities with offline support
+- **Real-time Feedback**: Live vote counts and visual feedback on interactions
 
-### **5. Performance Optimization**
-- Vector similarity search for semantic matching
-- Hybrid search combining vector and keyword approaches
-- Efficient data structures and indexing
-- Caching strategies for frequently accessed data
+### **5. Production-Ready Architecture**
+- **Automated Deployment**: Scripted deployment with version management
+- **Health Monitoring**: Comprehensive system status and performance metrics
+- **Error Handling**: Graceful degradation and comprehensive error reporting
+- **Scalable Design**: Architecture supports horizontal scaling and load balancing
 
 ## 🔮 **Future Architecture Considerations**
 
 ### **Scalability Enhancements**
-- **Distributed ChromaDB**: Multi-node vector database clusters
 - **Load Balancing**: Multiple API instances behind a load balancer
-- **Caching Layer**: Redis for frequently accessed data
+- **Database Clustering**: Distributed SQLite or PostgreSQL clusters
+- **Caching Layer**: Redis for frequently accessed data and session management
 - **CDN Integration**: Static asset delivery optimization
 
 ### **Advanced Features**
-- **Real-time Updates**: WebSocket support for live data updates
-- **Advanced Analytics**: Query analytics and usage patterns
+- **Real-time Updates**: WebSocket support for live data updates and notifications
+- **Advanced Analytics**: Machine learning for search result optimization
 - **Multi-tenant Support**: Isolated data spaces for different organizations
 - **API Versioning**: Backward-compatible API evolution
 
 ### **Integration Capabilities**
-- **GraphQL API**: Flexible query interface
-- **Webhook Support**: Real-time notifications
-- **Third-party Integrations**: EHR systems, pharmacy software
+- **EHR Integration**: Direct integration with Electronic Health Records
+- **Pharmacy Software**: Integration with pharmacy management systems
 - **Mobile SDKs**: Native mobile application support
+- **Third-party APIs**: Integration with additional medical data sources
+
+### **AI/ML Enhancements**
+- **Natural Language Processing**: Advanced query understanding and intent recognition
+- **Predictive Analytics**: Anticipate user needs and suggest relevant medications
+- **Personalization**: User-specific result ranking based on history and preferences
+- **Automated Quality Assurance**: AI-powered result validation and quality scoring
 
 ---
 

@@ -1,6 +1,6 @@
 # RxVerify
 
-A real-time Retrieval-Augmented Generation system for comprehensive drug information, integrating data from RxNorm, DailyMed, OpenFDA, and DrugBank APIs.
+A real-time medication search and drug information system designed for post-discharge medication management. Features live API integration with RxNorm, DailyMed, OpenFDA, and DrugBank, plus intelligent feedback-driven ML pipeline optimization.
 
 ## 🚀 Quick Start
 
@@ -99,22 +99,103 @@ make health         # Quick health check
 - **Health Check**: http://localhost:8000/health
 - **API Docs**: http://localhost:8000/docs
 
+## 🔌 API Endpoints
+
+### **Core Search Endpoints**
+- `POST /search` - Enhanced medication search with post-discharge focus
+- `POST /query` - General drug information queries (Ask Questions - coming soon)
+
+### **Feedback System**
+- `POST /feedback` - Submit thumbs up/down feedback on search results
+- `GET /feedback/stats` - Get feedback analytics and trends
+- `POST /feedback/remove` - Remove specific feedback entries
+- `POST /feedback/clear` - Clear all feedback data
+
+### **Admin & Management**
+- `GET /status` - Comprehensive system status and health metrics
+- `GET /cache/stats` - Medication cache statistics
+- `POST /cache/clear` - Clear medication cache
+- `GET /rxlist/stats` - RxList database statistics
+- `POST /rxlist/clear` - Clear RxList database
+- `POST /rxlist/ingest` - Ingest new RxList data
+
+### **System Health**
+- `GET /health` - Basic health check
+- `GET /` - API information and version
+
 ## 🎯 Features
 
-- **Real-time Medical Database Integration**: Live queries to RxNorm, DailyMed, OpenFDA, and DrugBank
-- **Enhanced DailyMed XML Parsing**: Comprehensive package insert content extraction
+### 🔍 **Core Search Features**
+- **Real-time Medication Search**: Live API queries to RxNorm, DailyMed, OpenFDA, and DrugBank
+- **Post-Discharge Focus**: Curated results for oral medications typically prescribed after hospital stays
+- **Intelligent Deduplication**: Combines duplicate drugs with different dosages into single results
+- **RxCUI Integration**: Direct links to RxNav for detailed drug information
+- **Partial Name Expansion**: Smart expansion of common drug prefixes (e.g., "metf" → "metformin")
+
+### 🤖 **AI & ML Features**
+- **Feedback-Driven Learning**: Thumbs up/down voting system for continuous improvement
+- **ML Pipeline Integration**: User feedback feeds into result ranking and optimization
+- **Real-time Analytics**: Admin dashboard with feedback trends and system metrics
 - **Zero Hallucinations**: All responses sourced from official medical databases
-- **Professional UI**: Modern frontend with progress updates and debug information
+
+### 🎨 **User Experience**
+- **Modern UI**: Clean, responsive design with dark/light mode toggle
+- **Real-time Feedback**: Live vote counts and visual feedback on search results
+- **Admin Dashboard**: Comprehensive analytics and system management tools
+- **Mobile Responsive**: Optimized for all device sizes
+- **Progressive Web App**: PWA capabilities with offline support
+
+### 🔧 **System Features**
+- **Automated Versioning**: Dynamic version numbers with deployment timestamps
+- **Health Monitoring**: Comprehensive system status and performance metrics
+- **Cache Management**: Intelligent caching for improved performance
 - **Cross-Source Validation**: Detects and reports data discrepancies between sources
 
 ## 🔍 Testing the System
 
 1. **Start the servers**: `make run`
 2. **Open frontend**: `make open`
-3. **Test queries**:
-   - "What are the side effects of warfarin?"
-   - "What are the side effects of ibuprofen?"
-   - "What are the side effects of metformin?"
+3. **Test medication search**:
+   - Search for "metformin" or "metf"
+   - Search for "atorvastatin" or "ator"
+   - Search for "lisinopril" or "lisi"
+4. **Test feedback system**:
+   - Vote on search results using thumbs up/down
+   - Check admin dashboard for feedback analytics
+5. **Test admin features**:
+   - Access admin dropdown in top navigation
+   - View feedback analytics and system metrics
+   - Clear caches and manage system data
+
+## 🚀 Deployment
+
+### **Automated Deployment**
+```bash
+# Deploy to Heroku with automatic versioning
+./deploy.sh
+
+# Deploy without version update
+./deploy.sh --skip-version
+
+# Update version only
+./update_version.sh
+```
+
+### **Manual Deployment**
+```bash
+# Frontend deployment
+cd frontend
+git subtree push --prefix=frontend heroku-frontend main
+
+# Backend deployment  
+git subtree push --prefix=. heroku-backend main
+```
+
+### **Version Management**
+- **Format**: `v1.0.0-beta.YYYYMMDD-HHMMSS`
+- **Auto-generated**: Timestamps in Zulu format
+- **Cache-busting**: Automatic frontend cache version updates
+- **Git Integration**: Auto-commit and push version changes
 
 ## 📚 Architecture
 

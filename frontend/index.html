@@ -238,8 +238,9 @@
                             </label>
                         </div>
                         <button 
-                            type="submit" 
+                            type="button" 
                             id="submitBtn"
+                            onclick="showComingSoonModal()"
                             class="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-all duration-200 flex items-center space-x-2 pulse-glow"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -751,6 +752,38 @@
 
     <!-- Toast Notifications -->
     <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <!-- Coming Soon Modal -->
+    <div id="comingSoonModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-2xl">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Coming Soon!</h3>
+                <p class="text-gray-600 mb-6">
+                    The "Ask Questions" feature is currently under construction. 
+                    We're working hard to bring you AI-powered drug insights and detailed information.
+                </p>
+                <div class="flex space-x-3">
+                    <button 
+                        onclick="closeComingSoonModal()" 
+                        class="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                    >
+                        Got it
+                    </button>
+                    <button 
+                        onclick="switchTab('search')" 
+                        class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                    >
+                        Try Drug Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Simple tab switching - no complex initialization needed -->
     <script>
@@ -1320,6 +1353,41 @@
             }
         }
         
+        // Coming Soon Modal Functions
+        function showComingSoonModal() {
+            const modal = document.getElementById('comingSoonModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        }
+        
+        function closeComingSoonModal() {
+            const modal = document.getElementById('comingSoonModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+        
+        // Close modal when clicking outside or pressing Escape
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('comingSoonModal');
+            if (modal) {
+                // Close when clicking outside the modal
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeComingSoonModal();
+                    }
+                });
+                
+                // Close when pressing Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                        closeComingSoonModal();
+                    }
+                });
+            }
+        });
+        
         // Add search functionality directly
         let searchTimeout;
         
@@ -1465,7 +1533,7 @@
         });
     </script>
 
-    <script src="app.js?v=38"></script>
+    <script src="app.js?v=39"></script>
     <!-- Footer -->
     <footer class="bg-gray-50 border-t border-gray-200 mt-16">
         <div class="container mx-auto px-6 py-6">

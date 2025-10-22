@@ -86,7 +86,6 @@ deploy_frontend() {
     
     # Copy necessary files to root of temp directory
     cp frontend/Procfile ${TEMP_DIR}/
-    cp frontend/runtime.txt ${TEMP_DIR}/
     cp frontend/requirements.txt ${TEMP_DIR}/
     
     # Navigate to temp directory

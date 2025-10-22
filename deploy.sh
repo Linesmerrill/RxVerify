@@ -148,6 +148,19 @@ show_status() {
     heroku logs --tail -a ${FRONTEND_APP} -n 10
 }
 
+# Function to update version
+update_version() {
+    echo -e "\n${YELLOW}🔄 Updating version...${NC}"
+    
+    if [ -f "update_version.sh" ]; then
+        ./update_version.sh
+        echo -e "${GREEN}✅ Version updated${NC}"
+    else
+        echo -e "${RED}❌ update_version.sh not found${NC}"
+        exit 1
+    fi
+}
+
 # Main deployment function
 main() {
     # Parse command line arguments
@@ -155,6 +168,7 @@ main() {
     DEPLOY_FRONTEND=true
     SET_ENV=false
     SHOW_STATUS=false
+    UPDATE_VERSION=true
     
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -174,6 +188,10 @@ main() {
                 SHOW_STATUS=true
                 shift
                 ;;
+            --skip-version)
+                UPDATE_VERSION=false
+                shift
+                ;;
             --help)
                 echo "Usage: $0 [OPTIONS]"
                 echo "Options:"
@@ -181,6 +199,7 @@ main() {
                 echo "  --frontend-only   Deploy only the frontend"
                 echo "  --set-env         Set environment variables"
                 echo "  --status          Show deployment status"
+                echo "  --skip-version    Skip version update"
                 echo "  --help            Show this help message"
                 exit 0
                 ;;
@@ -194,6 +213,11 @@ main() {
     # Check prerequisites
     check_heroku_cli
     check_heroku_auth
+    
+    # Update version if requested
+    if [ "$UPDATE_VERSION" = true ]; then
+        update_version
+    fi
     
     # Set environment variables if requested
     if [ "$SET_ENV" = true ]; then

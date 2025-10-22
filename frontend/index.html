@@ -111,11 +111,6 @@
                 </div>
                 
                 <div class="hidden md:flex items-center space-x-6">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-2 h-2 bg-green-400 rounded-full"></div>
-                        <span class="text-sm">System Online</span>
-                    </div>
-                    
                     <!-- Admin Menu Dropdown -->
                     <div class="relative">
                         <button id="adminMenuBtn" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 flex items-center space-x-2">
@@ -153,10 +148,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <button id="statusBtn" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200">
-                        System Status
-                    </button>
                 </div>
             </div>
         </div>
@@ -813,19 +804,13 @@
                 // Update example queries for Drug Search tab
                 updateExampleQueries('search');
             } else if (tabName === 'feedback') {
-                // Update button styles
-                feedbackTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-purple-600 shadow-sm';
-                
-                // Show content
+                // Show content (no tab button styling needed since it's in dropdown)
                 feedbackContent.classList.remove('hidden');
                 
                 // Load feedback data when switching to feedback tab
                 loadFeedbackData();
             } else if (tabName === 'admin') {
-                // Update button styles
-                adminTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-indigo-600 shadow-sm';
-                
-                // Show content
+                // Show content (no tab button styling needed since it's in dropdown)
                 adminContent.classList.remove('hidden');
                 
                 // Load admin data when switching to admin tab
@@ -1459,6 +1444,30 @@
         });
     </script>
 
-    <script src="app.js?v=35"></script>
+    <script src="app.js?v=36"></script>
+    <!-- Footer -->
+    <footer class="bg-gray-50 border-t border-gray-200 mt-16">
+        <div class="container mx-auto px-6 py-6">
+            <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                        <span class="text-sm text-gray-600">System Online</span>
+                    </div>
+                    <div class="hidden md:block w-px h-4 bg-gray-300"></div>
+                    <span class="text-xs text-gray-500">RxVerify v1.0.0</span>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button id="statusBtn" class="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-all duration-200">
+                        System Status
+                    </button>
+                    <div class="hidden md:block w-px h-4 bg-gray-300"></div>
+                    <span class="text-xs text-gray-500">© 2024 RxVerify</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
 </body>
 </html>

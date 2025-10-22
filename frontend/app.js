@@ -18,11 +18,6 @@ class RxVerifyApp {
         this.setupEventListeners();
         this.setupCharacterCounter();
         this.checkSystemStatus();
-        // Only show welcome toast if it's the first visit (not a reload)
-        if (!sessionStorage.getItem('rxverify_visited')) {
-            this.showToast('Welcome to RxVerify! 🚀', 'success');
-            sessionStorage.setItem('rxverify_visited', 'true');
-        }
     }
 
     // WebSocket functionality removed to fix feedback buttons

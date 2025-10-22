@@ -11,6 +11,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
     <meta name="theme-color" content="#3b82f6">
+    <meta name="color-scheme" content="light dark">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -62,6 +63,53 @@
         @keyframes pulseGlow {
             0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
             50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.8); }
+        }
+        
+        /* Dark mode styles */
+        .dark {
+            color-scheme: dark;
+        }
+        .dark .gradient-bg {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        }
+        .dark .bg-white {
+            background-color: #1e293b !important;
+        }
+        .dark .text-gray-900 {
+            color: #f1f5f9 !important;
+        }
+        .dark .text-gray-700 {
+            color: #cbd5e1 !important;
+        }
+        .dark .text-gray-600 {
+            color: #94a3b8 !important;
+        }
+        .dark .text-gray-500 {
+            color: #64748b !important;
+        }
+        .dark .bg-gray-50 {
+            background-color: #0f172a !important;
+        }
+        .dark .bg-gray-100 {
+            background-color: #1e293b !important;
+        }
+        .dark .border-gray-200 {
+            border-color: #334155 !important;
+        }
+        .dark .hover\\:bg-gray-100:hover {
+            background-color: #334155 !important;
+        }
+        .dark .hover\\:text-gray-900:hover {
+            color: #f1f5f9 !important;
+        }
+        .dark .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+        }
+        .dark .shadow-xl {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2) !important;
+        }
+        .dark .shadow-2xl {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4) !important;
         }
     </style>
 </head>
@@ -115,6 +163,24 @@
                 </div>
                 
                 <div class="hidden md:flex items-center space-x-6">
+                    <!-- Dark Mode Toggle -->
+                    <div class="relative">
+                        <button id="themeToggle" class="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200" title="Toggle theme">
+                            <!-- Sun icon (light mode) -->
+                            <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <!-- Moon icon (dark mode) -->
+                            <svg id="moonIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                            <!-- System icon (system mode) -->
+                            <svg id="systemIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
                     <!-- Admin Menu Dropdown -->
                     <div class="relative">
                         <button id="adminMenuBtn" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 flex items-center space-x-2">
@@ -1539,7 +1605,104 @@
         });
     </script>
 
-    <script src="app.js?v=1761152210"></script>
+    <!-- Theme Toggle Functionality -->
+    <script>
+        // Theme management
+        const THEME_KEY = 'rxverify-theme';
+        const THEMES = {
+            LIGHT: 'light',
+            DARK: 'dark', 
+            SYSTEM: 'system'
+        };
+        
+        let currentTheme = THEMES.SYSTEM; // Default to system
+        
+        // Initialize theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            if (savedTheme && Object.values(THEMES).includes(savedTheme)) {
+                currentTheme = savedTheme;
+            }
+            applyTheme();
+            updateThemeIcon();
+        }
+        
+        // Apply theme to document
+        function applyTheme() {
+            const html = document.documentElement;
+            
+            // Remove existing theme classes
+            html.classList.remove('dark');
+            
+            if (currentTheme === THEMES.DARK) {
+                html.classList.add('dark');
+            } else if (currentTheme === THEMES.SYSTEM) {
+                // Check system preference
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    html.classList.add('dark');
+                }
+            }
+            // Light mode is default (no class needed)
+        }
+        
+        // Update theme icon
+        function updateThemeIcon() {
+            const sunIcon = document.getElementById('sunIcon');
+            const moonIcon = document.getElementById('moonIcon');
+            const systemIcon = document.getElementById('systemIcon');
+            
+            // Hide all icons first
+            [sunIcon, moonIcon, systemIcon].forEach(icon => {
+                if (icon) icon.classList.add('hidden');
+            });
+            
+            // Show appropriate icon
+            if (currentTheme === THEMES.LIGHT && sunIcon) {
+                sunIcon.classList.remove('hidden');
+            } else if (currentTheme === THEMES.DARK && moonIcon) {
+                moonIcon.classList.remove('hidden');
+            } else if (currentTheme === THEMES.SYSTEM && systemIcon) {
+                systemIcon.classList.remove('hidden');
+            }
+        }
+        
+        // Cycle through themes
+        function toggleTheme() {
+            if (currentTheme === THEMES.LIGHT) {
+                currentTheme = THEMES.DARK;
+            } else if (currentTheme === THEMES.DARK) {
+                currentTheme = THEMES.SYSTEM;
+            } else {
+                currentTheme = THEMES.LIGHT;
+            }
+            
+            localStorage.setItem(THEME_KEY, currentTheme);
+            applyTheme();
+            updateThemeIcon();
+        }
+        
+        // Listen for system theme changes
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (currentTheme === THEMES.SYSTEM) {
+                    applyTheme();
+                }
+            });
+        }
+        
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', initTheme);
+        
+        // Add click handler to theme toggle button
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+        });
+    </script>
+
+    <script src="app.js?v=1761152600"></script>
     <!-- Footer -->
     <footer class="bg-gray-50 border-t border-gray-200 mt-16">
         <div class="container mx-auto px-6 py-6">

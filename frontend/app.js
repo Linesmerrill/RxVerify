@@ -967,10 +967,18 @@ class RxVerifyApp {
         feedbackButtons.appendChild(thumbsUpBtn);
         feedbackButtons.appendChild(thumbsDownBtn);
         
-        // Create RxCUI info
+        // Create RxCUI info with all RxCUIs as clickable links
         const rxcuiDiv = document.createElement('div');
         rxcuiDiv.className = 'text-xs text-gray-400';
-        rxcuiDiv.textContent = `RxCUI: ${result.rxcui}`;
+        
+        if (result.all_rxcuis && result.all_rxcuis.length > 0) {
+            const rxcuiLinks = result.all_rxcuis.map(rxcui => 
+                `<a href="https://rxnav.nlm.nih.gov/REST/rxcui/${rxcui}/allinfo" target="_blank" class="text-blue-500 hover:text-blue-700 hover:underline">${rxcui}</a>`
+            ).join(', ');
+            rxcuiDiv.innerHTML = `RxCUI: ${rxcuiLinks}`;
+        } else {
+            rxcuiDiv.textContent = `RxCUI: ${result.rxcui}`;
+        }
         
         feedbackDiv.appendChild(feedbackButtons);
         feedbackDiv.appendChild(rxcuiDiv);

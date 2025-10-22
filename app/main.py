@@ -278,7 +278,8 @@ async def search_medications(request: SearchRequest):
                 "is_oral_medication": getattr(result, 'is_oral_medication', True),
                 "discharge_relevance_score": getattr(result, 'discharge_relevance_score', None),
                 "helpful_count": getattr(result, 'helpful_count', 0),
-                "not_helpful_count": getattr(result, 'not_helpful_count', 0)
+                "not_helpful_count": getattr(result, 'not_helpful_count', 0),
+                "all_rxcuis": getattr(result, 'all_rxcuis', [])
             })
         
         return SearchResponse(

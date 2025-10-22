@@ -56,6 +56,8 @@ class DrugSearchResult(BaseModel):
     discharge_relevance_score: Optional[float] = None
     helpful_count: int = 0
     not_helpful_count: int = 0
+    original_name: Optional[str] = None  # Store original name for dosage extraction
+    all_rxcuis: List[str] = []  # Store all RxCUIs for combined results
 
 class SearchResponse(BaseModel):
     results: List[DrugSearchResult]

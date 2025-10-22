@@ -176,6 +176,9 @@ class PostDischargeSearchService:
             # Get feedback counts for this drug and query
             feedback_counts = self.get_feedback_counts(drug_name, query)
             
+            # Store original name for dosage extraction
+            original_name = doc.title
+            
             return DrugSearchResult(
                 rxcui=doc.rxcui,
                 name=drug_name,
@@ -185,7 +188,9 @@ class PostDischargeSearchService:
                 drug_class=drug_class,
                 source=doc.source.value,
                 helpful_count=feedback_counts["helpful"],
-                not_helpful_count=feedback_counts["not_helpful"]
+                not_helpful_count=feedback_counts["not_helpful"],
+                original_name=original_name,  # Store original name for dosage extraction
+                all_rxcuis=[doc.rxcui] if doc.rxcui else []  # Single RxCUI for non-combined results
             )
         except Exception as e:
             logger.error(f"Error converting doc to DrugSearchResult: {str(e)}")
@@ -605,13 +610,17 @@ class PostDischargeSearchService:
         # Remove common medication type suffixes
         base_name = re.sub(r'\s+(tablet|capsule|solution|cream|gel|patch|drops|spray|inhaler|syrup|suspension|powder|oral|topical|injection)\s*$', '', base_name, flags=re.IGNORECASE)
         
-        # Clean up extra spaces
+        # Remove extra words that might be concatenated
+        base_name = re.sub(r'(oral|tablet|capsule)$', '', base_name, flags=re.IGNORECASE)
+        
+        # Clean up extra spaces and special characters
         base_name = re.sub(r'\s+', ' ', base_name).strip()
+        base_name = re.sub(r'[,\-\.]+$', '', base_name)  # Remove trailing punctuation
         
         return base_name.lower()
     
     def _merge_drug_results(self, results: List[DrugSearchResult]) -> DrugSearchResult:
-        """Merge multiple drug results into a single result."""
+        """Merge multiple drug results into a single result with dosage information."""
         if not results:
             return None
         
@@ -621,6 +630,7 @@ class PostDischargeSearchService:
         # Collect all RxCUIs
         all_rxcuis = [result.rxcui for result in results if result.rxcui]
         primary_rxcui = all_rxcuis[0] if all_rxcuis else base_result.rxcui
+        all_rxcui_list = list(dict.fromkeys(all_rxcuis))  # Remove duplicates while preserving order
         
         # Collect all brand names
         all_brand_names = []
@@ -644,21 +654,81 @@ class PostDischargeSearchService:
                 best_drug_class = result.drug_class
                 break
         
+        # Extract dosage information from all results
+        dosages = self._extract_dosages_from_results(results)
+        
+        # Create a more descriptive name that includes dosage info
+        base_name = self._get_base_drug_name(base_result.name)
+        if dosages:
+            # Create a name like "Glipizide (1mg, 2.5mg, 5mg)"
+            dosage_str = ", ".join(dosages)
+            display_name = f"{base_name.title()} ({dosage_str})"
+        else:
+            display_name = base_name.title()
+        
         # Create merged result
         merged_result = DrugSearchResult(
             rxcui=primary_rxcui,
-            name=base_result.name,
+            name=display_name,
             generic_name=base_result.generic_name,
             brand_names=unique_brand_names[:5],  # Limit to 5 brand names
             common_uses=best_common_uses,
             drug_class=best_drug_class or base_result.drug_class,
             source=base_result.source,
-            feedback_score=base_result.feedback_score,
-            is_oral_medication=base_result.is_oral_medication,
-            discharge_relevance_score=base_result.discharge_relevance_score
+            helpful_count=base_result.helpful_count,
+            not_helpful_count=base_result.not_helpful_count,
+            all_rxcuis=all_rxcui_list  # Include all RxCUIs
         )
         
         return merged_result
+    
+    def _extract_dosages_from_results(self, results: List[DrugSearchResult]) -> List[str]:
+        """Extract dosage information from multiple drug results."""
+        dosages = []
+        
+        for result in results:
+            # Extract dosage from the original name if available, otherwise from current name
+            original_name = getattr(result, 'original_name', result.name)
+            dosage = self._extract_dosage_from_name(original_name)
+            if dosage and dosage not in dosages:
+                dosages.append(dosage)
+        
+        # Sort dosages numerically for better display
+        return self._sort_dosages(dosages)
+    
+    def _extract_dosage_from_name(self, name: str) -> Optional[str]:
+        """Extract dosage information from drug name."""
+        import re
+        
+        # Look for dosage patterns like "2.5mg", "10mg", "500mcg", etc.
+        dosage_patterns = [
+            r'(\d+\.?\d*)\s*(mg|mcg|g|ml|%|mg/ml|mcg/ml)',
+            r'(\d+\.?\d*)\s*HR',  # Extended release like "24 HR"
+        ]
+        
+        for pattern in dosage_patterns:
+            matches = re.findall(pattern, name, re.IGNORECASE)
+            if matches:
+                # Return the first dosage found
+                dosage_value, unit = matches[0]
+                return f"{dosage_value}{unit.lower()}"
+        
+        return None
+    
+    def _sort_dosages(self, dosages: List[str]) -> List[str]:
+        """Sort dosages numerically for better display."""
+        if not dosages:
+            return dosages
+        
+        def dosage_sort_key(dosage: str) -> float:
+            """Extract numeric value for sorting."""
+            import re
+            match = re.match(r'(\d+\.?\d*)', dosage)
+            if match:
+                return float(match.group(1))
+            return 0.0
+        
+        return sorted(dosages, key=dosage_sort_key)
     
     def _filter_oral_medications(self, results: List[DrugSearchResult]) -> List[DrugSearchResult]:
         """Filter results to focus on oral medications only."""

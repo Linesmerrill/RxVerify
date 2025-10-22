@@ -3309,3 +3309,4 @@ AttributeError: 'FeedbackRequest' object has no attribute 'is_removal'
 2025-10-20 11:28:24,155 - app.medical_apis - INFO - DailyMed search returned 2 results for 'met'
 2025-10-20 11:28:24,196 - app.medical_apis - INFO - Total documents retrieved from all sources: 10
 2025-10-20 11:28:24,200 - app.post_discharge_search - INFO - Discharge medication search completed in 3110.87ms, found 4 results
+2025-10-22 07:00:39,188 - root - INFO - 🛑 RxVerify shutting down - cleaning up medical API client

@@ -918,7 +918,13 @@
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
                 searchInput.value = drugName;
-                handleSearchInput(drugName);
+                // Call the app's handleSearchInput method instead of the standalone function
+                if (window.rxVerifyApp && window.rxVerifyApp.handleSearchInput) {
+                    window.rxVerifyApp.handleSearchInput(drugName);
+                } else {
+                    // Fallback to standalone function if app not available
+                    handleSearchInput(drugName);
+                }
             }
         }
         
@@ -1459,7 +1465,7 @@
         });
     </script>
 
-    <script src="app.js?v=37"></script>
+    <script src="app.js?v=38"></script>
     <!-- Footer -->
     <footer class="bg-gray-50 border-t border-gray-200 mt-16">
         <div class="container mx-auto px-6 py-6">

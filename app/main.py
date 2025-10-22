@@ -16,6 +16,10 @@ from app.search_service import get_search_service
 from app.medication_cache import get_medication_cache
 from app.rxlist_database import get_rxlist_database
 from app.post_discharge_search import get_post_discharge_search_service
+from app.models import (
+    RetrievedDoc, SearchRequest, DrugSearchResult, SearchResponse,
+    FeedbackRequest, FeedbackResponse, MLPipelineUpdate, Source
+)
 
 # Validate settings
 settings.validate()
@@ -63,28 +67,6 @@ class QueryResponse(BaseModel):
     cross_validation: list  # Cross-validation findings
     search_debug: dict  # Search debugging information
 
-class SearchRequest(BaseModel):
-    query: str
-    limit: int = 10
-
-class SearchResponse(BaseModel):
-    results: list
-    total_found: int
-    processing_time_ms: float
-
-class FeedbackRequest(BaseModel):
-    drug_name: str
-    query: str
-    is_positive: bool
-    is_removal: Optional[bool] = False  # New field to indicate if this is removing a vote
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
-    timestamp: Optional[str] = None
-
-class FeedbackResponse(BaseModel):
-    success: bool
-    message: str
-    updated_score: Optional[float] = None
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):

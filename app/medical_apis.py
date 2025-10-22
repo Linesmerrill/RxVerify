@@ -110,6 +110,63 @@ class MedicalAPIClient:
                                 "text": text
                             })
             
+            # Strategy 2: If no results and query looks like a partial drug name, try common drug prefixes
+            if not results and len(drug_name) >= 3 and drug_name.isalpha():
+                common_drug_prefixes = {
+                    "metf": "metformin",
+                    "glip": "glipizide", 
+                    "lisi": "lisinopril",
+                    "amlo": "amlodipine",
+                    "simv": "simvastatin",
+                    "ator": "atorvastatin",
+                    "omep": "omeprazole",
+                    "panto": "pantoprazole",
+                    "warf": "warfarin",
+                    "furo": "furosemide",
+                    "hydro": "hydrochlorothiazide",
+                    "pred": "prednisone",
+                    "ibu": "ibuprofen",
+                    "acet": "acetaminophen",
+                    "trama": "tramadol",
+                    "oxyc": "oxycodone",
+                    "morph": "morphine",
+                    "loraz": "lorazepam",
+                    "alpraz": "alprazolam",
+                    "diazep": "diazepam"
+                }
+                
+                if drug_name.lower() in common_drug_prefixes:
+                    expanded_name = common_drug_prefixes[drug_name.lower()]
+                    logger.info(f"Expanding partial drug name '{drug_name}' to '{expanded_name}'")
+                    
+                    # Try search with expanded name
+                    params["name"] = expanded_name
+                    response = await self.http_client.get(search_url, params=params)
+                    response.raise_for_status()
+                    data = response.json()
+                    
+                    if "drugGroup" in data and "conceptGroup" in data["drugGroup"]:
+                        for concept_group in data["drugGroup"]["conceptGroup"]:
+                            if "conceptProperties" in concept_group:
+                                for concept in concept_group["conceptProperties"][:limit]:
+                                    # Enhanced text based on query type
+                                    if is_side_effects_query:
+                                        text = f"RxNorm Drug: {concept.get('name', '')} (RxCUI: {concept.get('rxcui', '')}, Type: {concept.get('termType', '')})\nNote: For detailed side effects, see DailyMed package insert or OpenFDA label information."
+                                    else:
+                                        text = f"RxNorm Drug: {concept.get('name', '')} (RxCUI: {concept.get('rxcui', '')}, Type: {concept.get('termType', '')})"
+                                    
+                                    results.append({
+                                        "rxcui": concept.get("rxcui", ""),
+                                        "name": concept.get("name", ""),
+                                        "synonym": concept.get("synonym", ""),
+                                        "term_type": concept.get("termType", ""),
+                                        "source": "rxnorm",
+                                        "id": f"rxnorm_{concept.get('rxcui', 'unknown')}",
+                                        "url": f"https://rxnav.nlm.nih.gov/REST/rxcui/{concept.get('rxcui', '')}",
+                                        "title": concept.get("name", ""),
+                                        "text": text
+                                    })
+            
             logger.info(f"RxNorm search returned {len(results)} results for '{drug_name}'")
             return results
             
@@ -128,9 +185,39 @@ class MedicalAPIClient:
             # Strategy 1: Try searching by RxCUI if we have it from RxNorm
             # First, let's try to get RxCUI from RxNorm for this drug
             try:
+                # Check if we need to expand partial drug name
+                search_name = drug_name
+                if len(drug_name) >= 3 and drug_name.isalpha():
+                    common_drug_prefixes = {
+                        "metf": "metformin",
+                        "glip": "glipizide", 
+                        "lisi": "lisinopril",
+                        "amlo": "amlodipine",
+                        "simv": "simvastatin",
+                        "ator": "atorvastatin",
+                        "omep": "omeprazole",
+                        "panto": "pantoprazole",
+                        "warf": "warfarin",
+                        "furo": "furosemide",
+                        "hydro": "hydrochlorothiazide",
+                        "pred": "prednisone",
+                        "ibu": "ibuprofen",
+                        "acet": "acetaminophen",
+                        "trama": "tramadol",
+                        "oxyc": "oxycodone",
+                        "morph": "morphine",
+                        "loraz": "lorazepam",
+                        "alpraz": "alprazolam",
+                        "diazep": "diazepam"
+                    }
+                    
+                    if drug_name.lower() in common_drug_prefixes:
+                        search_name = common_drug_prefixes[drug_name.lower()]
+                        logger.info(f"DailyMed: Expanding partial drug name '{drug_name}' to '{search_name}'")
+                
                 rxnorm_url = f"{RXNORM_BASE_URL}/drugs.json"
                 rxnorm_params = {
-                    "name": drug_name,
+                    "name": search_name,
                     "allsrc": 1,
                     "src": 1
                 }

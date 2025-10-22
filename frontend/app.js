@@ -973,7 +973,7 @@ class RxVerifyApp {
         
         if (result.all_rxcuis && result.all_rxcuis.length > 0) {
             const rxcuiLinks = result.all_rxcuis.map(rxcui => 
-                `<a href="https://rxnav.nlm.nih.gov/REST/rxcui/${rxcui}/allinfo" target="_blank" class="text-blue-500 hover:text-blue-700 hover:underline">${rxcui}</a>`
+                `<a href="https://rxnav.nlm.nih.gov/REST/RxTerms/rxcui/${rxcui}/allinfo" target="_blank" class="text-blue-500 hover:text-blue-700 hover:underline">${rxcui}</a>`
             ).join(', ');
             rxcuiDiv.innerHTML = `RxCUI: ${rxcuiLinks}`;
         } else {

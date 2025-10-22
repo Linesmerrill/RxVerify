@@ -75,11 +75,85 @@
                         <p class="text-primary-100 text-sm">Multi-Database Drug Assistant</p>
                     </div>
                 </div>
+                
+                <!-- Mobile Admin Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobileAdminMenuBtn" class="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Mobile Dropdown Menu -->
+                    <div id="mobileAdminDropdown" class="absolute right-4 top-20 w-48 bg-white rounded-lg shadow-lg border border-gray-200 hidden z-50">
+                        <div class="py-1">
+                            <button 
+                                onclick="switchTab('feedback')" 
+                                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                                <span>Feedback Analytics</span>
+                            </button>
+                            <button 
+                                onclick="switchTab('admin')" 
+                                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                                <span>Admin Dashboard</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="hidden md:flex items-center space-x-6">
                     <div class="flex items-center space-x-2">
                         <div class="w-2 h-2 bg-green-400 rounded-full"></div>
                         <span class="text-sm">System Online</span>
                     </div>
+                    
+                    <!-- Admin Menu Dropdown -->
+                    <div class="relative">
+                        <button id="adminMenuBtn" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 flex items-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <span>Admin</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="adminDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 hidden z-50">
+                            <div class="py-1">
+                                <button 
+                                    onclick="switchTab('feedback')" 
+                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    <span>Feedback Analytics</span>
+                                </button>
+                                <button 
+                                    onclick="switchTab('admin')" 
+                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                    </svg>
+                                    <span>Admin Dashboard</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <button id="statusBtn" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200">
                         System Status
                     </button>
@@ -131,30 +205,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <span>Ask Questions</span>
-                    </div>
-                </button>
-                <button 
-                    id="feedbackTab" 
-                    class="tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900"
-                    onclick="switchTab('feedback')"
-                >
-                    <div class="flex items-center justify-center space-x-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                        <span>Feedback Analytics</span>
-                    </div>
-                </button>
-                <button 
-                    id="adminTab" 
-                    class="tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900"
-                    onclick="switchTab('admin')"
-                >
-                    <div class="flex items-center justify-center space-x-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                        <span>Admin Dashboard</span>
                     </div>
                 </button>
             </div>
@@ -716,27 +766,33 @@
         function switchTab(tabName) {
             console.log('Switching to tab:', tabName);
             
-            // Get tab buttons
+            // Get tab buttons (only main tabs now)
             const askTab = document.getElementById('askTab');
             const searchTab = document.getElementById('searchTab');
-            const feedbackTab = document.getElementById('feedbackTab');
-            const adminTab = document.getElementById('adminTab');
             const askContent = document.getElementById('askTabContent');
             const searchContent = document.getElementById('searchTabContent');
             const feedbackContent = document.getElementById('feedbackTabContent');
             const adminContent = document.getElementById('adminTabContent');
             
-            // Reset all tab styles
+            // Reset main tab styles
             askTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
             searchTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
-            feedbackTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
-            adminTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
             
             // Hide all content
             askContent.classList.add('hidden');
             searchContent.classList.add('hidden');
             feedbackContent.classList.add('hidden');
             adminContent.classList.add('hidden');
+            
+            // Close dropdown menus when switching tabs
+            const dropdown = document.getElementById('adminDropdown');
+            const mobileDropdown = document.getElementById('mobileAdminDropdown');
+            if (dropdown) {
+                dropdown.classList.add('hidden');
+            }
+            if (mobileDropdown) {
+                mobileDropdown.classList.add('hidden');
+            }
             
             if (tabName === 'ask') {
                 // Update button styles
@@ -1350,9 +1406,59 @@
             
             // Set default tab to search
             switchTab('search');
+            
+            // Admin dropdown functionality (desktop)
+            const adminMenuBtn = document.getElementById('adminMenuBtn');
+            const adminDropdown = document.getElementById('adminDropdown');
+            
+            if (adminMenuBtn && adminDropdown) {
+                adminMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    adminDropdown.classList.toggle('hidden');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!adminMenuBtn.contains(e.target) && !adminDropdown.contains(e.target)) {
+                        adminDropdown.classList.add('hidden');
+                    }
+                });
+                
+                // Close dropdown when pressing Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        adminDropdown.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Mobile admin dropdown functionality
+            const mobileAdminMenuBtn = document.getElementById('mobileAdminMenuBtn');
+            const mobileAdminDropdown = document.getElementById('mobileAdminDropdown');
+            
+            if (mobileAdminMenuBtn && mobileAdminDropdown) {
+                mobileAdminMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    mobileAdminDropdown.classList.toggle('hidden');
+                });
+                
+                // Close mobile dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!mobileAdminMenuBtn.contains(e.target) && !mobileAdminDropdown.contains(e.target)) {
+                        mobileAdminDropdown.classList.add('hidden');
+                    }
+                });
+                
+                // Close mobile dropdown when pressing Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        mobileAdminDropdown.classList.add('hidden');
+                    }
+                });
+            }
         });
     </script>
 
-    <script src="app.js?v=34"></script>
+    <script src="app.js?v=35"></script>
 </body>
 </html>

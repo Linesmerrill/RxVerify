@@ -128,6 +128,20 @@
         .dark .tab-button.hover\\:text-gray-900:hover {
             color: #f1f5f9 !important;
         }
+        
+        /* Dark mode badge styling */
+        .dark .bg-blue-100 {
+            background-color: #1e3a8a !important;
+        }
+        .dark .text-blue-800 {
+            color: #93c5fd !important;
+        }
+        .dark .bg-green-100 {
+            background-color: #064e3b !important;
+        }
+        .dark .text-green-800 {
+            color: #6ee7b7 !important;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -248,8 +262,14 @@
                 Get Real-Time Drug Information
             </h2>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Ask questions about medications and get intelligent, cited responses from live medical databases including RxNorm, DailyMed, OpenFDA, and DrugBank.
+                Search medications and get real-time information from live medical databases including RxNorm, DailyMed, OpenFDA, and DrugBank.
             </p>
+            <div class="mt-4 inline-flex items-center space-x-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>Ask Questions feature coming soon!</span>
+            </div>
             <div class="mt-4 inline-flex items-center space-x-2 px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -1719,7 +1739,7 @@
         });
     </script>
 
-    <script src="app.js?v=1761153404"></script>
+    <script src="app.js?v=1761153500"></script>
     <!-- Footer -->
     <footer class="bg-gray-50 border-t border-gray-200 mt-16">
         <div class="container mx-auto px-6 py-6">

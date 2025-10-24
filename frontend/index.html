@@ -660,21 +660,6 @@
                         </div>
                     </div>
 
-                    <!-- Debug Actions -->
-                    <div class="bg-yellow-50 rounded-xl p-6">
-                        <h5 class="text-lg font-semibold text-yellow-800 mb-4">Debug Actions</h5>
-                        <div class="flex flex-wrap gap-4">
-                            <button onclick="clearAllFeedback()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
-                                Clear All Feedback
-                            </button>
-                            <button onclick="exportFeedbackData()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
-                                Export Feedback Data
-                            </button>
-                            <button onclick="importFeedbackData()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                                Import Feedback Data
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1279,43 +1264,6 @@
                 console.error('Error removing feedback:', error);
                 showToast('Error removing feedback', 'error');
             }
-        }
-        
-        async function clearAllFeedback() {
-            if (!confirm('Are you sure you want to clear ALL feedback data? This action cannot be undone.')) {
-                return;
-            }
-            
-            try {
-                const apiBaseUrl = getApiBaseUrl();
-                const response = await fetch(`${apiBaseUrl}/feedback/clear`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                
-                const data = await response.json();
-                if (data.success) {
-                    showToast('All feedback cleared successfully', 'success');
-                    loadFeedbackData(); // Refresh the data
-                } else {
-                    showToast('Failed to clear feedback: ' + data.message, 'error');
-                }
-            } catch (error) {
-                console.error('Error clearing feedback:', error);
-                showToast('Error clearing feedback', 'error');
-            }
-        }
-        
-        function exportFeedbackData() {
-            // This would export the feedback data as JSON
-            showToast('Export functionality coming soon', 'info');
-        }
-        
-        function importFeedbackData() {
-            // This would allow importing feedback data from a file
-            showToast('Import functionality coming soon', 'info');
         }
         
         function showToast(message, type = 'info') {

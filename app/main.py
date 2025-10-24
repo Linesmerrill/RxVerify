@@ -145,12 +145,6 @@ async def root():
         "status": "/status"
     }
 
-@app.get("/admin")
-async def admin_page():
-    """Admin dashboard page."""
-    from fastapi.responses import FileResponse
-    return FileResponse("frontend/admin.html")
-
 @app.post("/query", response_model=QueryResponse)
 async def query(q: Query, request: Request):
     """Main query endpoint for drug information."""

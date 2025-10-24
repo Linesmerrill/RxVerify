@@ -1074,8 +1074,8 @@
                 // Show content (no tab button styling needed since it's in dropdown)
                 adminContent.classList.remove('hidden');
                 
-                // Load admin data when switching to admin tab
-                loadAdminData();
+                // Initialize admin dashboard when switching to admin tab
+                initializeAdminDashboard();
             }
         }
         
@@ -1505,16 +1505,44 @@
         async function loadAdminData() {
             try {
                 const apiBaseUrl = getApiBaseUrl();
+                console.log('Loading admin data from:', apiBaseUrl);
                 
                 // Load all admin data in parallel with time filter
                 const [systemStatus, cacheStats, rxlistStats, feedbackStats, metricsSummary, timeSeriesData] = await Promise.all([
-                    fetch(`${apiBaseUrl}/status`).then(r => r.json()),
-                    fetch(`${apiBaseUrl}/cache/stats`).then(r => r.json()),
-                    fetch(`${apiBaseUrl}/rxlist/stats`).then(r => r.json()),
-                    fetch(`${apiBaseUrl}/feedback/stats?time_period_hours=${currentTimeFilter}`).then(r => r.json()),
-                    fetch(`${apiBaseUrl}/metrics/summary?time_period_hours=${currentTimeFilter}`).then(r => r.json()),
-                    fetch(`${apiBaseUrl}/metrics/time-series?metric_type=searches&time_period_hours=${currentTimeFilter}&interval_hours=${Math.max(1, Math.floor(currentTimeFilter / 24))}`).then(r => r.json())
+                    fetch(`${apiBaseUrl}/status`).then(r => {
+                        console.log('Status response:', r.status);
+                        return r.json();
+                    }),
+                    fetch(`${apiBaseUrl}/cache/stats`).then(r => {
+                        console.log('Cache stats response:', r.status);
+                        return r.json();
+                    }),
+                    fetch(`${apiBaseUrl}/rxlist/stats`).then(r => {
+                        console.log('RxList stats response:', r.status);
+                        return r.json();
+                    }),
+                    fetch(`${apiBaseUrl}/feedback/stats?time_period_hours=${currentTimeFilter}`).then(r => {
+                        console.log('Feedback stats response:', r.status);
+                        return r.json();
+                    }),
+                    fetch(`${apiBaseUrl}/metrics/summary?time_period_hours=${currentTimeFilter}`).then(r => {
+                        console.log('Metrics summary response:', r.status);
+                        return r.json();
+                    }),
+                    fetch(`${apiBaseUrl}/metrics/time-series?metric_type=searches&time_period_hours=${currentTimeFilter}&interval_hours=${Math.max(1, Math.floor(currentTimeFilter / 24))}`).then(r => {
+                        console.log('Time series response:', r.status);
+                        return r.json();
+                    })
                 ]);
+                
+                console.log('All API responses received:', {
+                    systemStatus: systemStatus.status,
+                    cacheStats: cacheStats.status,
+                    rxlistStats: rxlistStats.status,
+                    feedbackStats: feedbackStats.success,
+                    metricsSummary: metricsSummary.success,
+                    timeSeriesData: timeSeriesData.success
+                });
                 
                 updateSystemOverview(systemStatus, feedbackStats, metricsSummary);
                 updateDatabaseStats(cacheStats, rxlistStats);
@@ -1523,7 +1551,7 @@
                 
             } catch (error) {
                 console.error('Error loading admin data:', error);
-                showToast('Failed to load admin data', 'error');
+                showToast('Failed to load admin data: ' + error.message, 'error');
             }
         }
         
@@ -1561,8 +1589,8 @@
         function updateDatabaseStats(cacheStats, rxlistStats) {
             // Update cache stats
             if (cacheStats.cache_stats) {
-                document.getElementById('cacheEntries').textContent = cacheStats.cache_stats.total_entries || 0;
-                document.getElementById('cacheSize').textContent = cacheStats.cache_stats.cache_size || 'N/A';
+                document.getElementById('cacheEntries').textContent = cacheStats.cache_stats.total_medications || 0;
+                document.getElementById('cacheSize').textContent = cacheStats.cache_stats.total_searches || 0;
                 document.getElementById('cacheLastUpdated').textContent = 
                     cacheStats.cache_stats.last_updated ? new Date(cacheStats.cache_stats.last_updated).toLocaleString() : 'N/A';
             }
@@ -1693,6 +1721,12 @@
             showToast('Refreshing admin data...', 'info');
             await loadAdminData();
             showToast('Admin data refreshed successfully', 'success');
+        }
+        
+        // Initialize admin dashboard when tab is shown
+        function initializeAdminDashboard() {
+            updateTimeFilterButtons();
+            loadAdminData();
         }
         
         async function clearMedicationCache() {

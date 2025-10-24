@@ -18,8 +18,11 @@ from app.medication_cache import get_medication_cache
 from app.rxlist_database import get_rxlist_database
 from app.post_discharge_search import get_post_discharge_search_service
 from app.metrics_database import MetricsDatabase
-from app.database_manager import db_manager
-from app.mongodb_manager import mongodb_manager
+# Import database manager based on environment
+if 'MONGODB_URI' in os.environ or 'MONGODB_URL' in os.environ:
+    from app.mongodb_manager import mongodb_manager as db_manager
+else:
+    from app.database_manager import db_manager
 from app.models import (
     RetrievedDoc, SearchRequest, DrugSearchResult, SearchResponse,
     FeedbackRequest, FeedbackResponse, MLPipelineUpdate, Source
@@ -60,7 +63,7 @@ async def startup_event():
         # Check if MongoDB is configured
         if 'MONGODB_URI' in os.environ or 'MONGODB_URL' in os.environ:
             logger.info("MongoDB detected - initializing MongoDB collections")
-            await mongodb_manager.create_indexes()
+            await db_manager.create_indexes()
             logger.info("✅ MongoDB collections initialized successfully")
         else:
             logger.info("SQL/PostgreSQL detected - initializing database tables")

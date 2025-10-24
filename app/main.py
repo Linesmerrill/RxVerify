@@ -391,22 +391,22 @@ async def get_feedback_stats():
     try:
         search_service = await get_post_discharge_search_service()
         
-                # Get feedback statistics from database
-                stats = search_service._feedback_db.get_feedback_stats()
-                feedback_counts = search_service._feedback_db.get_all_feedback_counts()
-                feedback_entries = search_service._feedback_db.get_all_feedback_entries()
-                ignored_medications = search_service._feedback_db.get_ignored_medications()
-                
-                # Convert to the expected format
-                feedback_list = []
-                for key, data in feedback_counts.items():
-                    feedback_list.append({
-                        "drug_name": data["drug_name"],
-                        "query": data["query"],
-                        "helpful_count": data["helpful"],
-                        "not_helpful_count": data["not_helpful"],
-                        "total_votes": data["helpful"] + data["not_helpful"]
-                    })
+        # Get feedback statistics from database
+        stats = search_service._feedback_db.get_feedback_stats()
+        feedback_counts = search_service._feedback_db.get_all_feedback_counts()
+        feedback_entries = search_service._feedback_db.get_all_feedback_entries()
+        ignored_medications = search_service._feedback_db.get_ignored_medications()
+        
+        # Convert to the expected format
+        feedback_list = []
+        for key, data in feedback_counts.items():
+            feedback_list.append({
+                "drug_name": data["drug_name"],
+                "query": data["query"],
+                "helpful_count": data["helpful"],
+                "not_helpful_count": data["not_helpful"],
+                "total_votes": data["helpful"] + data["not_helpful"]
+            })
         
         return {
             "success": True,

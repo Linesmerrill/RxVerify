@@ -17,6 +17,7 @@ from app.medication_cache import get_medication_cache
 from app.rxlist_database import get_rxlist_database
 from app.post_discharge_search import get_post_discharge_search_service
 from app.metrics_database import MetricsDatabase
+from app.database_manager import db_manager
 from app.models import (
     RetrievedDoc, SearchRequest, DrugSearchResult, SearchResponse,
     FeedbackRequest, FeedbackResponse, MLPipelineUpdate, Source
@@ -51,6 +52,13 @@ app.add_middleware(
 async def startup_event():
     """Initialize resources on startup."""
     logger.info("🚀 RxVerify starting up - Real-time medical database integration enabled")
+    
+    # Initialize database tables
+    try:
+        db_manager.create_tables()
+        logger.info("✅ Database tables initialized successfully")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize database tables: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_event():

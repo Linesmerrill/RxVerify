@@ -2,6 +2,35 @@
 
 A real-time medication search and drug information system designed for post-discharge medication management. Features live API integration with RxNorm, DailyMed, OpenFDA, and DrugBank, plus intelligent feedback-driven ML pipeline optimization.
 
+## 🗄️ Database Setup
+
+RxVerify uses **PostgreSQL** for persistent storage in production and **SQLite** for local development.
+
+### Production (Heroku PostgreSQL)
+- **Free tier**: Heroku PostgreSQL Mini (10,000 rows, 20 connections)
+- **Persistent**: Data survives deployments and dyno restarts
+- **Automatic**: Database URL provided via `DATABASE_URL` environment variable
+
+### Local Development (SQLite)
+- **File-based**: `rxverify.db` in project root
+- **No setup required**: Automatically created on first run
+- **Fast**: Perfect for development and testing
+
+### Database Migration
+When deploying to production, the system automatically:
+1. Creates all required tables
+2. Migrates existing SQLite data (if any)
+3. Sets up proper indexes for performance
+
+### Manual Database Setup
+```bash
+# Add PostgreSQL to Heroku
+./setup_postgres.sh
+
+# Deploy with database migration
+./deploy_with_postgres.sh
+```
+
 ## 🚀 Quick Start
 
 ### Option 1: Using Makefile (Recommended)

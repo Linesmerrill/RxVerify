@@ -31,23 +31,17 @@ help:
 # Start both servers
 run:
 	@echo "🚀 Starting RxVerify with Python Server Manager..."
-	@python run_servers.py
+	@./venv/bin/python run_servers.py
 
 # Start backend server
 run-backend:
 	@echo "🚀 Starting RxVerify Backend..."
-	@if [ -f "venv/bin/activate.fish" ]; then \
-		echo "Using Fish shell virtual environment"; \
-		source venv/bin/activate.fish && python -m uvicorn app.main:app --reload --port 8000; \
-	else \
-		echo "Using standard Python virtual environment"; \
-		source venv/bin/activate && python -m uvicorn app.main:app --reload --port 8000; \
-	fi
+	@./venv/bin/python -m uvicorn app.main:app --reload --port 8000
 
 # Start frontend server
 run-frontend:
 	@echo "🌐 Starting RxVerify Frontend..."
-	@cd frontend && python -m http.server 8080
+	@cd frontend && ../venv/bin/python -m http.server 8080
 
 # Stop both servers
 stop: stop-backend stop-frontend
@@ -69,14 +63,14 @@ restart: stop run
 # Install dependencies
 install:
 	@echo "📦 Installing Python dependencies..."
-	@python -m pip install --upgrade pip
-	@python -m pip install -r requirements.txt
+	@./venv/bin/python -m pip install --upgrade pip
+	@./venv/bin/python -m pip install -r requirements.txt
 	@echo "✅ Dependencies installed!"
 
 # Run tests
 test:
 	@echo "🧪 Running tests..."
-	@python -m pytest tests/ -v
+	@./venv/bin/python -m pytest tests/ -v
 
 # Check server status
 status:

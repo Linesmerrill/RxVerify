@@ -9,6 +9,7 @@ from typing import Optional
 from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
+from sqlalchemy.ext.declarative import declarative_base
 
 logger = logging.getLogger(__name__)
 
@@ -104,3 +105,6 @@ class DatabaseConfig:
 
 # Global database configuration instance
 db_config = DatabaseConfig()
+
+# SQLAlchemy Base for model definitions
+Base = declarative_base()

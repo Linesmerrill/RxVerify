@@ -262,8 +262,9 @@ async def search_medications(request: SearchRequest):
         
         # Add timeout for the search operation
         import asyncio
+        search_service = await get_post_discharge_search_service()
         search_task = asyncio.create_task(
-            get_post_discharge_search_service().search_discharge_medications(request.query, request.limit)
+            search_service.search_discharge_medications(request.query, request.limit)
         )
         
         try:

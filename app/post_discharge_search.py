@@ -12,6 +12,7 @@ from app.models import DrugSearchResult, Source
 from app.medical_apis import get_medical_api_client
 from app.embeddings import embed
 from app.db import search_vector, add_document
+from app.feedback_database import FeedbackDatabase
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ class PostDischargeSearchService:
     
     def __init__(self):
         self._medication_cache = {}
-        self._feedback_counts = {}  # Store helpful/not_helpful counts per drug+query
+        self._feedback_db = FeedbackDatabase()  # Persistent feedback storage
         
         # Common post-hospital discharge medication patterns
         self._discharge_med_patterns = [
@@ -853,34 +854,11 @@ class PostDischargeSearchService:
     
     def record_feedback(self, drug_name: str, query: str, is_positive: bool, is_removal: bool = False):
         """Record user feedback for ML pipeline."""
-        key = f"{drug_name.lower()}_{query.lower()}"
-        
-        # Initialize counts if not exists
-        if key not in self._feedback_counts:
-            self._feedback_counts[key] = {"helpful": 0, "not_helpful": 0}
-        
-        # Handle removal or addition
-        if is_removal:
-            # Decrement the appropriate count (but don't go below 0)
-            if is_positive:
-                self._feedback_counts[key]["helpful"] = max(0, self._feedback_counts[key]["helpful"] - 1)
-            else:
-                self._feedback_counts[key]["not_helpful"] = max(0, self._feedback_counts[key]["not_helpful"] - 1)
-            action = "removed"
-        else:
-            # Increment the appropriate count
-            if is_positive:
-                self._feedback_counts[key]["helpful"] += 1
-            else:
-                self._feedback_counts[key]["not_helpful"] += 1
-            action = "added"
-        
-        logger.info(f"Recorded feedback for {key}: {action} {'helpful' if is_positive else 'not_helpful'} (counts: {self._feedback_counts[key]})")
+        return self._feedback_db.record_feedback(drug_name, query, is_positive, is_removal=is_removal)
     
     def get_feedback_counts(self, drug_name: str, query: str) -> Dict[str, int]:
         """Get feedback counts for a specific drug and query."""
-        key = f"{drug_name.lower()}_{query.lower()}"
-        return self._feedback_counts.get(key, {"helpful": 0, "not_helpful": 0})
+        return self._feedback_db.get_feedback_counts(drug_name, query)
 
 # Global instance
 _post_discharge_search_service = None

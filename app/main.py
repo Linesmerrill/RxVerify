@@ -391,30 +391,29 @@ async def get_feedback_stats():
     try:
         search_service = await get_post_discharge_search_service()
         
-        # Calculate feedback statistics
-        total_helpful = sum(counts["helpful"] for counts in search_service._feedback_counts.values())
-        total_not_helpful = sum(counts["not_helpful"] for counts in search_service._feedback_counts.values())
-        total_feedback = total_helpful + total_not_helpful
+        # Get feedback statistics from database
+        stats = search_service._feedback_db.get_feedback_stats()
+        feedback_counts = search_service._feedback_db.get_all_feedback_counts()
         
-        # Get detailed feedback list
+        # Convert to the expected format
         feedback_list = []
-        for key, counts in search_service._feedback_counts.items():
-            if '_' in key:
-                drug_name, query = key.rsplit('_', 1)
-                feedback_list.append({
-                    "drug_name": drug_name,
-                    "query": query,
-                    "helpful_count": counts["helpful"],
-                    "not_helpful_count": counts["not_helpful"],
-                    "total_votes": counts["helpful"] + counts["not_helpful"]
-                })
+        for key, data in feedback_counts.items():
+            feedback_list.append({
+                "drug_name": data["drug_name"],
+                "query": data["query"],
+                "helpful_count": data["helpful"],
+                "not_helpful_count": data["not_helpful"],
+                "total_votes": data["helpful"] + data["not_helpful"]
+            })
         
         return {
             "success": True,
             "stats": {
-                "total_feedback": total_feedback,
-                "positive_ratings": total_helpful,
-                "negative_ratings": total_not_helpful,
+                "total_feedback": stats["total_feedback"],
+                "positive_ratings": stats["total_helpful"],
+                "negative_ratings": stats["total_not_helpful"],
+                "recent_feedback_24h": stats["recent_feedback_24h"],
+                "helpful_percentage": round(stats["helpful_percentage"], 2),
                 "last_updated": datetime.now().isoformat()
             },
             "feedback_list": feedback_list,
@@ -436,11 +435,9 @@ async def remove_feedback(request: dict):
             return {"success": False, "message": "drug_name and query are required"}
         
         search_service = await get_post_discharge_search_service()
-        key = f"{drug_name}_{query}"
+        success = search_service._feedback_db.remove_feedback(drug_name, query)
         
-        if key in search_service._feedback_counts:
-            del search_service._feedback_counts[key]
-            logger.info(f"Removed feedback for {drug_name} with query {query}")
+        if success:
             return {"success": True, "message": "Feedback removed successfully"}
         else:
             return {"success": False, "message": "Feedback not found"}
@@ -454,10 +451,13 @@ async def clear_all_feedback():
     """Clear all feedback data."""
     try:
         search_service = await get_post_discharge_search_service()
-        search_service._feedback_counts.clear()
-        logger.info("Cleared all feedback data")
-        return {"success": True, "message": "All feedback cleared successfully"}
+        success = search_service._feedback_db.clear_all_feedback()
         
+        if success:
+            return {"success": True, "message": "All feedback cleared successfully"}
+        else:
+            return {"success": False, "message": "Failed to clear feedback"}
+            
     except Exception as e:
         logger.error(f"Error clearing feedback: {str(e)}")
         return {"success": False, "message": str(e)}

@@ -115,9 +115,9 @@ class FeedbackDatabase:
         """Record user feedback for ML pipeline."""
         try:
             if self.use_mongodb:
-                await self.mongodb_manager.add_feedback(drug_name, query, is_positive, is_removal)
+                await self.mongodb_manager.add_feedback(drug_name, query, is_positive, is_removal=is_removal)
             else:
-                self.db_manager.add_feedback(drug_name, query, is_positive, is_removal)
+                self.db_manager.add_feedback(drug_name, query, is_positive, is_removal=is_removal)
             logger.info(f"Recorded feedback: {drug_name} - {query} - {'Positive' if is_positive else 'Negative'}")
         except Exception as e:
             logger.error(f"Failed to record feedback: {e}")

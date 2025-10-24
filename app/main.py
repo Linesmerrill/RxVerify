@@ -430,10 +430,10 @@ async def submit_feedback(feedback: FeedbackRequest):
         search_service = await get_post_discharge_search_service()
         
         # Record the feedback (with removal flag)
-        search_service.record_feedback(feedback.drug_name, feedback.query, feedback.is_positive, is_removal)
+        await search_service.record_feedback(feedback.drug_name, feedback.query, feedback.is_positive, is_removal)
         
         # Get updated counts
-        feedback_counts = search_service.get_feedback_counts(feedback.drug_name, feedback.query)
+        feedback_counts = await search_service.get_feedback_counts(feedback.drug_name, feedback.query)
         
         # Record successful request
         monitor.record_request(success=True)

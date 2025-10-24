@@ -20,6 +20,7 @@ class FeedbackDatabase:
         if self.use_mongodb:
             from app.mongodb_manager import mongodb_manager
             self.db_manager = mongodb_manager
+            self.mongodb_manager = mongodb_manager
             logger.info("Feedback database initialized with MongoDB")
         else:
             from app.database_manager import db_manager
@@ -113,10 +114,10 @@ class FeedbackDatabase:
     async def record_feedback(self, drug_name: str, query: str, is_positive: bool, is_removal: bool = False):
         """Record user feedback for ML pipeline."""
         try:
-            if self.is_mongodb:
-                await mongodb_manager.add_feedback(drug_name, query, is_positive, is_removal)
+            if self.use_mongodb:
+                await self.mongodb_manager.add_feedback(drug_name, query, is_positive, is_removal)
             else:
-                db_manager.add_feedback(drug_name, query, is_positive, is_removal)
+                self.db_manager.add_feedback(drug_name, query, is_positive, is_removal)
             logger.info(f"Recorded feedback: {drug_name} - {query} - {'Positive' if is_positive else 'Negative'}")
         except Exception as e:
             logger.error(f"Failed to record feedback: {e}")

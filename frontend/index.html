@@ -1412,35 +1412,97 @@
             }
         }
         
-        async function removeFeedback(drugName, query) {
-            if (!confirm(`Are you sure you want to remove feedback for "${drugName}" with query "${query}"?`)) {
-                return;
-            }
+        // Modern confirmation modal functions
+        function showConfirmationModal(drugName, query, onConfirm) {
+            const modal = document.getElementById('confirmationModal');
+            const modalContent = document.getElementById('modalContent');
+            const modalDrugName = document.getElementById('modalDrugName');
+            const modalQuery = document.getElementById('modalQuery');
+            const modalCancel = document.getElementById('modalCancel');
+            const modalConfirm = document.getElementById('modalConfirm');
             
-            try {
-                const apiBaseUrl = getApiBaseUrl();
-                const response = await fetch(`${apiBaseUrl}/feedback/remove`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        drug_name: drugName,
-                        query: query
-                    })
-                });
-                
-                const data = await response.json();
-                if (data.success) {
-                    showToast('Feedback removed successfully', 'success');
-                    loadFeedbackData(); // Refresh the data
-                } else {
-                    showToast('Failed to remove feedback: ' + data.message, 'error');
+            // Set the drug name and query
+            modalDrugName.textContent = drugName;
+            modalQuery.textContent = query;
+            
+            // Show modal with animation
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            
+            // Handle cancel
+            const handleCancel = () => {
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            };
+            
+            // Handle confirm
+            const handleConfirm = () => {
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    onConfirm();
+                }, 300);
+            };
+            
+            // Remove existing event listeners
+            modalCancel.replaceWith(modalCancel.cloneNode(true));
+            modalConfirm.replaceWith(modalConfirm.cloneNode(true));
+            
+            // Add new event listeners
+            document.getElementById('modalCancel').addEventListener('click', handleCancel);
+            document.getElementById('modalConfirm').addEventListener('click', handleConfirm);
+            
+            // Close on backdrop click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    handleCancel();
                 }
-            } catch (error) {
-                console.error('Error removing feedback:', error);
-                showToast('Error removing feedback', 'error');
-            }
+            });
+            
+            // Close on Escape key
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    handleCancel();
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
+        }
+        
+        async function removeFeedback(drugName, query) {
+            showConfirmationModal(drugName, query, async () => {
+                try {
+                    const apiBaseUrl = getApiBaseUrl();
+                    const response = await fetch(`${apiBaseUrl}/feedback/remove`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            drug_name: drugName,
+                            query: query
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        showToast('Feedback removed successfully', 'success');
+                        loadFeedbackData(); // Refresh the data
+                    } else {
+                        showToast('Failed to remove feedback: ' + data.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error removing feedback:', error);
+                    showToast('Error removing feedback', 'error');
+                }
+            });
         }
         
         function showToast(message, type = 'info') {
@@ -2065,6 +2127,57 @@
             </div>
         </div>
     </footer>
+
+    <!-- Modern Confirmation Modal -->
+    <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0" id="modalContent">
+            <div class="p-6">
+                <!-- Modal Header -->
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Remove Feedback</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">This action cannot be undone</p>
+                    </div>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="mb-6">
+                    <p class="text-gray-700 dark:text-gray-300 mb-3">
+                        Are you sure you want to remove this feedback entry?
+                    </p>
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                        <div class="text-sm">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-gray-500 dark:text-gray-400">Drug:</span>
+                                <span class="font-medium text-gray-900 dark:text-white" id="modalDrugName">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500 dark:text-gray-400">Query:</span>
+                                <span class="font-medium text-gray-900 dark:text-white" id="modalQuery">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="flex space-x-3">
+                    <button type="button" id="modalCancel" class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200">
+                        Cancel
+                    </button>
+                    <button type="button" id="modalConfirm" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                        Remove Feedback
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>

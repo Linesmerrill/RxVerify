@@ -5,7 +5,7 @@ Pydantic models for MongoDB document validation and serialization
 
 from datetime import datetime
 from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from bson import ObjectId
 
 class PyObjectId(ObjectId):
@@ -21,8 +21,9 @@ class PyObjectId(ObjectId):
         return ObjectId(v)
 
     @classmethod
-    def __modify_schema__(cls, field_schema):
+    def __get_pydantic_json_schema__(cls, field_schema):
         field_schema.update(type="string")
+        return field_schema
 
 class FeedbackDocument(BaseModel):
     """Feedback document model."""
@@ -35,7 +36,7 @@ class FeedbackDocument(BaseModel):
     session_id: Optional[str] = Field(None, max_length=100)
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
@@ -53,7 +54,7 @@ class SearchMetricDocument(BaseModel):
     cache_misses: int = Field(default=0)
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
@@ -70,7 +71,7 @@ class ApiMetricDocument(BaseModel):
     results_count: int = Field(default=0)
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
@@ -83,7 +84,7 @@ class SystemMetricDocument(BaseModel):
     metadata: Optional[Dict[str, Any]] = Field(None)
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
@@ -97,7 +98,7 @@ class UserActivityDocument(BaseModel):
     metadata: Optional[Dict[str, Any]] = Field(None)
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
@@ -110,7 +111,7 @@ class MedicationCacheDocument(BaseModel):
     hit_count: int = Field(default=0)
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
@@ -128,6 +129,6 @@ class RxListDrugDocument(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}

@@ -6,7 +6,7 @@ set -e
 echo "🔧 Adding PostgreSQL addon to Heroku apps..."
 
 # App names
-BACKEND_APP="rxverify-backend"
+BACKEND_APP="rx-verify-api"
 
 # Check if Heroku CLI is installed
 if ! command -v heroku &> /dev/null; then

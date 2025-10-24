@@ -37,8 +37,8 @@ if ! heroku auth:whoami &> /dev/null; then
 fi
 
 # App names
-BACKEND_APP="rxverify-backend"
-FRONTEND_APP="rxverify-frontend"
+BACKEND_APP="rx-verify-api"
+FRONTEND_APP="rx-verify"
 
 print_status "Setting up PostgreSQL database..."
 

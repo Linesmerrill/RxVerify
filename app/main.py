@@ -145,6 +145,12 @@ async def root():
         "status": "/status"
     }
 
+@app.get("/admin")
+async def admin_page():
+    """Admin dashboard page."""
+    from fastapi.responses import FileResponse
+    return FileResponse("frontend/admin.html")
+
 @app.post("/query", response_model=QueryResponse)
 async def query(q: Query, request: Request):
     """Main query endpoint for drug information."""
@@ -472,6 +478,63 @@ async def unignore_medication(request: dict):
             
     except Exception as e:
         logger.error(f"Error unignoring medication: {str(e)}")
+        return {"success": False, "message": str(e)}
+
+@app.get("/admin/stats")
+async def get_admin_stats():
+    """Get admin dashboard statistics."""
+    try:
+        search_service = await get_post_discharge_search_service()
+        
+        # Get system health
+        system_health = await get_system_status()
+        
+        # Get feedback database stats
+        db_stats = search_service._feedback_db.get_database_stats()
+        
+        return {
+            "success": True,
+            "system_health": {
+                "status": "Online",
+                "api_health": "Healthy", 
+                "database_status": "Connected"
+            },
+            "database_stats": db_stats,
+            "charts": {
+                "search_performance": "placeholder",
+                "feedback_trends": "placeholder"
+            },
+            "timestamp": time.time()
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get admin stats: {str(e)}")
+        return {"success": False, "message": str(e)}
+
+@app.post("/admin/clear-cache")
+async def clear_medication_cache():
+    """Clear the medication cache."""
+    try:
+        cache = await get_medication_cache()
+        cache.clear_cache()
+        
+        return {"success": True, "message": "Medication cache cleared successfully"}
+        
+    except Exception as e:
+        logger.error(f"Failed to clear medication cache: {str(e)}")
+        return {"success": False, "message": str(e)}
+
+@app.post("/admin/clear-rxlist")
+async def clear_rxlist_database():
+    """Clear the RxList database."""
+    try:
+        rxlist_db = await get_rxlist_database()
+        rxlist_db.clear_all_drugs()
+        
+        return {"success": True, "message": "RxList database cleared successfully"}
+        
+    except Exception as e:
+        logger.error(f"Failed to clear RxList database: {str(e)}")
         return {"success": False, "message": str(e)}
 
 @app.post("/feedback/clear")

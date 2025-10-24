@@ -81,7 +81,7 @@ class SystemMetricDocument(BaseModel):
     metric_name: str = Field(..., max_length=100)
     metric_value: float = Field(...)
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    metadata: Optional[Dict[str, Any]] = Field(None)
+    meta_data: Optional[Dict[str, Any]] = Field(None)
     
     class Config:
         populate_by_name = True
@@ -95,7 +95,7 @@ class UserActivityDocument(BaseModel):
     session_id: Optional[str] = Field(None, max_length=100)
     action: str = Field(..., max_length=100)
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    metadata: Optional[Dict[str, Any]] = Field(None)
+    meta_data: Optional[Dict[str, Any]] = Field(None)
     
     class Config:
         populate_by_name = True

@@ -260,11 +260,18 @@ async def search_medications(request: SearchRequest):
     try:
         logger.info(f"Processing enhanced medication search: {request.query[:50]}...")
         
-        # Get enhanced post-discharge search service
-        search_service = await get_post_discharge_search_service()
+        # Add timeout for the search operation
+        import asyncio
+        search_task = asyncio.create_task(
+            get_post_discharge_search_service().search_discharge_medications(request.query, request.limit)
+        )
         
-        # Perform enhanced search focused on post-discharge medications
-        results = await search_service.search_discharge_medications(request.query, request.limit)
+        try:
+            # Wait for search with 30 second timeout
+            results = await asyncio.wait_for(search_task, timeout=30.0)
+        except asyncio.TimeoutError:
+            logger.error(f"Search timeout for query: {request.query}")
+            raise HTTPException(status_code=408, detail="Search request timed out")
         
         # Calculate processing time
         processing_time = (time.time() - start_time) * 1000

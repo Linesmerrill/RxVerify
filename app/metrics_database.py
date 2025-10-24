@@ -65,12 +65,12 @@ class MetricsDatabase:
         # This would need to be implemented in both database managers
         logger.warning("record_system_metric not yet implemented in database managers")
     
-    async def record_user_activity(self, action: str, user_id: str = None, session_id: str = None, metadata: str = None):
+    async def record_user_activity(self, action: str, user_id: str = None, session_id: str = None, meta_data: str = None):
         """Record user activity."""
         if self.use_mongodb:
-            await self.db_manager.record_user_activity(action, user_id, session_id, metadata)
+            await self.db_manager.record_user_activity(action, user_id, session_id, meta_data)
         else:
-            self.db_manager.record_user_activity(action, user_id, session_id, metadata)
+            self.db_manager.record_user_activity(action, user_id, session_id, meta_data)
     
     async def get_metrics_summary(self, time_period_hours: int = 24) -> Dict[str, Any]:
         """Get comprehensive metrics summary for the specified time period."""

@@ -254,7 +254,7 @@ class MongoDBManager:
             logger.error(f"Failed to record API metric: {e}")
     
     async def record_user_activity(self, action: str, user_id: str = None, 
-                                  session_id: str = None, metadata: Dict[str, Any] = None):
+                                  session_id: str = None, meta_data: Dict[str, Any] = None):
         """Record user activity."""
         try:
             db = await self.get_database()
@@ -262,7 +262,7 @@ class MongoDBManager:
                 action=action,
                 user_id=user_id,
                 session_id=session_id,
-                metadata=metadata
+                meta_data=meta_data
             )
             await db.user_activity.insert_one(activity.dict(by_alias=True))
         except Exception as e:

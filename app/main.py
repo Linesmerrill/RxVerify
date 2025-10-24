@@ -391,11 +391,36 @@ async def get_feedback_stats():
     try:
         search_service = await get_post_discharge_search_service()
         
-        # Get feedback statistics from database
-        stats = search_service._feedback_db.get_feedback_stats()
-        feedback_counts = search_service._feedback_db.get_all_feedback_counts()
-        feedback_entries = search_service._feedback_db.get_all_feedback_entries()
-        ignored_medications = search_service._feedback_db.get_ignored_medications()
+        # Get feedback statistics from database with error handling
+        try:
+            stats = search_service._feedback_db.get_feedback_stats()
+        except Exception as e:
+            logger.error(f"Error getting feedback stats: {e}")
+            stats = {
+                "total_feedback": 0,
+                "total_helpful": 0,
+                "total_not_helpful": 0,
+                "recent_feedback_24h": 0,
+                "helpful_percentage": 0
+            }
+        
+        try:
+            feedback_counts = search_service._feedback_db.get_all_feedback_counts()
+        except Exception as e:
+            logger.error(f"Error getting feedback counts: {e}")
+            feedback_counts = {}
+        
+        try:
+            feedback_entries = search_service._feedback_db.get_all_feedback_entries()
+        except Exception as e:
+            logger.error(f"Error getting feedback entries: {e}")
+            feedback_entries = []
+        
+        try:
+            ignored_medications = search_service._feedback_db.get_ignored_medications()
+        except Exception as e:
+            logger.error(f"Error getting ignored medications: {e}")
+            ignored_medications = []
         
         # Convert to the expected format
         feedback_list = []

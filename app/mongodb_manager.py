@@ -69,7 +69,7 @@ class MongoDBManager:
     
     # Feedback Operations
     async def add_feedback(self, drug_name: str, query: str, is_positive: bool, 
-                          user_id: str = None, session_id: str = None) -> bool:
+                          user_id: str = None, session_id: str = None, is_removal: bool = False) -> bool:
         """Add feedback entry."""
         try:
             db = await self.get_database()

@@ -109,3 +109,15 @@ class FeedbackDatabase:
         except Exception as e:
             logger.error(f"Error checking if medication is ignored: {e}")
             return False
+    
+    async def record_feedback(self, drug_name: str, query: str, is_positive: bool, is_removal: bool = False):
+        """Record user feedback for ML pipeline."""
+        try:
+            if self.is_mongodb:
+                await mongodb_manager.add_feedback(drug_name, query, is_positive, is_removal)
+            else:
+                db_manager.add_feedback(drug_name, query, is_positive, is_removal)
+            logger.info(f"Recorded feedback: {drug_name} - {query} - {'Positive' if is_positive else 'Negative'}")
+        except Exception as e:
+            logger.error(f"Failed to record feedback: {e}")
+            raise

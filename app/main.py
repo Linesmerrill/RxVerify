@@ -294,7 +294,7 @@ async def search_medications(request: SearchRequest):
             action="medication_search",
             user_id=getattr(request, 'user_id', None),
             session_id=getattr(request, 'session_id', None),
-            meta_data=f"query_length={len(request.query)}, results_count={len(results)}"
+            meta_data={"query_length": len(request.query), "results_count": len(results)}
         )
         
         # Convert results to dict format for JSON response
@@ -341,7 +341,7 @@ async def search_medications(request: SearchRequest):
             action="medication_search_failed",
             user_id=getattr(request, 'user_id', None),
             session_id=getattr(request, 'session_id', None),
-            meta_data=f"error={str(e)[:100]}"
+            meta_data={"error": str(e)[:100]}
         )
         
         logger.error(f"Enhanced medication search failed: {str(e)}", exc_info=True)
@@ -497,7 +497,7 @@ async def get_feedback_stats(time_period_hours: int = 24):
         
         # Get feedback statistics from database with error handling
         try:
-            stats = search_service._feedback_db.get_feedback_stats()
+            stats = await search_service._feedback_db.get_feedback_stats()
         except Exception as e:
             logger.error(f"Error getting feedback stats: {e}")
             stats = {
@@ -509,19 +509,19 @@ async def get_feedback_stats(time_period_hours: int = 24):
             }
         
         try:
-            feedback_counts = search_service._feedback_db.get_all_feedback_counts()
+            feedback_counts = await search_service._feedback_db.get_all_feedback_counts()
         except Exception as e:
             logger.error(f"Error getting feedback counts: {e}")
             feedback_counts = {}
         
         try:
-            feedback_entries = search_service._feedback_db.get_all_feedback_entries()
+            feedback_entries = await search_service._feedback_db.get_all_feedback_entries()
         except Exception as e:
             logger.error(f"Error getting feedback entries: {e}")
             feedback_entries = []
         
         try:
-            ignored_medications = search_service._feedback_db.get_ignored_medications()
+            ignored_medications = await search_service._feedback_db.get_ignored_medications()
         except Exception as e:
             logger.error(f"Error getting ignored medications: {e}")
             ignored_medications = []

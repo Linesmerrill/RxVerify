@@ -459,7 +459,7 @@ async def submit_feedback(feedback: FeedbackRequest):
 async def get_metrics_summary(time_period_hours: int = 24):
     """Get comprehensive system metrics summary."""
     try:
-        summary = metrics_db.get_metrics_summary(time_period_hours)
+        summary = await metrics_db.get_metrics_summary(time_period_hours)
         return {
             "success": True,
             "data": summary,
@@ -476,7 +476,7 @@ async def get_time_series_data(metric_type: str = "searches", time_period_hours:
         if metric_type not in ["searches", "api_calls"]:
             return {"success": False, "message": "Invalid metric_type. Must be 'searches' or 'api_calls'"}
         
-        data = metrics_db.get_time_series_data(metric_type, time_period_hours, interval_hours)
+        data = await metrics_db.get_time_series_data(metric_type, time_period_hours, interval_hours)
         return {
             "success": True,
             "data": data,

@@ -56,6 +56,9 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     """Initialize resources on startup."""
+    # Disable ChromaDB telemetry to reduce log noise
+    os.environ["ANONYMIZED_TELEMETRY"] = "False"
+    
     logger.info("🚀 RxVerify starting up - Real-time medical database integration enabled")
     
     # Initialize database tables/collections

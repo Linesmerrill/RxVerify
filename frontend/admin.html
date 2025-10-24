@@ -411,6 +411,15 @@
             }
         }
 
+        // Get admin base URL
+        function getAdminBaseUrl() {
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                return 'http://localhost:8000';
+            } else {
+                return 'https://rxverify-backend.herokuapp.com';
+            }
+        }
+
         // Load feedback data
         async function loadFeedbackData() {
             try {

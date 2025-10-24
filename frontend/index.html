@@ -1176,7 +1176,7 @@
                 
                 if (data.success) {
                     updateFeedbackStats(data.stats);
-                    allFeedbackData = data.feedback_list || [];
+                    allFeedbackData = data.feedback_entries || [];
                     applyFilterAndPagination();
                     updateIgnoredMedications(data.ignored_medications || []);
                 } else {

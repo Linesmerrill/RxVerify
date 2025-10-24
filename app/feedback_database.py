@@ -122,36 +122,38 @@ class FeedbackDatabase:
             logger.error(f"Failed to get feedback counts: {e}")
             return {"helpful": 0, "not_helpful": 0}
     
-    def get_all_feedback_counts(self) -> Dict[str, Dict[str, int]]:
-        """Get all feedback counts grouped by drug_name+query."""
+    def get_all_feedback_entries(self) -> List[Dict[str, Any]]:
+        """Get all individual feedback entries."""
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.execute("""
                     SELECT 
                         drug_name,
                         query,
-                        SUM(CASE WHEN is_positive = 1 THEN 1 ELSE 0 END) as helpful,
-                        SUM(CASE WHEN is_positive = 0 THEN 1 ELSE 0 END) as not_helpful
+                        is_positive,
+                        timestamp,
+                        user_id,
+                        session_id
                     FROM feedback 
-                    GROUP BY drug_name, query
-                    ORDER BY helpful + not_helpful DESC
+                    ORDER BY timestamp DESC
                 """)
                 
-                feedback_counts = {}
+                feedback_entries = []
                 for row in cursor.fetchall():
-                    key = f"{row[0]}_{row[1]}"
-                    feedback_counts[key] = {
+                    feedback_entries.append({
                         "drug_name": row[0],
                         "query": row[1],
-                        "helpful": row[2] or 0,
-                        "not_helpful": row[3] or 0
-                    }
+                        "is_positive": bool(row[2]),
+                        "timestamp": row[3],
+                        "user_id": row[4],
+                        "session_id": row[5]
+                    })
                 
-                return feedback_counts
+                return feedback_entries
                 
         except Exception as e:
-            logger.error(f"Failed to get all feedback counts: {e}")
-            return {}
+            logger.error(f"Failed to get all feedback entries: {e}")
+            return []
     
     def get_feedback_stats(self) -> Dict[str, any]:
         """Get overall feedback statistics."""

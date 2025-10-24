@@ -4,30 +4,47 @@ A real-time medication search and drug information system designed for post-disc
 
 ## 🗄️ Database Setup
 
-RxVerify uses **PostgreSQL** for persistent storage in production and **SQLite** for local development.
+RxVerify supports multiple database options for persistent storage:
 
-### Production (Heroku PostgreSQL)
-- **Free tier**: Heroku PostgreSQL Mini (10,000 rows, 20 connections)
+### Option 1: MongoDB Atlas (Recommended - FREE)
+- **Free tier**: 512MB storage, shared clusters
 - **Persistent**: Data survives deployments and dyno restarts
-- **Automatic**: Database URL provided via `DATABASE_URL` environment variable
+- **NoSQL**: Flexible document-based storage
+- **Setup**: Automatic via `MONGODB_URI` environment variable
 
-### Local Development (SQLite)
+### Option 2: PostgreSQL (Paid)
+- **Paid tier**: Heroku PostgreSQL Essential 0 (~$5/month)
+- **Persistent**: Data survives deployments and dyno restarts
+- **SQL**: Relational database with ACID compliance
+- **Setup**: Automatic via `DATABASE_URL` environment variable
+
+### Option 3: SQLite (Local Development)
 - **File-based**: `rxverify.db` in project root
 - **No setup required**: Automatically created on first run
 - **Fast**: Perfect for development and testing
+- **Note**: Data lost on Heroku deployments
 
 ### Database Migration
 When deploying to production, the system automatically:
-1. Creates all required tables
-2. Migrates existing SQLite data (if any)
-3. Sets up proper indexes for performance
+1. Detects database type from environment variables
+2. Creates required tables/collections and indexes
+3. Migrates existing SQLite data (if any)
 
-### Manual Database Setup
+### MongoDB Atlas Setup (FREE)
 ```bash
-# Add PostgreSQL to Heroku
+# Interactive setup with guided instructions
+./setup_mongodb.sh
+
+# Deploy with MongoDB
+./deploy_with_mongodb.sh
+```
+
+### PostgreSQL Setup (PAID)
+```bash
+# Add PostgreSQL addon to Heroku
 ./setup_postgres.sh
 
-# Deploy with database migration
+# Deploy with PostgreSQL
 ./deploy_with_postgres.sh
 ```
 

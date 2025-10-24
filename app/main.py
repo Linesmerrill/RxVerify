@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+import os
 import time
 from typing import List, Dict, Optional
 from datetime import datetime
@@ -18,6 +19,7 @@ from app.rxlist_database import get_rxlist_database
 from app.post_discharge_search import get_post_discharge_search_service
 from app.metrics_database import MetricsDatabase
 from app.database_manager import db_manager
+from app.mongodb_manager import mongodb_manager
 from app.models import (
     RetrievedDoc, SearchRequest, DrugSearchResult, SearchResponse,
     FeedbackRequest, FeedbackResponse, MLPipelineUpdate, Source
@@ -53,12 +55,19 @@ async def startup_event():
     """Initialize resources on startup."""
     logger.info("🚀 RxVerify starting up - Real-time medical database integration enabled")
     
-    # Initialize database tables
+    # Initialize database tables/collections
     try:
-        db_manager.create_tables()
-        logger.info("✅ Database tables initialized successfully")
+        # Check if MongoDB is configured
+        if 'MONGODB_URI' in os.environ or 'MONGODB_URL' in os.environ:
+            logger.info("MongoDB detected - initializing MongoDB collections")
+            await mongodb_manager.create_indexes()
+            logger.info("✅ MongoDB collections initialized successfully")
+        else:
+            logger.info("SQL/PostgreSQL detected - initializing database tables")
+            db_manager.create_tables()
+            logger.info("✅ Database tables initialized successfully")
     except Exception as e:
-        logger.error(f"❌ Failed to initialize database tables: {e}")
+        logger.error(f"❌ Failed to initialize database: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_event():

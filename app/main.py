@@ -394,6 +394,7 @@ async def get_feedback_stats():
         # Get feedback statistics from database
         stats = search_service._feedback_db.get_feedback_stats()
         feedback_counts = search_service._feedback_db.get_all_feedback_counts()
+        ignored_medications = search_service._feedback_db.get_ignored_medications()
         
         # Convert to the expected format
         feedback_list = []
@@ -414,9 +415,11 @@ async def get_feedback_stats():
                 "negative_ratings": stats["total_not_helpful"],
                 "recent_feedback_24h": stats["recent_feedback_24h"],
                 "helpful_percentage": round(stats["helpful_percentage"], 2),
+                "ignored_medications_count": len(ignored_medications),
                 "last_updated": datetime.now().isoformat()
             },
             "feedback_list": feedback_list,
+            "ignored_medications": ignored_medications,
             "timestamp": time.time()
         }
         
@@ -444,6 +447,31 @@ async def remove_feedback(request: dict):
             
     except Exception as e:
         logger.error(f"Error removing feedback: {str(e)}")
+        return {"success": False, "message": str(e)}
+
+@app.post("/feedback/unignore")
+async def unignore_medication(request: dict):
+    """Unignore a medication by removing its negative feedback."""
+    try:
+        drug_name = request.get("drug_name")
+        query = request.get("query")
+        
+        if not drug_name or not query:
+            return {"success": False, "message": "drug_name and query are required"}
+        
+        search_service = await get_post_discharge_search_service()
+        
+        # Remove all negative feedback for this drug-query combination
+        # This effectively "unignores" the medication
+        success = search_service._feedback_db.remove_feedback(drug_name, query)
+        
+        if success:
+            return {"success": True, "message": f"Medication '{drug_name}' unignored successfully for query '{query}'"}
+        else:
+            return {"success": False, "message": "Failed to unignore medication"}
+            
+    except Exception as e:
+        logger.error(f"Error unignoring medication: {str(e)}")
         return {"success": False, "message": str(e)}
 
 @app.post("/feedback/clear")

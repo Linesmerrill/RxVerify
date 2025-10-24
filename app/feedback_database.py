@@ -227,6 +227,64 @@ class FeedbackDatabase:
             logger.error(f"Failed to clear all feedback: {e}")
             return False
     
+    def get_ignored_medications(self, min_votes: int = 3, negative_threshold: float = 0.6) -> List[Dict[str, any]]:
+        """Get medications that should be ignored based on feedback thresholds."""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.execute("""
+                    SELECT 
+                        drug_name,
+                        query,
+                        SUM(CASE WHEN is_positive = 1 THEN 1 ELSE 0 END) as helpful,
+                        SUM(CASE WHEN is_positive = 0 THEN 1 ELSE 0 END) as not_helpful,
+                        COUNT(*) as total_votes
+                    FROM feedback 
+                    GROUP BY drug_name, query
+                    HAVING total_votes >= ? AND (not_helpful * 1.0 / total_votes) >= ?
+                    ORDER BY (not_helpful * 1.0 / total_votes) DESC, total_votes DESC
+                """, (min_votes, negative_threshold))
+                
+                ignored_medications = []
+                for row in cursor.fetchall():
+                    ignored_medications.append({
+                        "drug_name": row[0],
+                        "query": row[1],
+                        "helpful_count": row[2] or 0,
+                        "not_helpful_count": row[3] or 0,
+                        "total_votes": row[4] or 0,
+                        "negative_percentage": (row[3] / row[4] * 100) if row[4] > 0 else 0
+                    })
+                
+                return ignored_medications
+                
+        except Exception as e:
+            logger.error(f"Failed to get ignored medications: {e}")
+            return []
+    
+    def is_medication_ignored(self, drug_name: str, query: str, min_votes: int = 3, negative_threshold: float = 0.6) -> bool:
+        """Check if a specific medication should be ignored."""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.execute("""
+                    SELECT 
+                        SUM(CASE WHEN is_positive = 1 THEN 1 ELSE 0 END) as helpful,
+                        SUM(CASE WHEN is_positive = 0 THEN 1 ELSE 0 END) as not_helpful,
+                        COUNT(*) as total_votes
+                    FROM feedback 
+                    WHERE drug_name = ? AND query = ?
+                """, (drug_name, query))
+                
+                result = cursor.fetchone()
+                if result and result[2] >= min_votes:
+                    negative_percentage = (result[1] / result[2]) if result[2] > 0 else 0
+                    return negative_percentage >= negative_threshold
+                
+                return False
+                
+        except Exception as e:
+            logger.error(f"Failed to check if medication is ignored: {e}")
+            return False
+    
     def get_database_stats(self) -> Dict[str, any]:
         """Get database statistics."""
         try:
@@ -240,10 +298,14 @@ class FeedbackDatabase:
                 cursor = conn.execute("SELECT COUNT(DISTINCT query) FROM feedback")
                 unique_queries = cursor.fetchone()[0]
                 
+                # Get ignored medications count
+                ignored_count = len(self.get_ignored_medications())
+                
                 return {
                     "total_records": total_records,
                     "unique_drugs": unique_drugs,
                     "unique_queries": unique_queries,
+                    "ignored_medications": ignored_count,
                     "database_size_mb": self.db_path.stat().st_size / (1024 * 1024) if self.db_path.exists() else 0
                 }
                 
@@ -253,5 +315,6 @@ class FeedbackDatabase:
                 "total_records": 0,
                 "unique_drugs": 0,
                 "unique_queries": 0,
+                "ignored_medications": 0,
                 "database_size_mb": 0
             }

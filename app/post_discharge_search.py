@@ -86,11 +86,14 @@ class PostDischargeSearchService:
             # 4. Enhance with vector search for additional context
             enhanced_results = await self._enhance_with_vector_search(query, oral_results)
             
-            # 5. Apply ML feedback scoring (placeholder for now)
+            # 5. Apply ML feedback scoring and filtering
             scored_results = self._apply_feedback_scoring(enhanced_results, query)
             
-            # 6. Sort by relevance and discharge medication priority
-            final_results = self._sort_by_discharge_relevance(scored_results, query)
+            # 6. Filter out ignored medications
+            filtered_results = self._filter_ignored_medications(scored_results, query)
+            
+            # 7. Sort by relevance and discharge medication priority
+            final_results = self._sort_by_discharge_relevance(filtered_results, query)
             
             processing_time = (time.time() - start_time) * 1000
             logger.info(f"Discharge medication search completed in {processing_time:.2f}ms, found {len(final_results)} results")
@@ -851,6 +854,21 @@ class PostDischargeSearchService:
             return getattr(result, 'discharge_relevance_score', 0.5)
         
         return sorted(results, key=relevance_score, reverse=True)
+    
+    def _filter_ignored_medications(self, results: List[DrugSearchResult], query: str) -> List[DrugSearchResult]:
+        """Filter out medications that have been marked as ignored based on feedback."""
+        filtered_results = []
+        
+        for result in results:
+            # Check if this medication should be ignored
+            if self._feedback_db.is_medication_ignored(result.name, query):
+                logger.info(f"Filtering out ignored medication: {result.name} for query: {query}")
+                continue
+            
+            filtered_results.append(result)
+        
+        logger.info(f"Filtered {len(results) - len(filtered_results)} ignored medications from {len(results)} total results")
+        return filtered_results
     
     def record_feedback(self, drug_name: str, query: str, is_positive: bool, is_removal: bool = False):
         """Record user feedback for ML pipeline."""

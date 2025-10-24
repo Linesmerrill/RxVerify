@@ -617,12 +617,44 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Drug Name</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Query</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="feedbackTableBody" class="bg-white divide-y divide-gray-200">
                                     <!-- Feedback data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Ignored Medications -->
+                    <div class="bg-red-50 rounded-xl border border-red-200 overflow-hidden">
+                        <div class="px-6 py-4 bg-red-100 border-b border-red-200">
+                            <h5 class="text-lg font-semibold text-red-800 flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+                                </svg>
+                                <span>Ignored Medications</span>
+                            </h5>
+                            <p class="text-sm text-red-600 mt-1">Medications with poor feedback ratings that are filtered from search results</p>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-red-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">Drug Name</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">Query</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">Negative %</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">Total Votes</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ignoredMedicationsBody" class="bg-white divide-y divide-red-200">
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-4 text-center text-red-500">
+                                            Loading ignored medications...
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1085,6 +1117,7 @@
                 if (data.success) {
                     updateFeedbackStats(data.stats);
                     updateFeedbackTable(data.feedback_list || []);
+                    updateIgnoredMedications(data.ignored_medications || []);
                 } else {
                     console.error('Failed to load feedback data:', data.message);
                 }
@@ -1106,7 +1139,7 @@
             if (feedbackList.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                        <td colspan="4" class="px-6 py-4 text-center text-gray-500">
                             No feedback data available
                         </td>
                     </tr>
@@ -1128,9 +1161,6 @@
                             ${feedback.is_positive ? 'Positive' : 'Negative'}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ${feedback.score ? feedback.score.toFixed(2) : 'N/A'}
-                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button onclick="removeFeedback('${feedback.drug_name}', '${feedback.query}')" class="text-red-600 hover:text-red-900">
                             Remove
@@ -1139,6 +1169,85 @@
                 `;
                 tbody.appendChild(row);
             });
+        }
+        
+        function updateIgnoredMedications(ignoredList) {
+            const tbody = document.getElementById('ignoredMedicationsBody');
+            tbody.innerHTML = '';
+            
+            if (ignoredList.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-red-500">
+                            No medications are currently ignored
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            ignoredList.forEach(medication => {
+                const row = document.createElement('tr');
+                const negativePercentage = medication.total_votes > 0 
+                    ? ((medication.not_helpful_count / medication.total_votes) * 100).toFixed(1)
+                    : '0.0';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-900">
+                        ${medication.drug_name || 'N/A'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">
+                        ${medication.query || 'N/A'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-semibold">
+                        ${negativePercentage}%
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">
+                        ${medication.total_votes || 0}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="unignoreMedication('${medication.drug_name}', '${medication.query}')" class="text-green-600 hover:text-green-900 mr-3">
+                            Unignore
+                        </button>
+                        <button onclick="removeFeedback('${medication.drug_name}', '${medication.query}')" class="text-red-600 hover:text-red-900">
+                            Remove All
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        async function unignoreMedication(drugName, query) {
+            if (!confirm(`Are you sure you want to unignore "${drugName}" for query "${query}"? This will make it appear in search results again.`)) {
+                return;
+            }
+            
+            try {
+                const apiBaseUrl = getApiBaseUrl();
+                const response = await fetch(`${apiBaseUrl}/feedback/unignore`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        drug_name: drugName,
+                        query: query
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Medication unignored successfully!');
+                    loadFeedbackData(); // Refresh the data
+                } else {
+                    alert('Failed to unignore medication: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error unignoring medication:', error);
+                alert('Error unignoring medication');
+            }
         }
         
         async function removeFeedback(drugName, query) {

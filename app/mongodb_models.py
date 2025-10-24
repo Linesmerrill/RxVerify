@@ -88,6 +88,24 @@ class SystemMetricDocument(BaseModel):
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
+class DrugDocument(BaseModel):
+    """Drug document model for caching drug search results."""
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    name: str = Field(..., max_length=255)
+    generic_name: Optional[str] = Field(None, max_length=255)
+    brand_names: Optional[List[str]] = Field(None)
+    common_uses: Optional[List[str]] = Field(None)
+    drug_class: Optional[str] = Field(None, max_length=100)
+    search_terms: List[str] = Field(default_factory=list)  # Terms that can find this drug
+    source: str = Field(default="rxnorm", max_length=50)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+
 class UserActivityDocument(BaseModel):
     """User activity document model."""
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")

@@ -350,6 +350,35 @@ async def search_medications(request: SearchRequest):
             detail=f"Enhanced medication search failed: {str(e)}"
         )
 
+@app.get("/drugs/search")
+async def search_drugs(query: str = "", limit: int = 10):
+    """Drug search endpoint with autocomplete - drugs.com style."""
+    if not query or len(query.strip()) < 2:
+        return {"results": [], "total": 0, "cache_stats": {"hit_rate": 0}}
+    
+    try:
+        from app.drug_search_service import drug_search_service
+        
+        # Search for drugs
+        results = await drug_search_service.search_drugs(query.strip(), limit)
+        
+        # Get cache statistics
+        cache_stats = await drug_search_service.get_cache_stats()
+        
+        return {
+            "results": results,
+            "total": len(results),
+            "query": query,
+            "cache_stats": cache_stats
+        }
+        
+    except Exception as e:
+        logger.error(f"Drug search failed: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Drug search failed: {str(e)}"
+        )
+
 @app.get("/rxlist/stats")
 async def get_rxlist_stats():
     """Get RxList database statistics."""

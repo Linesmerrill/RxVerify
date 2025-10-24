@@ -804,16 +804,8 @@ class RxVerifyApp {
             // Store current search query for feedback
             this.currentSearchQuery = query;
             
-            const response = await fetch(`${this.apiBaseUrl}/search`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    query: query,
-                    limit: 10
-                })
-            });
+            // Use the new drug search endpoint for autocomplete
+            const response = await fetch(`${this.apiBaseUrl}/drugs/search?query=${encodeURIComponent(query)}&limit=10`);
             
             if (!response.ok) {
                 throw new Error(`Search failed: ${response.statusText}`);
@@ -964,21 +956,7 @@ class RxVerifyApp {
         feedbackButtons.appendChild(thumbsUpBtn);
         feedbackButtons.appendChild(thumbsDownBtn);
         
-        // Create RxCUI info with all RxCUIs as clickable links
-        const rxcuiDiv = document.createElement('div');
-        rxcuiDiv.className = 'text-xs text-gray-400';
-        
-        if (result.all_rxcuis && result.all_rxcuis.length > 0) {
-            const rxcuiLinks = result.all_rxcuis.map(rxcui => 
-                `<a href="https://mor.nlm.nih.gov/RxNav/search?searchBy=RXCUI&searchTerm=${rxcui}" target="_blank" class="text-blue-500 hover:text-blue-700 hover:underline">${rxcui}</a>`
-            ).join(', ');
-            rxcuiDiv.innerHTML = `RxCUI: ${rxcuiLinks}`;
-        } else {
-            rxcuiDiv.textContent = `RxCUI: ${result.rxcui}`;
-        }
-        
         feedbackDiv.appendChild(feedbackButtons);
-        feedbackDiv.appendChild(rxcuiDiv);
         
         // Use appendChild instead of innerHTML to preserve event listeners
         div.appendChild(nameDiv);

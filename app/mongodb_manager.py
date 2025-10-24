@@ -62,6 +62,13 @@ class MongoDBManager:
             await db.rxlist_drugs.create_index([("generic_name", ASCENDING)])
             await db.rxlist_drugs.create_index([("drug_class", ASCENDING)])
             
+            # Drugs collection indexes for autocomplete
+            await db.drugs.create_index([("name", ASCENDING)])
+            await db.drugs.create_index([("generic_name", ASCENDING)])
+            await db.drugs.create_index([("brand_names", ASCENDING)])
+            await db.drugs.create_index([("search_terms", ASCENDING)])
+            await db.drugs.create_index([("created_at", DESCENDING)])
+            
             logger.info("MongoDB indexes created successfully")
         except Exception as e:
             logger.error(f"Failed to create MongoDB indexes: {e}")
@@ -464,6 +471,119 @@ class MongoDBManager:
             logger.info(f"Cleaned up {deleted_count} old records")
         except Exception as e:
             logger.error(f"Failed to cleanup old data: {e}")
+
+    # Drug Search Operations
+    async def search_drugs(self, query: str, limit: int = 10) -> List[Dict[str, Any]]:
+        """Search for drugs using cached results first."""
+        try:
+            db = await self.get_database()
+            
+            # Create search terms from query
+            search_terms = self._create_search_terms(query)
+            
+            # Search in cached drugs collection
+            pipeline = [
+                {
+                    "$match": {
+                        "$or": [
+                            {"name": {"$regex": query, "$options": "i"}},
+                            {"generic_name": {"$regex": query, "$options": "i"}},
+                            {"brand_names": {"$in": search_terms}},
+                            {"search_terms": {"$in": search_terms}}
+                        ]
+                    }
+                },
+                {
+                    "$project": {
+                        "name": 1,
+                        "generic_name": 1,
+                        "brand_names": 1,
+                        "common_uses": 1,
+                        "drug_class": 1,
+                        "source": 1,
+                        "score": {
+                            "$add": [
+                                {"$cond": [{"$regexMatch": {"input": "$name", "regex": f"^{query}", "options": "i"}}, 10, 0]},
+                                {"$cond": [{"$regexMatch": {"input": "$generic_name", "regex": f"^{query}", "options": "i"}}, 8, 0]},
+                                {"$cond": [{"$in": [query], "$brand_names"}, 6, 0]},
+                                {"$cond": [{"$in": [query], "$search_terms"}, 4, 0]}
+                            ]
+                        }
+                    }
+                },
+                {"$sort": {"score": -1, "name": 1}},
+                {"$limit": limit}
+            ]
+            
+            results = await db.drugs.aggregate(pipeline).to_list(length=None)
+            return results
+            
+        except Exception as e:
+            logger.error(f"Failed to search drugs: {e}")
+            return []
+
+    async def cache_drug(self, drug_data: Dict[str, Any]) -> bool:
+        """Cache a drug in the database."""
+        try:
+            db = await self.get_database()
+            
+            # Create search terms
+            search_terms = self._create_search_terms(drug_data.get("name", ""))
+            if drug_data.get("generic_name"):
+                search_terms.extend(self._create_search_terms(drug_data["generic_name"]))
+            if drug_data.get("brand_names"):
+                for brand in drug_data["brand_names"]:
+                    search_terms.extend(self._create_search_terms(brand))
+            
+            # Remove duplicates and empty strings
+            search_terms = list(set([term for term in search_terms if term.strip()]))
+            
+            from app.mongodb_models import DrugDocument
+            drug_doc = DrugDocument(
+                name=drug_data["name"],
+                generic_name=drug_data.get("generic_name"),
+                brand_names=drug_data.get("brand_names", []),
+                common_uses=drug_data.get("common_uses", []),
+                drug_class=drug_data.get("drug_class"),
+                search_terms=search_terms,
+                source=drug_data.get("source", "rxnorm")
+            )
+            
+            # Use upsert to avoid duplicates
+            await db.drugs.update_one(
+                {"name": drug_data["name"]},
+                {"$set": drug_doc.dict(by_alias=True)},
+                upsert=True
+            )
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to cache drug: {e}")
+            return False
+
+    def _create_search_terms(self, text: str) -> List[str]:
+        """Create search terms from text."""
+        if not text:
+            return []
+        
+        terms = []
+        text_lower = text.lower()
+        
+        # Add the full text
+        terms.append(text_lower)
+        
+        # Add individual words
+        words = text_lower.split()
+        terms.extend(words)
+        
+        # Add partial matches (first 3+ characters)
+        for word in words:
+            if len(word) >= 3:
+                for i in range(3, len(word) + 1):
+                    terms.append(word[:i])
+        
+        return terms
 
 # Global MongoDB manager instance
 mongodb_manager = MongoDBManager()

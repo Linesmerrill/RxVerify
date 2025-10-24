@@ -273,7 +273,7 @@ async def search_medications(request: SearchRequest):
         monitor.record_request(success=True)
         
         # Record search metrics
-        metrics_db.record_search_metric(
+        await metrics_db.record_search_metric(
             query=request.query,
             results_count=len(results),
             response_time_ms=processing_time,
@@ -282,11 +282,11 @@ async def search_medications(request: SearchRequest):
         )
         
         # Record user activity
-        metrics_db.record_user_activity(
+        await metrics_db.record_user_activity(
             action="medication_search",
             user_id=getattr(request, 'user_id', None),
             session_id=getattr(request, 'session_id', None),
-            metadata=f"query_length={len(request.query)}, results_count={len(results)}"
+            meta_data=f"query_length={len(request.query)}, results_count={len(results)}"
         )
         
         # Convert results to dict format for JSON response
@@ -320,7 +320,7 @@ async def search_medications(request: SearchRequest):
         
         # Record failed search metrics
         processing_time = (time.time() - start_time) * 1000
-        metrics_db.record_search_metric(
+        await metrics_db.record_search_metric(
             query=request.query,
             results_count=0,
             response_time_ms=processing_time,
@@ -329,11 +329,11 @@ async def search_medications(request: SearchRequest):
         )
         
         # Record user activity
-        metrics_db.record_user_activity(
+        await metrics_db.record_user_activity(
             action="medication_search_failed",
             user_id=getattr(request, 'user_id', None),
             session_id=getattr(request, 'session_id', None),
-            metadata=f"error={str(e)[:100]}"
+            meta_data=f"error={str(e)[:100]}"
         )
         
         logger.error(f"Enhanced medication search failed: {str(e)}", exc_info=True)

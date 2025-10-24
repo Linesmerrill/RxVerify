@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import text, func, and_, or_
 
-from app.database_config import db_config
+from app.database_config import db_config, Base
 from app.database_models import (
     FeedbackEntry, SearchMetric, ApiMetric, SystemMetric, 
     UserActivity, MedicationCache, RxListDrug
@@ -220,7 +220,7 @@ class DatabaseManager:
             logger.error(f"Failed to record API metric: {e}")
     
     def record_user_activity(self, action: str, user_id: str = None, 
-                           session_id: str = None, metadata: str = None):
+                           session_id: str = None, meta_data: str = None):
         """Record user activity."""
         try:
             with self.get_session() as db:
@@ -228,7 +228,7 @@ class DatabaseManager:
                     action=action,
                     user_id=user_id,
                     session_id=session_id,
-                    metadata=metadata
+                    meta_data=meta_data
                 )
                 db.add(activity)
                 db.commit()

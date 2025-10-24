@@ -77,7 +77,7 @@ class SystemMetric(Base):
     metric_name = Column(String(100), nullable=False, index=True)
     metric_value = Column(Float, nullable=False)
     timestamp = Column(DateTime(timezone=True), default=func.now(), index=True)
-    metadata = Column(Text, nullable=True)
+    meta_data = Column(Text, nullable=True)
     
     # Composite index
     __table_args__ = (
@@ -93,7 +93,7 @@ class UserActivity(Base):
     session_id = Column(String(100), nullable=True, index=True)
     action = Column(String(100), nullable=False, index=True)
     timestamp = Column(DateTime(timezone=True), default=func.now(), index=True)
-    metadata = Column(Text, nullable=True)
+    meta_data = Column(Text, nullable=True)
     
     # Composite indexes
     __table_args__ = (

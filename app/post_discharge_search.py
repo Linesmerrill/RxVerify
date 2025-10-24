@@ -87,7 +87,7 @@ class PostDischargeSearchService:
             enhanced_results = await self._enhance_with_vector_search(query, oral_results)
             
             # 5. Apply ML feedback scoring and filtering
-            scored_results = self._apply_feedback_scoring(enhanced_results, query)
+            scored_results = await self._apply_feedback_scoring(enhanced_results, query)
             
             # 6. Filter out ignored medications
             filtered_results = self._filter_ignored_medications(scored_results, query)
@@ -141,7 +141,7 @@ class PostDischargeSearchService:
         results = []
         for doc in search_results:
             logger.debug(f"Processing doc: title='{doc.title}', rxcui='{doc.rxcui}', source='{doc.source}'")
-            drug_result = self._convert_to_drug_search_result(doc, query)
+            drug_result = await self._convert_to_drug_search_result(doc, query)
             if drug_result:
                 logger.debug(f"Created drug result: name='{drug_result.name}', rxcui='{drug_result.rxcui}'")
                 results.append(drug_result)
@@ -153,7 +153,7 @@ class PostDischargeSearchService:
         
         return results
     
-    def _convert_to_drug_search_result(self, doc, query: str) -> Optional[DrugSearchResult]:
+    async def _convert_to_drug_search_result(self, doc, query: str) -> Optional[DrugSearchResult]:
         """Convert RetrievedDoc to DrugSearchResult."""
         try:
             # Use the title as the primary drug name (this comes from the API response)
@@ -178,7 +178,7 @@ class PostDischargeSearchService:
             common_uses = self._extract_common_uses(doc.text)
             
             # Get feedback counts for this drug and query
-            feedback_counts = self.get_feedback_counts(drug_name, query)
+            feedback_counts = await self.get_feedback_counts(drug_name, query)
             
             # Store original name for dosage extraction
             original_name = doc.title
@@ -802,11 +802,11 @@ class PostDischargeSearchService:
             logger.error(f"Error in vector search enhancement: {str(e)}")
             return results
     
-    def _apply_feedback_scoring(self, results: List[DrugSearchResult], query: str) -> List[DrugSearchResult]:
+    async def _apply_feedback_scoring(self, results: List[DrugSearchResult], query: str) -> List[DrugSearchResult]:
         """Apply ML feedback scoring to results."""
         for result in results:
             # Get feedback counts for this drug-query combination
-            feedback_counts = self.get_feedback_counts(result.name, query)
+            feedback_counts = await self.get_feedback_counts(result.name, query)
             
             # Calculate feedback score from counts (helpful vs not_helpful ratio)
             total_votes = feedback_counts["helpful"] + feedback_counts["not_helpful"]
@@ -874,9 +874,9 @@ class PostDischargeSearchService:
         """Record user feedback for ML pipeline."""
         return self._feedback_db.record_feedback(drug_name, query, is_positive, is_removal=is_removal)
     
-    def get_feedback_counts(self, drug_name: str, query: str) -> Dict[str, int]:
+    async def get_feedback_counts(self, drug_name: str, query: str) -> Dict[str, int]:
         """Get feedback counts for a specific drug and query."""
-        return self._feedback_db.get_feedback_counts(drug_name, query)
+        return await self._feedback_db.get_feedback_counts(drug_name, query)
 
 # Global instance
 _post_discharge_search_service = None

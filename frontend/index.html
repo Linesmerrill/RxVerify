@@ -610,6 +610,47 @@
 
                     <!-- Feedback List -->
                     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <h5 class="text-lg font-semibold text-gray-800 flex items-center space-x-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                        </svg>
+                                        <span>Feedback List</span>
+                                    </h5>
+                                    <p class="text-sm text-gray-600 mt-1">All user feedback entries for medications</p>
+                                </div>
+                                
+                                <!-- Filter Controls -->
+                                <div class="mt-4 sm:mt-0 flex items-center space-x-2">
+                                    <span class="text-sm text-gray-600">Filter:</span>
+                                    <div class="flex rounded-lg border border-gray-200 overflow-hidden">
+                                        <button 
+                                            id="filterAll" 
+                                            onclick="filterFeedback('all')" 
+                                            class="px-3 py-1 text-sm font-medium bg-blue-600 text-white transition-colors"
+                                        >
+                                            All
+                                        </button>
+                                        <button 
+                                            id="filterPositive" 
+                                            onclick="filterFeedback('positive')" 
+                                            class="px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                                        >
+                                            Positive
+                                        </button>
+                                        <button 
+                                            id="filterNegative" 
+                                            onclick="filterFeedback('negative')" 
+                                            class="px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                                        >
+                                            Negative
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead class="bg-gray-50">
@@ -624,6 +665,34 @@
                                     <!-- Feedback data will be loaded here -->
                                 </tbody>
                             </table>
+                        </div>
+                        
+                        <!-- Pagination Controls -->
+                        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div class="text-sm text-gray-600">
+                                    Showing <span id="feedbackStart">0</span> to <span id="feedbackEnd">0</span> of <span id="feedbackTotal">0</span> entries
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button 
+                                        id="prevPage" 
+                                        onclick="changePage(-1)" 
+                                        class="px-3 py-1 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled
+                                    >
+                                        Previous
+                                    </button>
+                                    <span id="pageInfo" class="px-3 py-1 text-sm text-gray-600">Page 1 of 1</span>
+                                    <button 
+                                        id="nextPage" 
+                                        onclick="changePage(1)" 
+                                        class="px-3 py-1 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1093,6 +1162,12 @@
         }
         
         // Feedback Analytics Functions
+        let allFeedbackData = [];
+        let filteredFeedbackData = [];
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let currentFilter = 'all';
+        
         async function loadFeedbackData() {
             try {
                 const apiBaseUrl = getApiBaseUrl();
@@ -1101,7 +1176,8 @@
                 
                 if (data.success) {
                     updateFeedbackStats(data.stats);
-                    updateFeedbackTable(data.feedback_list || []);
+                    allFeedbackData = data.feedback_list || [];
+                    applyFilterAndPagination();
                     updateIgnoredMedications(data.ignored_medications || []);
                 } else {
                     console.error('Failed to load feedback data:', data.message);
@@ -1154,6 +1230,78 @@
                 `;
                 tbody.appendChild(row);
             });
+        }
+        
+        function filterFeedback(filter) {
+            currentFilter = filter;
+            currentPage = 1; // Reset to first page when filtering
+            applyFilterAndPagination();
+            updateFilterButtons();
+        }
+        
+        function applyFilterAndPagination() {
+            // Apply filter
+            if (currentFilter === 'all') {
+                filteredFeedbackData = [...allFeedbackData];
+            } else if (currentFilter === 'positive') {
+                filteredFeedbackData = allFeedbackData.filter(feedback => feedback.is_positive);
+            } else if (currentFilter === 'negative') {
+                filteredFeedbackData = allFeedbackData.filter(feedback => !feedback.is_positive);
+            }
+            
+            // Apply pagination
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedData = filteredFeedbackData.slice(startIndex, endIndex);
+            
+            // Update table
+            updateFeedbackTable(paginatedData);
+            
+            // Update pagination controls
+            updatePaginationControls();
+        }
+        
+        function updateFilterButtons() {
+            // Reset all buttons
+            document.getElementById('filterAll').className = 'px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors';
+            document.getElementById('filterPositive').className = 'px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors';
+            document.getElementById('filterNegative').className = 'px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors';
+            
+            // Highlight active filter
+            if (currentFilter === 'all') {
+                document.getElementById('filterAll').className = 'px-3 py-1 text-sm font-medium bg-blue-600 text-white transition-colors';
+            } else if (currentFilter === 'positive') {
+                document.getElementById('filterPositive').className = 'px-3 py-1 text-sm font-medium bg-blue-600 text-white transition-colors';
+            } else if (currentFilter === 'negative') {
+                document.getElementById('filterNegative').className = 'px-3 py-1 text-sm font-medium bg-blue-600 text-white transition-colors';
+            }
+        }
+        
+        function changePage(direction) {
+            const totalPages = Math.ceil(filteredFeedbackData.length / itemsPerPage);
+            const newPage = currentPage + direction;
+            
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                applyFilterAndPagination();
+            }
+        }
+        
+        function updatePaginationControls() {
+            const totalItems = filteredFeedbackData.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const startItem = totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+            const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+            
+            // Update pagination info
+            document.getElementById('feedbackStart').textContent = startItem;
+            document.getElementById('feedbackEnd').textContent = endItem;
+            document.getElementById('feedbackTotal').textContent = totalItems;
+            document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+            
+            // Update button states
+            document.getElementById('prevPage').disabled = currentPage <= 1;
+            document.getElementById('nextPage').disabled = currentPage >= totalPages;
         }
         
         function updateIgnoredMedications(ignoredList) {

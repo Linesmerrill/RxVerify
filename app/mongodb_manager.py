@@ -478,40 +478,33 @@ class MongoDBManager:
         try:
             db = await self.get_database()
             
-            # Create search terms from query
-            search_terms = self._create_search_terms(query)
-            
-            # Search in cached drugs collection
+            # Search with priority for cleaner results
             pipeline = [
                 {
                     "$match": {
                         "$or": [
                             {"name": {"$regex": query, "$options": "i"}},
                             {"generic_name": {"$regex": query, "$options": "i"}},
-                            {"brand_names": {"$in": search_terms}},
-                            {"search_terms": {"$in": search_terms}}
+                            {"brand_names": {"$regex": query, "$options": "i"}}
                         ]
                     }
                 },
                 {
-                    "$project": {
-                        "name": 1,
-                        "generic_name": 1,
-                        "brand_names": 1,
-                        "common_uses": 1,
-                        "drug_class": 1,
-                        "source": 1,
-                        "score": {
+                    "$addFields": {
+                        "priority_score": {
                             "$add": [
-                                {"$cond": [{"$regexMatch": {"input": "$name", "regex": f"^{query}", "options": "i"}}, 10, 0]},
-                                {"$cond": [{"$regexMatch": {"input": "$generic_name", "regex": f"^{query}", "options": "i"}}, 8, 0]},
-                                {"$cond": [{"$in": [query], "$brand_names"}, 6, 0]},
-                                {"$cond": [{"$in": [query], "$search_terms"}, 4, 0]}
+                                # Higher score for manual entries (cleaner)
+                                {"$cond": [{"$eq": ["$source", "manual"]}, 100, 0]},
+                                # Higher score for exact name matches
+                                {"$cond": [{"$regexMatch": {"input": "$name", "regex": f"^{query}", "options": "i"}}, 50, 0]},
+                                # Lower score for complex formulations
+                                {"$cond": [{"$gt": [{"$strLenCP": "$name"}, 50]}, -20, 0]},
+                                {"$cond": [{"$regexMatch": {"input": "$name", "regex": "MG/ML|Injectable|Oral Tablet|Pack"}}, -10, 0]}
                             ]
                         }
                     }
                 },
-                {"$sort": {"score": -1, "name": 1}},
+                {"$sort": {"priority_score": -1, "name": 1}},
                 {"$limit": limit}
             ]
             

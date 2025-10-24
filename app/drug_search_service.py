@@ -57,13 +57,23 @@ class DrugSearchService:
         """Search external APIs for drug information."""
         try:
             # Use RxNorm for drug name search
-            rxnorm_results = await self.medical_api_client.search_rxnorm(query, limit)
+            rxnorm_results = await self.medical_api_client.search_rxnorm(query, limit * 3)  # Get more to filter
             
             # Format results for our drug model
             formatted_results = []
             for result in rxnorm_results:
+                drug_name = result.get("name", "")
+                
+                # Skip complex pharmaceutical formulations
+                if self._is_complex_formulation(drug_name):
+                    continue
+                
+                # Skip generic terms
+                if drug_name.lower() in ['oral', 'adverse', 'effect', 'side', 'drug', 'medication', 'tablet', 'capsule', 'injection']:
+                    continue
+                
                 drug_data = {
-                    "name": result.get("name", ""),
+                    "name": drug_name,
                     "generic_name": result.get("generic_name", ""),
                     "brand_names": result.get("brand_names", []),
                     "common_uses": result.get("common_uses", []),
@@ -71,15 +81,51 @@ class DrugSearchService:
                     "source": "rxnorm"
                 }
                 
-                # Only include if we have a valid name
-                if drug_data["name"] and drug_data["name"].lower() not in ['oral', 'adverse', 'effect', 'side', 'drug', 'medication']:
-                    formatted_results.append(drug_data)
+                formatted_results.append(drug_data)
+                
+                # Stop when we have enough good results
+                if len(formatted_results) >= limit:
+                    break
             
-            return formatted_results[:limit]
+            return formatted_results
             
         except Exception as e:
             logger.error(f"Error searching external APIs: {e}")
             return []
+    
+    def _is_complex_formulation(self, drug_name: str) -> bool:
+        """Check if a drug name is a complex pharmaceutical formulation."""
+        # Skip very long names (likely formulations)
+        if len(drug_name) > 100:
+            return True
+        
+        # Skip names with multiple ingredients (contain multiple MG/ML)
+        if drug_name.count("MG/ML") > 1:
+            return True
+        
+        # Skip names with complex chemical compositions
+        complex_indicators = [
+            "Injectable Solution",
+            "Injectable Suspension", 
+            "Topical Solution",
+            "Oral Suspension",
+            "Rectal Suppository",
+            "Vaginal Suppository",
+            "Ophthalmic Solution",
+            "Otic Solution",
+            "Nasal Spray",
+            "Inhalation Solution",
+            "Transdermal Patch",
+            "Extended Release",
+            "Delayed Release",
+            "Controlled Release"
+        ]
+        
+        for indicator in complex_indicators:
+            if indicator in drug_name:
+                return True
+        
+        return False
     
     async def _cache_results(self, results: List[Dict[str, Any]]) -> None:
         """Cache search results in MongoDB."""
@@ -134,6 +180,66 @@ class DrugSearchService:
                 await asyncio.sleep(0.1)  # Small delay to avoid overwhelming APIs
             except Exception as e:
                 logger.error(f"Error populating cache for {drug_name}: {e}")
+    
+    async def populate_common_drugs(self) -> None:
+        """Populate cache with common medications."""
+        # Add some hardcoded common drugs for better results
+        common_drugs_data = [
+            {
+                "name": "Metformin",
+                "generic_name": "Metformin",
+                "brand_names": ["Glucophage", "Fortamet", "Glumetza"],
+                "common_uses": ["Type 2 Diabetes", "Blood Sugar Control"],
+                "drug_class": "Biguanide",
+                "source": "manual"
+            },
+            {
+                "name": "Metoprolol",
+                "generic_name": "Metoprolol",
+                "brand_names": ["Lopressor", "Toprol XL"],
+                "common_uses": ["High Blood Pressure", "Heart Disease", "Chest Pain"],
+                "drug_class": "Beta Blocker",
+                "source": "manual"
+            },
+            {
+                "name": "Aspirin",
+                "generic_name": "Aspirin",
+                "brand_names": ["Bayer", "Ecotrin", "Bufferin"],
+                "common_uses": ["Pain Relief", "Fever Reduction", "Heart Attack Prevention"],
+                "drug_class": "NSAID",
+                "source": "manual"
+            },
+            {
+                "name": "Atorvastatin",
+                "generic_name": "Atorvastatin",
+                "brand_names": ["Lipitor"],
+                "common_uses": ["High Cholesterol", "Heart Disease Prevention"],
+                "drug_class": "Statin",
+                "source": "manual"
+            },
+            {
+                "name": "Lisinopril",
+                "generic_name": "Lisinopril",
+                "brand_names": ["Prinivil", "Zestril"],
+                "common_uses": ["High Blood Pressure", "Heart Failure"],
+                "drug_class": "ACE Inhibitor",
+                "source": "manual"
+            }
+        ]
+        
+        # Cache the hardcoded drugs
+        for drug_data in common_drugs_data:
+            await mongodb_manager.cache_drug(drug_data)
+        
+        # Also try to populate from APIs
+        common_drug_names = [
+            "metformin", "metoprolol", "methotrexate", "methylprednisolone",
+            "aspirin", "acetaminophen", "ibuprofen", "naproxen",
+            "atorvastatin", "simvastatin", "pravastatin", "rosuvastatin",
+            "lisinopril", "enalapril", "ramipril", "captopril"
+        ]
+        
+        await self.populate_initial_cache(common_drug_names)
 
 # Global drug search service instance
 drug_search_service = DrugSearchService()

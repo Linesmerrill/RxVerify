@@ -379,6 +379,27 @@ async def search_drugs(query: str = "", limit: int = 10):
             detail=f"Drug search failed: {str(e)}"
         )
 
+@app.post("/drugs/populate-cache")
+async def populate_drug_cache():
+    """Populate the drug cache with common medications."""
+    try:
+        from app.drug_search_service import drug_search_service
+        
+        # Populate cache with common drugs
+        await drug_search_service.populate_common_drugs()
+        
+        return {
+            "success": True,
+            "message": "Drug cache populated successfully with common medications"
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to populate drug cache: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to populate drug cache: {str(e)}"
+        )
+
 @app.get("/rxlist/stats")
 async def get_rxlist_stats():
     """Get RxList database statistics."""

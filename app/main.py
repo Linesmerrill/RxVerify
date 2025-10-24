@@ -16,6 +16,7 @@ from app.search_service import get_search_service
 from app.medication_cache import get_medication_cache
 from app.rxlist_database import get_rxlist_database
 from app.post_discharge_search import get_post_discharge_search_service
+from app.metrics_database import MetricsDatabase
 from app.models import (
     RetrievedDoc, SearchRequest, DrugSearchResult, SearchResponse,
     FeedbackRequest, FeedbackResponse, MLPipelineUpdate, Source
@@ -23,6 +24,9 @@ from app.models import (
 
 # Validate settings
 settings.validate()
+
+# Initialize metrics database
+metrics_db = MetricsDatabase()
 
 app = FastAPI(
     title="RxVerify - Multi-Database Drug Assistant",
@@ -245,6 +249,23 @@ async def search_medications(request: SearchRequest):
         # Record successful request
         monitor.record_request(success=True)
         
+        # Record search metrics
+        metrics_db.record_search_metric(
+            query=request.query,
+            results_count=len(results),
+            response_time_ms=processing_time,
+            user_id=getattr(request, 'user_id', None),
+            session_id=getattr(request, 'session_id', None)
+        )
+        
+        # Record user activity
+        metrics_db.record_user_activity(
+            action="medication_search",
+            user_id=getattr(request, 'user_id', None),
+            session_id=getattr(request, 'session_id', None),
+            metadata=f"query_length={len(request.query)}, results_count={len(results)}"
+        )
+        
         # Convert results to dict format for JSON response
         results_dict = []
         for result in results:
@@ -273,6 +294,24 @@ async def search_medications(request: SearchRequest):
     except Exception as e:
         # Record failed request
         monitor.record_request(success=False)
+        
+        # Record failed search metrics
+        processing_time = (time.time() - start_time) * 1000
+        metrics_db.record_search_metric(
+            query=request.query,
+            results_count=0,
+            response_time_ms=processing_time,
+            user_id=getattr(request, 'user_id', None),
+            session_id=getattr(request, 'session_id', None)
+        )
+        
+        # Record user activity
+        metrics_db.record_user_activity(
+            action="medication_search_failed",
+            user_id=getattr(request, 'user_id', None),
+            session_id=getattr(request, 'session_id', None),
+            metadata=f"error={str(e)[:100]}"
+        )
         
         logger.error(f"Enhanced medication search failed: {str(e)}", exc_info=True)
         raise HTTPException(
@@ -385,8 +424,42 @@ async def submit_feedback(feedback: FeedbackRequest):
             detail=f"Feedback submission failed: {str(e)}"
         )
 
+@app.get("/metrics/summary")
+async def get_metrics_summary(time_period_hours: int = 24):
+    """Get comprehensive system metrics summary."""
+    try:
+        summary = metrics_db.get_metrics_summary(time_period_hours)
+        return {
+            "success": True,
+            "data": summary,
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        logger.error(f"Failed to get metrics summary: {str(e)}")
+        return {"success": False, "message": str(e)}
+
+@app.get("/metrics/time-series")
+async def get_time_series_data(metric_type: str = "searches", time_period_hours: int = 24, interval_hours: int = 1):
+    """Get time series data for charts."""
+    try:
+        if metric_type not in ["searches", "api_calls"]:
+            return {"success": False, "message": "Invalid metric_type. Must be 'searches' or 'api_calls'"}
+        
+        data = metrics_db.get_time_series_data(metric_type, time_period_hours, interval_hours)
+        return {
+            "success": True,
+            "data": data,
+            "metric_type": metric_type,
+            "time_period_hours": time_period_hours,
+            "interval_hours": interval_hours,
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        logger.error(f"Failed to get time series data: {str(e)}")
+        return {"success": False, "message": str(e)}
+
 @app.get("/feedback/stats")
-async def get_feedback_stats():
+async def get_feedback_stats(time_period_hours: int = 24):
     """Get feedback statistics for ML pipeline monitoring."""
     try:
         search_service = await get_post_discharge_search_service()

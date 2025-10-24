@@ -122,6 +122,37 @@ class FeedbackDatabase:
             logger.error(f"Failed to get feedback counts: {e}")
             return {"helpful": 0, "not_helpful": 0}
     
+    def get_all_feedback_counts(self) -> Dict[str, Dict[str, Any]]:
+        """Get aggregated feedback counts for all drug/query combinations."""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.execute("""
+                    SELECT 
+                        drug_name,
+                        query,
+                        SUM(CASE WHEN is_positive = 1 THEN 1 ELSE 0 END) as helpful,
+                        SUM(CASE WHEN is_positive = 0 THEN 1 ELSE 0 END) as not_helpful
+                    FROM feedback 
+                    GROUP BY drug_name, query
+                    ORDER BY helpful + not_helpful DESC
+                """)
+                
+                feedback_counts = {}
+                for row in cursor.fetchall():
+                    key = f"{row[0]}|{row[1]}"
+                    feedback_counts[key] = {
+                        "drug_name": row[0],
+                        "query": row[1],
+                        "helpful": row[2] or 0,
+                        "not_helpful": row[3] or 0
+                    }
+                
+                return feedback_counts
+                
+        except Exception as e:
+            logger.error(f"Failed to get all feedback counts: {e}")
+            return {}
+    
     def get_all_feedback_entries(self) -> List[Dict[str, Any]]:
         """Get all individual feedback entries."""
         try:

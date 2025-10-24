@@ -756,6 +756,41 @@
                     </div>
                 </div>
 
+                <!-- Time Filter Controls -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2">Time Period Filter</h4>
+                            <p class="text-sm text-gray-600">Select the time period for metrics analysis</p>
+                        </div>
+                        <div class="mt-4 sm:mt-0">
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="setTimeFilter(24)" id="filter24h" class="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg transition-colors">
+                                    24 Hours
+                                </button>
+                                <button onclick="setTimeFilter(168)" id="filter7d" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                                    7 Days
+                                </button>
+                                <button onclick="setTimeFilter(336)" id="filter2w" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                                    2 Weeks
+                                </button>
+                                <button onclick="setTimeFilter(720)" id="filter1m" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                                    1 Month
+                                </button>
+                                <button onclick="setTimeFilter(2160)" id="filter3m" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                                    3 Months
+                                </button>
+                                <button onclick="setTimeFilter(4320)" id="filter6m" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                                    6 Months
+                                </button>
+                                <button onclick="setTimeFilter(8760)" id="filter1y" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                                    1 Year
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- System Overview Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white">
@@ -824,7 +859,7 @@
 
                     <!-- Request Trends Chart -->
                     <div class="bg-white rounded-xl border border-gray-200 p-6">
-                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Request Trends (Last 24h)</h4>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Search Trends</h4>
                         <div class="relative h-64">
                             <canvas id="trendsChart"></canvas>
                         </div>
@@ -1433,22 +1468,57 @@
         // Admin Dashboard Functions
         let feedbackChart = null;
         let trendsChart = null;
+        let currentTimeFilter = 24; // Default to 24 hours
+        
+        function setTimeFilter(hours) {
+            currentTimeFilter = hours;
+            updateTimeFilterButtons();
+            loadAdminData();
+        }
+        
+        function updateTimeFilterButtons() {
+            // Reset all buttons
+            const buttons = ['filter24h', 'filter7d', 'filter2w', 'filter1m', 'filter3m', 'filter6m', 'filter1y'];
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                btn.className = 'px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors';
+            });
+            
+            // Highlight active button
+            let activeId = '';
+            switch(currentTimeFilter) {
+                case 24: activeId = 'filter24h'; break;
+                case 168: activeId = 'filter7d'; break;
+                case 336: activeId = 'filter2w'; break;
+                case 720: activeId = 'filter1m'; break;
+                case 2160: activeId = 'filter3m'; break;
+                case 4320: activeId = 'filter6m'; break;
+                case 8760: activeId = 'filter1y'; break;
+            }
+            
+            if (activeId) {
+                const activeBtn = document.getElementById(activeId);
+                activeBtn.className = 'px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg transition-colors';
+            }
+        }
         
         async function loadAdminData() {
             try {
                 const apiBaseUrl = getApiBaseUrl();
                 
-                // Load all admin data in parallel
-                const [systemStatus, cacheStats, rxlistStats, feedbackStats] = await Promise.all([
+                // Load all admin data in parallel with time filter
+                const [systemStatus, cacheStats, rxlistStats, feedbackStats, metricsSummary, timeSeriesData] = await Promise.all([
                     fetch(`${apiBaseUrl}/status`).then(r => r.json()),
                     fetch(`${apiBaseUrl}/cache/stats`).then(r => r.json()),
                     fetch(`${apiBaseUrl}/rxlist/stats`).then(r => r.json()),
-                    fetch(`${apiBaseUrl}/feedback/stats`).then(r => r.json())
+                    fetch(`${apiBaseUrl}/feedback/stats?time_period_hours=${currentTimeFilter}`).then(r => r.json()),
+                    fetch(`${apiBaseUrl}/metrics/summary?time_period_hours=${currentTimeFilter}`).then(r => r.json()),
+                    fetch(`${apiBaseUrl}/metrics/time-series?metric_type=searches&time_period_hours=${currentTimeFilter}&interval_hours=${Math.max(1, Math.floor(currentTimeFilter / 24))}`).then(r => r.json())
                 ]);
                 
-                updateSystemOverview(systemStatus, feedbackStats);
+                updateSystemOverview(systemStatus, feedbackStats, metricsSummary);
                 updateDatabaseStats(cacheStats, rxlistStats);
-                updateCharts(feedbackStats);
+                updateCharts(feedbackStats, timeSeriesData);
                 updateRecentActivity();
                 
             } catch (error) {
@@ -1457,15 +1527,35 @@
             }
         }
         
-        function updateSystemOverview(systemStatus, feedbackStats) {
-            // Update overview cards
-            document.getElementById('totalRequests').textContent = systemStatus.monitoring?.total_requests || 0;
-            document.getElementById('successRate').textContent = 
-                systemStatus.monitoring?.success_rate ? `${(systemStatus.monitoring.success_rate * 100).toFixed(1)}%` : 'N/A';
-            document.getElementById('cacheHitRate').textContent = 
-                systemStatus.monitoring?.cache_hit_rate ? `${(systemStatus.monitoring.cache_hit_rate * 100).toFixed(1)}%` : 'N/A';
-            document.getElementById('avgResponseTime').textContent = 
-                systemStatus.monitoring?.avg_response_time ? `${systemStatus.monitoring.avg_response_time.toFixed(0)}ms` : 'N/A';
+        function updateSystemOverview(systemStatus, feedbackStats, metricsSummary) {
+            // Update overview cards with real metrics data
+            if (metricsSummary.success && metricsSummary.data) {
+                const metrics = metricsSummary.data;
+                
+                // Total Requests (from metrics)
+                document.getElementById('totalRequests').textContent = metrics.search_metrics?.total_searches || 0;
+                
+                // Success Rate (from API metrics)
+                document.getElementById('successRate').textContent = 
+                    metrics.api_metrics?.success_rate ? `${metrics.api_metrics.success_rate.toFixed(1)}%` : 'N/A';
+                
+                // Cache Hit Rate (from search metrics)
+                document.getElementById('cacheHitRate').textContent = 
+                    metrics.search_metrics?.cache_hit_rate ? `${metrics.search_metrics.cache_hit_rate.toFixed(1)}%` : 'N/A';
+                
+                // Average Response Time (from search metrics)
+                document.getElementById('avgResponseTime').textContent = 
+                    metrics.search_metrics?.avg_response_time_ms ? `${metrics.search_metrics.avg_response_time_ms.toFixed(0)}ms` : 'N/A';
+            } else {
+                // Fallback to system status if metrics not available
+                document.getElementById('totalRequests').textContent = systemStatus.monitoring?.total_requests || 0;
+                document.getElementById('successRate').textContent = 
+                    systemStatus.monitoring?.success_rate ? `${(systemStatus.monitoring.success_rate * 100).toFixed(1)}%` : 'N/A';
+                document.getElementById('cacheHitRate').textContent = 
+                    systemStatus.monitoring?.cache_hit_rate ? `${(systemStatus.monitoring.cache_hit_rate * 100).toFixed(1)}%` : 'N/A';
+                document.getElementById('avgResponseTime').textContent = 
+                    systemStatus.monitoring?.avg_response_time ? `${systemStatus.monitoring.avg_response_time.toFixed(0)}ms` : 'N/A';
+            }
         }
         
         function updateDatabaseStats(cacheStats, rxlistStats) {
@@ -1517,23 +1607,40 @@
                 }
             });
             
-            // Update trends chart (mock data for now)
+            // Update trends chart with time series data
             if (trendsChart) {
                 trendsChart.destroy();
             }
             
             const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+            
+            let chartData = [];
+            let chartLabels = [];
+            
+            if (timeSeriesData.success && timeSeriesData.data) {
+                chartData = timeSeriesData.data.map(point => point.count);
+                chartLabels = timeSeriesData.data.map(point => {
+                    const date = new Date(point.timestamp * 1000);
+                    return date.toLocaleTimeString();
+                });
+            } else {
+                // Fallback data
+                chartData = [0];
+                chartLabels = ['No Data'];
+            }
+            
             trendsChart = new Chart(trendsCtx, {
                 type: 'line',
                 data: {
-                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    labels: chartLabels,
                     datasets: [{
-                        label: 'Requests',
-                        data: [12, 19, 3, 5, 2, 3],
+                        label: 'Searches',
+                        data: chartData,
                         borderColor: '#3B82F6',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        tension: 0.4,
-                        fill: true
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
                     }]
                 },
                 options: {
@@ -1542,6 +1649,11 @@
                     scales: {
                         y: {
                             beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
                         }
                     }
                 }

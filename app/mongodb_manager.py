@@ -28,7 +28,7 @@ class MongoDBManager:
         
     async def get_database(self) -> AsyncIOMotorDatabase:
         """Get MongoDB database instance."""
-        if not self.database:
+        if self.database is None:
             self.database = await self.mongodb_config.connect()
         return self.database
     

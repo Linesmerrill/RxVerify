@@ -97,3 +97,15 @@ class FeedbackDatabase:
         # This would need to be implemented in both database managers
         logger.warning("clear_all_feedback not yet implemented in database managers")
         return True
+    
+    async def is_medication_ignored(self, drug_name: str, query: str) -> bool:
+        """Check if a medication should be ignored based on feedback."""
+        try:
+            ignored_meds = await self.get_ignored_medications()
+            for med in ignored_meds:
+                if med.get('drug_name') == drug_name:
+                    return True
+            return False
+        except Exception as e:
+            logger.error(f"Error checking if medication is ignored: {e}")
+            return False

@@ -90,7 +90,7 @@ class PostDischargeSearchService:
             scored_results = await self._apply_feedback_scoring(enhanced_results, query)
             
             # 6. Filter out ignored medications
-            filtered_results = self._filter_ignored_medications(scored_results, query)
+            filtered_results = await self._filter_ignored_medications(scored_results, query)
             
             # 7. Sort by relevance and discharge medication priority
             final_results = self._sort_by_discharge_relevance(filtered_results, query)
@@ -855,13 +855,13 @@ class PostDischargeSearchService:
         
         return sorted(results, key=relevance_score, reverse=True)
     
-    def _filter_ignored_medications(self, results: List[DrugSearchResult], query: str) -> List[DrugSearchResult]:
+    async def _filter_ignored_medications(self, results: List[DrugSearchResult], query: str) -> List[DrugSearchResult]:
         """Filter out medications that have been marked as ignored based on feedback."""
         filtered_results = []
         
         for result in results:
             # Check if this medication should be ignored
-            if self._feedback_db.is_medication_ignored(result.name, query):
+            if await self._feedback_db.is_medication_ignored(result.name, query):
                 logger.info(f"Filtering out ignored medication: {result.name} for query: {query}")
                 continue
             

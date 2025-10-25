@@ -1592,15 +1592,15 @@
                 const metrics = metricsSummary.data;
                 
                 // Total Requests (from metrics)
-                document.getElementById('totalRequests').textContent = metrics.search_metrics?.total_searches || 0;
+                document.getElementById('totalRequests').textContent = metrics.total_searches || 0;
                 
-                // Success Rate (from API metrics)
+                // Success Rate (from metrics)
                 document.getElementById('successRate').textContent = 
-                    metrics.api_metrics?.success_rate ? `${metrics.api_metrics.success_rate.toFixed(1)}%` : 'N/A';
+                    metrics.success_rate ? `${metrics.success_rate.toFixed(1)}%` : 'N/A';
                 
-                // Average Response Time (from search metrics)
+                // Average Response Time (from metrics)
                 document.getElementById('avgResponseTime').textContent = 
-                    metrics.search_metrics?.avg_response_time_ms ? `${metrics.search_metrics.avg_response_time_ms.toFixed(0)}ms` : 'N/A';
+                    metrics.average_response_time ? `${metrics.average_response_time.toFixed(0)}ms` : 'N/A';
             } else {
                 // Fallback to system status if metrics not available
                 document.getElementById('totalRequests').textContent = systemStatus.monitoring?.total_requests || 0;

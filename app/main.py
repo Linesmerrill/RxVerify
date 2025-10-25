@@ -314,7 +314,7 @@ async def search_medications(request: SearchRequest):
         processing_time = (time.time() - start_time) * 1000
         
         # Record successful request
-        monitor.record_request(success=True, response_time_ms=processing_time, endpoint="/drugs/search", query=query.strip())
+        monitor.record_request(success=True, response_time_ms=processing_time, endpoint="/drugs/search", query=request.query.strip())
         
         # Convert results to dict format for JSON response
         results_dict = []
@@ -344,7 +344,7 @@ async def search_medications(request: SearchRequest):
     except Exception as e:
         # Record failed request
         processing_time = (time.time() - start_time) * 1000
-        monitor.record_request(success=False, response_time_ms=processing_time, endpoint="/drugs/search", query=query.strip())
+        monitor.record_request(success=False, response_time_ms=processing_time, endpoint="/drugs/search", query=request.query.strip())
         
         logger.error(f"Enhanced medication search failed: {str(e)}", exc_info=True)
         raise HTTPException(
@@ -355,7 +355,11 @@ async def search_medications(request: SearchRequest):
 @app.get("/drugs/search")
 async def search_drugs(query: str = "", limit: int = 10):
     """Fast local drug search endpoint - uses curated MongoDB database."""
+    start_time = time.time()
+    
     if not query or len(query.strip()) < 2:
+        # Record failed request for empty query
+        monitor.record_request(success=False, response_time_ms=0, endpoint="/drugs/search", query=query.strip())
         return {"results": [], "total": 0, "search_stats": {"total_searches": 0}}
     
     try:
@@ -369,6 +373,10 @@ async def search_drugs(query: str = "", limit: int = 10):
         results = await local_drug_search_service.search_drugs(query.strip(), limit)
         search_stats = await local_drug_search_service.get_search_stats()
         
+        # Calculate processing time and record successful request
+        processing_time = (time.time() - start_time) * 1000
+        monitor.record_request(success=True, response_time_ms=processing_time, endpoint="/drugs/search", query=query.strip())
+        
         return {
             "results": results,
             "total": len(results),
@@ -377,6 +385,10 @@ async def search_drugs(query: str = "", limit: int = 10):
         }
         
     except Exception as e:
+        # Record failed request
+        processing_time = (time.time() - start_time) * 1000
+        monitor.record_request(success=False, response_time_ms=processing_time, endpoint="/drugs/search", query=query.strip())
+        
         logger.error(f"Local drug search failed: {str(e)}")
         raise HTTPException(
             status_code=500,

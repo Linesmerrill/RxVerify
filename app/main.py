@@ -876,8 +876,81 @@ async def remove_feedback(request: dict):
         if not drug_name or not query:
             return {"success": False, "message": "drug_name and query are required"}
         
-        # Remove feedback entry (simplified for now)
-        return {"success": True, "message": "Feedback removed successfully"}
+        if not drug_db_manager or drug_db_manager.db is None:
+            return {"success": False, "message": "Database not available"}
+        
+        # Find the vote record to remove
+        # We need to find votes that match the drug name and query pattern
+        vote_query = {
+            "drug_id": {"$regex": f".*{drug_name.replace(' ', '.*')}.*", "$options": "i"}
+        }
+        
+        # Find all votes for this drug
+        votes_cursor = drug_db_manager.votes_collection.find(vote_query)
+        votes_to_remove = []
+        
+        async for vote in votes_cursor:
+            # Check if this vote matches the query pattern
+            if f"Vote on {drug_name}" in query or drug_name in query:
+                votes_to_remove.append(vote["_id"])
+        
+        if not votes_to_remove:
+            return {"success": False, "message": "No matching feedback found"}
+        
+        # First, collect vote information before deletion
+        vote_info = []
+        for vote_id in votes_to_remove:
+            vote = await drug_db_manager.votes_collection.find_one({"_id": vote_id})
+            if vote:
+                vote_info.append({
+                    "drug_id": vote["drug_id"],
+                    "vote_type": vote["vote_type"]
+                })
+        
+        # Now delete the votes
+        result = await drug_db_manager.votes_collection.delete_many({
+            "_id": {"$in": votes_to_remove}
+        })
+        
+        if result.deleted_count > 0:
+            
+            # Update drug ratings
+            for vote_data in vote_info:
+                drug_id = vote_data["drug_id"]
+                vote_type = vote_data["vote_type"]
+                
+                # Decrement the vote count
+                await drug_db_manager.drugs_collection.update_one(
+                    {"drug_id": drug_id},
+                    {
+                        "$inc": {
+                            f"{vote_type}s": -1,
+                            "total_votes": -1
+                        }
+                    }
+                )
+                
+                # Recalculate rating score
+                drug = await drug_db_manager.drugs_collection.find_one({"drug_id": drug_id})
+                if drug:
+                    upvotes = drug.get("upvotes", 0)
+                    downvotes = drug.get("downvotes", 0)
+                    total_votes = upvotes + downvotes
+                    
+                    if total_votes > 0:
+                        rating_score = (upvotes - downvotes) / total_votes
+                    else:
+                        rating_score = 0.0
+                    
+                    await drug_db_manager.drugs_collection.update_one(
+                        {"drug_id": drug_id},
+                        {"$set": {"rating_score": rating_score}}
+                    )
+            
+            logger.info(f"Removed {result.deleted_count} feedback entries for drug {drug_name}")
+            return {"success": True, "message": f"Removed {result.deleted_count} feedback entries successfully"}
+        else:
+            return {"success": False, "message": "Failed to remove feedback entries"}
             
     except Exception as e:
         logger.error(f"Error removing feedback: {str(e)}")

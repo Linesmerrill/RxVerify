@@ -1018,6 +1018,8 @@ class RxVerifyApp {
             let isUnvote = false;
             let needsUnvoteFirst = false;
             
+            console.log(`Vote attempt: ${voteType} on ${drugId}, current vote state: ${currentVote}`);
+            
             if (currentVote === voteType) {
                 // User is trying to unvote (clicking same vote type again)
                 isUnvote = true;
@@ -1036,8 +1038,10 @@ class RxVerifyApp {
             // Update vote state in cache immediately
             if (isUnvote) {
                 this.voteStates.delete(drugId);
+                console.log(`Removed vote state for ${drugId}`);
             } else {
                 this.voteStates.set(drugId, voteType);
+                console.log(`Set vote state for ${drugId} to ${voteType}`);
             }
             this.saveVoteStates();
             

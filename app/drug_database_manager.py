@@ -367,7 +367,11 @@ class DrugDatabaseManager:
         return results
     
     async def _search_general(self, query: str, limit: int) -> List[DrugSearchResult]:
-        """General search across all drug types."""
+        """General search with intelligent ranking:
+        1. Drugs that start with the query (exact prefix matches)
+        2. Single word drugs that contain the query
+        3. Combination drugs that contain the query
+        """
         pipeline = [
             {
                 "$match": {
@@ -375,6 +379,7 @@ class DrugDatabaseManager:
                     "$or": [
                         {"name": {"$regex": query, "$options": "i"}},
                         {"search_terms": {"$regex": query, "$options": "i"}},
+                        {"primary_search_term": {"$regex": query, "$options": "i"}},
                         {"drug_class": {"$regex": query, "$options": "i"}},
                         {"common_uses": {"$regex": query, "$options": "i"}}
                     ]
@@ -383,12 +388,80 @@ class DrugDatabaseManager:
             {
                 "$addFields": {
                     "relevance_score": {
-                        "$cond": [
-                            {"$eq": ["$primary_search_term", query]}, 100,
-                            {"$cond": [
-                                {"$eq": ["$name", {"$toLower": "$name"}]}, 90,
-                                70
-                            ]}
+                        "$add": [
+                            # Base score for any match
+                            50,
+                            
+                            # Tier 1: Exact prefix matches (highest priority)
+                            {
+                                "$cond": [
+                                    {"$regexMatch": {
+                                        "input": {"$toLower": "$name"},
+                                        "regex": f"^{query.lower()}"
+                                    }}, 50, 0
+                                ]
+                            },
+                            
+                            # Tier 2: Primary search term starts with query
+                            {
+                                "$cond": [
+                                    {"$regexMatch": {
+                                        "input": {"$toLower": "$primary_search_term"},
+                                        "regex": f"^{query.lower()}"
+                                    }}, 40, 0
+                                ]
+                            },
+                            
+                            # Tier 3: Single word drugs (generic names)
+                            {
+                                "$cond": [
+                                    {
+                                        "$and": [
+                                            {"$eq": ["$drug_type", DrugType.GENERIC]},
+                                            {"$not": {"$regexMatch": {
+                                                "input": "$name",
+                                                "regex": r"\s+(and|\+|with|plus|\/)\s+"
+                                            }}}
+                                        ]
+                                    }, 30, 0
+                                ]
+                            },
+                            
+                            # Tier 4: Brand names
+                            {
+                                "$cond": [
+                                    {"$eq": ["$drug_type", DrugType.BRAND]}, 20, 0
+                                ]
+                            },
+                            
+                            # Tier 5: Combination drugs
+                            {
+                                "$cond": [
+                                    {
+                                        "$and": [
+                                            {"$eq": ["$drug_type", DrugType.COMBINATION]},
+                                            {"$regexMatch": {
+                                                "input": "$name",
+                                                "regex": r"\s+(and|\+|with|plus|\/)\s+"
+                                            }}
+                                        ]
+                                    }, 10, 0
+                                ]
+                            },
+                            
+                            # Bonus for exact matches
+                            {
+                                "$cond": [
+                                    {"$eq": [{"$toLower": "$name"}, query.lower()]}, 20, 0
+                                ]
+                            },
+                            
+                            # Bonus for primary search term exact match
+                            {
+                                "$cond": [
+                                    {"$eq": [{"$toLower": "$primary_search_term"}, query.lower()]}, 15, 0
+                                ]
+                            }
                         ]
                     }
                 }

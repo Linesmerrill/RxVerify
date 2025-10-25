@@ -461,6 +461,20 @@ class DrugDatabaseManager:
                                 "$cond": [
                                     {"$eq": [{"$toLower": "$primary_search_term"}, query.lower()]}, 15, 0
                                 ]
+                            },
+                            
+                            # Vote-based ranking boost
+                            {
+                                "$multiply": [
+                                    "$rating_score", 25  # Multiply rating score by 25 for significant impact
+                                ]
+                            },
+                            
+                            # Additional boost for drugs with high vote counts (social proof)
+                            {
+                                "$cond": [
+                                    {"$gte": ["$total_votes", 5]}, 10, 0  # Bonus for drugs with 5+ votes
+                                ]
                             }
                         ]
                     }

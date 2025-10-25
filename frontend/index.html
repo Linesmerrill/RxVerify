@@ -2060,7 +2060,28 @@
             if (themeToggle) {
                 themeToggle.addEventListener('click', toggleTheme);
             }
+            
+            // Fetch version from backend
+            fetchVersion();
         });
+        
+        // Function to fetch version from backend
+        async function fetchVersion() {
+            try {
+                const apiBaseUrl = getApiBaseUrl();
+                const response = await fetch(`${apiBaseUrl}/`);
+                const data = await response.json();
+                
+                if (data.version) {
+                    const versionElement = document.getElementById('versionDisplay');
+                    if (versionElement) {
+                        versionElement.textContent = `RxVerify v${data.version}`;
+                    }
+                }
+            } catch (error) {
+                console.log('Could not fetch version from backend, using default');
+            }
+        }
     </script>
 
     <script src="app.js?v=1761371727"></script>
@@ -2074,7 +2095,7 @@
                         <span class="text-sm text-gray-600">System Online</span>
                     </div>
                     <div class="hidden md:block w-px h-4 bg-gray-300"></div>
-                    <span class="text-xs text-gray-500">RxVerify v1.0.0</span>
+                    <span id="versionDisplay" class="text-xs text-gray-500">RxVerify v1.0.0</span>
                 </div>
                 
                 <div class="flex items-center space-x-4">

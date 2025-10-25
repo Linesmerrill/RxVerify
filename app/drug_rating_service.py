@@ -58,9 +58,9 @@ class DrugRatingService:
                 logger.warning(f"Cannot vote on non-existent drug: {drug_id}")
                 return False
             
-            # Check for duplicate votes (by user_id or ip_address)
-            if await self._has_user_voted(drug_id, user_id, ip_address):
-                logger.warning(f"User has already voted on drug {drug_id}")
+            # Check for duplicate votes (by user_id or ip_address) - only same vote type
+            if await self._has_user_voted_with_type(drug_id, vote_type, user_id, ip_address):
+                logger.warning(f"User has already voted {vote_type.value} on drug {drug_id}")
                 return False
             
             # Create vote record

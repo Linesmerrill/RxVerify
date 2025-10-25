@@ -14,6 +14,7 @@ from app.app_logging import logger
 from app.config import settings
 from app.medical_apis import close_medical_api_client
 from app.monitoring import monitor
+from app.analytics_database import analytics_db_manager
 # Import database manager based on environment
 if 'MONGODB_URI' in os.environ or 'MONGODB_URL' in os.environ:
     from app.mongodb_config import MongoDBConfig
@@ -65,12 +66,13 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-# Initialize monitor with broadcast callback
+# Initialize monitor with broadcast callback and analytics database
 async def broadcast_metrics(data):
     await manager.broadcast(data)
 
-# Update the monitor to use the broadcast callback
+# Update the monitor to use the broadcast callback and analytics database
 monitor.broadcast_callback = broadcast_metrics
+monitor.analytics_db_manager = analytics_db_manager
 
 # Validate settings
 settings.validate()
@@ -106,7 +108,16 @@ async def startup_event():
     try:
         if 'MONGODB_URI' in os.environ or 'MONGODB_URL' in os.environ:
             logger.info("MongoDB detected - initializing MongoDB connection")
-            # MongoDB will be initialized when first accessed
+            
+            # Initialize drug database manager
+            if drug_db_manager:
+                await drug_db_manager.initialize()
+                logger.info("✅ Drug database manager initialized")
+            
+            # Initialize analytics database manager
+            await analytics_db_manager.initialize()
+            logger.info("✅ Analytics database manager initialized")
+            
             logger.info("✅ MongoDB connection ready")
         else:
             logger.info("No MongoDB configured - using local drug search service")
@@ -715,8 +726,12 @@ async def submit_feedback(feedback: FeedbackRequest):
 async def get_metrics_summary(time_period_hours: int = 24):
     """Get comprehensive system metrics summary."""
     try:
-        # Get real metrics from monitor
-        metrics = monitor.get_metrics_summary(time_period_hours)
+        # Use persistent analytics database if available
+        if analytics_db_manager and analytics_db_manager.db:
+            metrics = await analytics_db_manager.get_metrics_summary(time_period_hours)
+        else:
+            # Fallback to in-memory monitor
+            metrics = monitor.get_metrics_summary(time_period_hours)
         
         return {
             "success": True,
@@ -741,8 +756,12 @@ async def get_time_series_data(metric_type: str = "searches", time_period_hours:
         if metric_type not in ["searches", "api_calls"]:
             return {"success": False, "message": "Invalid metric_type. Must be 'searches' or 'api_calls'"}
         
-        # Get real time series data from monitor
-        data = monitor.get_time_series_data(metric_type, time_period_hours, interval_hours)
+        # Use persistent analytics database if available
+        if analytics_db_manager and analytics_db_manager.db:
+            data = await analytics_db_manager.get_time_series_data(metric_type, time_period_hours, interval_hours)
+        else:
+            # Fallback to in-memory monitor
+            data = monitor.get_time_series_data(metric_type, time_period_hours, interval_hours)
         
         return {
             "success": True,
@@ -885,7 +904,12 @@ async def unignore_medication(request: dict):
 async def get_recent_activity(limit: int = 20):
     """Get recent activity data for admin dashboard."""
     try:
-        recent_requests = monitor.get_recent_requests(limit)
+        # Use persistent analytics database if available
+        if analytics_db_manager and analytics_db_manager.db:
+            recent_requests = await analytics_db_manager.get_recent_requests(limit)
+        else:
+            # Fallback to in-memory monitor
+            recent_requests = monitor.get_recent_requests(limit)
         
         return {
             "success": True,

@@ -2,6 +2,7 @@
 Simple Monitoring System for RxVerify
 
 Tracks request metrics, response times, and system performance.
+Now integrates with persistent analytics database.
 """
 
 import time
@@ -15,11 +16,12 @@ logger = logging.getLogger(__name__)
 
 
 class SimpleMonitor:
-    """Simple in-memory monitoring system for tracking metrics."""
+    """Simple in-memory monitoring system for tracking metrics with persistent storage."""
     
-    def __init__(self, broadcast_callback=None):
+    def __init__(self, broadcast_callback=None, analytics_db_manager=None):
         self._lock = threading.Lock()
         self.broadcast_callback = broadcast_callback
+        self.analytics_db_manager = analytics_db_manager
         self._reset_metrics()
     
     def _reset_metrics(self):
@@ -96,6 +98,19 @@ class SimpleMonitor:
                     asyncio.create_task(self.broadcast_callback(broadcast_data))
                 except Exception as e:
                     logger.warning(f"Failed to broadcast metrics update: {e}")
+            
+            # Save to persistent analytics database
+            if self.analytics_db_manager:
+                try:
+                    import asyncio
+                    asyncio.create_task(self.analytics_db_manager.log_request(
+                        endpoint=endpoint,
+                        query=query,
+                        success=success,
+                        response_time_ms=response_time_ms
+                    ))
+                except Exception as e:
+                    logger.warning(f"Failed to log request to analytics database: {e}")
     
     def get_metrics_summary(self, time_period_hours: int = 24) -> Dict[str, Any]:
         """Get comprehensive metrics summary."""

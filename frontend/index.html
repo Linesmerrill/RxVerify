@@ -619,23 +619,23 @@
                     </div>
 
                     <!-- Feedback List -->
-                    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                                 <div>
-                                    <h5 class="text-lg font-semibold text-gray-800 flex items-center space-x-2">
+                                    <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center space-x-2">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                                         </svg>
                                         <span>Feedback List</span>
                                     </h5>
-                                    <p class="text-sm text-gray-600 mt-1">All user feedback entries for medications</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">All user feedback entries for medications</p>
                                 </div>
                                 
                                 <!-- Filter Controls -->
                                 <div class="mt-4 sm:mt-0 flex items-center space-x-2">
-                                    <span class="text-sm text-gray-600">Filter:</span>
-                                    <div class="flex rounded-lg border border-gray-200 overflow-hidden">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Filter:</span>
+                                    <div class="flex rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
                                         <button 
                                             id="filterAll" 
                                             onclick="filterFeedback('all')" 
@@ -646,14 +646,14 @@
                                         <button 
                                             id="filterPositive" 
                                             onclick="filterFeedback('positive')" 
-                                            class="px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                                            class="px-3 py-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                                         >
                                             Positive
                                         </button>
                                         <button 
                                             id="filterNegative" 
                                             onclick="filterFeedback('negative')" 
-                                            class="px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                                            class="px-3 py-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                                         >
                                             Negative
                                         </button>
@@ -663,40 +663,40 @@
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full">
-                                <thead class="bg-gray-50">
+                                <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Drug Name</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Query</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Drug Name</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Query</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Rating</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="feedbackTableBody" class="bg-white divide-y divide-gray-200">
+                                <tbody id="feedbackTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     <!-- Feedback data will be loaded here -->
                                 </tbody>
                             </table>
                         </div>
                         
                         <!-- Pagination Controls -->
-                        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
                             <div class="flex items-center justify-between">
-                                <div class="text-sm text-gray-600">
+                                <div class="text-sm text-gray-600 dark:text-gray-400">
                                     Showing <span id="feedbackStart">0</span> to <span id="feedbackEnd">0</span> of <span id="feedbackTotal">0</span> entries
                                 </div>
                                 <div class="flex items-center space-x-2">
                                     <button 
                                         id="prevPage" 
                                         onclick="changePage(-1)" 
-                                        class="px-3 py-1 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        class="px-3 py-1 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                                         disabled
                                     >
                                         Previous
                                     </button>
-                                    <span id="pageInfo" class="px-3 py-1 text-sm text-gray-600">Page 1 of 1</span>
+                                    <span id="pageInfo" class="px-3 py-1 text-sm text-gray-600 dark:text-gray-400">Page 1 of 1</span>
                                     <button 
                                         id="nextPage" 
                                         onclick="changePage(1)" 
-                                        class="px-3 py-1 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        class="px-3 py-1 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                                         disabled
                                     >
                                         Next
@@ -1204,7 +1204,7 @@
             if (feedbackList.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                        <td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                             No feedback data available
                         </td>
                     </tr>
@@ -1215,19 +1215,19 @@
             feedbackList.forEach(feedback => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                         ${feedback.drug_name || 'N/A'}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         ${feedback.query || 'N/A'}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${feedback.is_positive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${feedback.is_positive ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'}">
                             ${feedback.is_positive ? 'Positive' : 'Negative'}
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button onclick="removeFeedback('${feedback.drug_name}', '${feedback.query}')" class="text-red-600 hover:text-red-900">
+                        <button onclick="removeFeedback('${feedback.drug_name}', '${feedback.query}')" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">
                             Remove
                         </button>
                     </td>
@@ -1267,9 +1267,9 @@
         
         function updateFilterButtons() {
             // Reset all buttons
-            document.getElementById('filterAll').className = 'px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors';
-            document.getElementById('filterPositive').className = 'px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors';
-            document.getElementById('filterNegative').className = 'px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors';
+            document.getElementById('filterAll').className = 'px-3 py-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors';
+            document.getElementById('filterPositive').className = 'px-3 py-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors';
+            document.getElementById('filterNegative').className = 'px-3 py-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors';
             
             // Highlight active filter
             if (currentFilter === 'all') {

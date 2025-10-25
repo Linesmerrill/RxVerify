@@ -63,6 +63,13 @@ class DrugRatingService:
                 logger.warning(f"User has already voted {vote_type.value} on drug {drug_id}")
                 return False
             
+            # Check if user has voted with a different vote type and remove it
+            existing_vote_type = await self._get_user_vote_type(drug_id, user_id, ip_address)
+            if existing_vote_type and existing_vote_type != vote_type:
+                logger.info(f"User switching vote from {existing_vote_type.value} to {vote_type.value} on drug {drug_id}")
+                # Remove the existing vote
+                await self._remove_user_vote(drug_id, existing_vote_type, user_id, ip_address)
+            
             # Create vote record
             vote_id = str(uuid.uuid4())
             vote = DrugVote(
@@ -134,6 +141,69 @@ class DrugRatingService:
                 
         except Exception as e:
             logger.error(f"Failed to unvote on drug {drug_id}: {str(e)}")
+            return False
+    
+    async def _get_user_vote_type(self, drug_id: str, user_id: Optional[str], 
+                                 ip_address: Optional[str]) -> Optional[VoteType]:
+        """Get the vote type that the user has cast on this drug."""
+        try:
+            query = {"drug_id": drug_id}
+            
+            # Check for votes by either user_id or ip_address
+            if user_id and ip_address:
+                query["$or"] = [
+                    {"user_id": user_id},
+                    {"ip_address": ip_address}
+                ]
+            elif user_id:
+                query["user_id"] = user_id
+            elif ip_address:
+                query["ip_address"] = ip_address
+            else:
+                return None  # No way to identify user
+            
+            existing_vote = await drug_db_manager.votes_collection.find_one(query)
+            if existing_vote:
+                return VoteType(existing_vote["vote_type"])
+            return None
+            
+        except Exception as e:
+            logger.error(f"Failed to get user vote type: {str(e)}")
+            return None
+    
+    async def _remove_user_vote(self, drug_id: str, vote_type: VoteType, 
+                               user_id: Optional[str], ip_address: Optional[str]) -> bool:
+        """Remove a user's vote from a drug."""
+        try:
+            query = {
+                "drug_id": drug_id,
+                "vote_type": vote_type.value
+            }
+            
+            # Use the same logic as _has_user_voted_with_type for consistency
+            if user_id and ip_address:
+                query["$or"] = [
+                    {"user_id": user_id},
+                    {"ip_address": ip_address}
+                ]
+            elif user_id:
+                query["user_id"] = user_id
+            elif ip_address:
+                query["ip_address"] = ip_address
+            
+            result = await drug_db_manager.votes_collection.delete_one(query)
+            
+            if result.deleted_count > 0:
+                # Update drug rating (decrement the vote)
+                await self._update_drug_rating(drug_id, vote_type, is_increment=False)
+                logger.info(f"Successfully removed {vote_type.value} vote for drug {drug_id}")
+                return True
+            else:
+                logger.warning(f"No {vote_type.value} vote found to remove for drug {drug_id}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Failed to remove user vote: {str(e)}")
             return False
     
     async def _has_user_voted_with_type(self, drug_id: str, vote_type: VoteType, 

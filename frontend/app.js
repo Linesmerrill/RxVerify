@@ -11,7 +11,7 @@ class RxVerifyApp {
         this.currentQuery = null;
         this.searchTimeout = null;
         this.currentTab = 'ask';
-        this.voteStates = this.loadVoteStates(); // Load cached vote states
+        this.voteStates = this.loadVoteStates(); // Load cached vote states as plain object
         this.voteCooldowns = new Map(); // Track cooldowns to prevent spam
         this.init();
     }
@@ -976,7 +976,7 @@ class RxVerifyApp {
         feedbackDiv.appendChild(feedbackButtons);
         
         // Apply initial vote state from cache
-        const currentVote = this.voteStates.get(result.drug_id);
+        const currentVote = this.voteStates[result.drug_id];
         if (currentVote === 'upvote') {
             thumbsUpBtn.className += ' bg-green-100 border-green-300';
         } else if (currentVote === 'downvote') {
@@ -1014,7 +1014,7 @@ class RxVerifyApp {
             }
             
             // Check if user already voted on this drug
-            const currentVote = this.voteStates.get(drugId);
+            const currentVote = this.voteStates[drugId];
             let isUnvote = false;
             let needsUnvoteFirst = false;
             
@@ -1037,10 +1037,10 @@ class RxVerifyApp {
             
             // Update vote state in cache immediately
             if (isUnvote) {
-                this.voteStates.delete(drugId);
+                delete this.voteStates[drugId];
                 console.log(`Removed vote state for ${drugId}`);
             } else {
-                this.voteStates.set(drugId, voteType);
+                this.voteStates[drugId] = voteType;
                 console.log(`Set vote state for ${drugId} to ${voteType}`);
             }
             this.saveVoteStates();
@@ -1128,11 +1128,11 @@ class RxVerifyApp {
             this.revertVoteButtons(drugId);
             
             // Revert vote state in cache
-            const currentVote = this.voteStates.get(drugId);
+            const currentVote = this.voteStates[drugId];
             if (currentVote === voteType) {
-                this.voteStates.delete(drugId);
+                delete this.voteStates[drugId];
             } else {
-                this.voteStates.set(drugId, currentVote);
+                this.voteStates[drugId] = currentVote;
             }
             this.saveVoteStates();
             
@@ -1146,18 +1146,20 @@ class RxVerifyApp {
             const stored = localStorage.getItem('rxverify_vote_states');
             if (stored) {
                 const states = JSON.parse(stored);
-                return new Map(Object.entries(states));
+                console.log('Loaded vote states from localStorage:', states);
+                return states;
             }
         } catch (error) {
             console.error('Error loading vote states:', error);
         }
-        return new Map();
+        console.log('No vote states found, returning empty object');
+        return {};
     }
 
     saveVoteStates() {
         try {
-            const states = Object.fromEntries(this.voteStates);
-            localStorage.setItem('rxverify_vote_states', JSON.stringify(states));
+            localStorage.setItem('rxverify_vote_states', JSON.stringify(this.voteStates));
+            console.log('Saved vote states to localStorage:', this.voteStates);
         } catch (error) {
             console.error('Error saving vote states:', error);
         }
@@ -1510,7 +1512,7 @@ class RxVerifyApp {
         }
         
         // Restore the vote state in cache
-        this.voteStates.set(drugId, previousVoteType);
+        this.voteStates[drugId] = previousVoteType;
         this.saveVoteStates();
     }
 }

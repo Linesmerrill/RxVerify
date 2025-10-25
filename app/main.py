@@ -450,6 +450,31 @@ async def search_drugs(query: str = "", limit: int = 10):
             detail=f"Local drug search failed: {str(e)}"
         )
 
+@app.get("/drugs/vote-status")
+async def get_vote_status(drug_id: str, request: Request):
+    """Check if the current user has voted on a specific drug."""
+    try:
+        from app.drug_rating_service import drug_rating_service
+        
+        # Get user identification info
+        ip_address = request.client.host if request.client else None
+        user_agent = request.headers.get("user-agent")
+        
+        # Check if user has voted
+        has_voted, vote_type = await drug_rating_service.check_user_vote_status(
+            drug_id, ip_address, user_agent
+        )
+        
+        return {
+            "has_voted": has_voted,
+            "vote_type": vote_type,
+            "drug_id": drug_id
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to check vote status: {str(e)}")
+        return {"has_voted": False, "vote_type": None, "drug_id": drug_id}
+
 @app.post("/drugs/vote")
 async def vote_on_drug(
     drug_id: str,

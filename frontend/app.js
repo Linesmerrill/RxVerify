@@ -975,8 +975,11 @@ class RxVerifyApp {
         
         feedbackDiv.appendChild(feedbackButtons);
         
-        // Apply initial vote state from cache
+        // Apply initial vote state from cache, but verify with backend
         const currentVote = this.voteStates[result.drug_id];
+        
+        // Always allow voting initially - we'll verify with backend on click
+        // This implements "when in doubt, allow voting" policy
         if (currentVote === 'upvote') {
             thumbsUpBtn.className += ' bg-green-100 border-green-300';
         } else if (currentVote === 'downvote') {
@@ -1000,6 +1003,9 @@ class RxVerifyApp {
 
     async voteOnDrug(drugId, voteType) {
         try {
+            // First, verify with backend if user has actually voted
+            const backendStatus = await this.verifyVoteStatus(drugId);
+            
             // Check cooldown to prevent spam clicking
             const cooldownKey = `${drugId}_${voteType}`;
             const now = Date.now();
@@ -1013,8 +1019,8 @@ class RxVerifyApp {
                 }
             }
             
-            // Check if user already voted on this drug
-            const currentVote = this.voteStates[drugId];
+            // Check if user already voted on this drug (backend verification)
+            const currentVote = backendStatus.has_voted ? backendStatus.vote_type : null;
             let isUnvote = false;
             let needsUnvoteFirst = false;
             
@@ -1035,7 +1041,7 @@ class RxVerifyApp {
             // IMMEDIATE UI UPDATE (Optimistic Update)
             this.updateVoteButtonsImmediately(drugId, voteType, isUnvote);
             
-            // Update vote state in cache immediately
+            // Update vote state in cache immediately and sync with backend
             if (isUnvote) {
                 delete this.voteStates[drugId];
                 console.log(`Removed vote state for ${drugId}`);
@@ -1044,6 +1050,9 @@ class RxVerifyApp {
                 console.log(`Set vote state for ${drugId} to ${voteType}`);
             }
             this.saveVoteStates();
+            
+            // Sync localStorage with backend state
+            console.log('Vote state synced with backend:', { drugId, voteType, isUnvote });
             
             // Set cooldown
             this.voteCooldowns.set(cooldownKey, now);
@@ -1147,6 +1156,32 @@ class RxVerifyApp {
     }
 
     // Vote state management methods
+    async verifyVoteStatus(drugId) {
+        // Verify with backend if user has actually voted on this drug
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/drugs/vote-status?drug_id=${encodeURIComponent(drugId)}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                return {
+                    has_voted: data.has_voted,
+                    vote_type: data.vote_type
+                };
+            } else {
+                console.warn('Failed to verify vote status, allowing vote');
+                return { has_voted: false, vote_type: null };
+            }
+        } catch (error) {
+            console.warn('Error verifying vote status, allowing vote:', error);
+            return { has_voted: false, vote_type: null };
+        }
+    }
+    
     loadVoteStates() {
         try {
             const stored = localStorage.getItem('rxverify_vote_states');

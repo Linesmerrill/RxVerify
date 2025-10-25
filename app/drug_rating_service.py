@@ -30,6 +30,45 @@ class DrugRatingService:
         identifier = f"{ip_address or 'unknown'}:{user_agent or 'unknown'}"
         return hashlib.md5(identifier.encode()).hexdigest()
     
+    async def check_user_vote_status(self, drug_id: str, ip_address: Optional[str], 
+                                   user_agent: Optional[str]) -> tuple[bool, Optional[str]]:
+        """
+        Check if a user has voted on a drug and return the vote type.
+        
+        Returns:
+            tuple: (has_voted: bool, vote_type: Optional[str])
+        """
+        try:
+            # Generate user ID for anonymous voting
+            user_id = self._generate_user_id(ip_address, user_agent)
+            
+            # Check for existing vote
+            query = {"drug_id": drug_id}
+            
+            # Check for votes by either user_id or ip_address
+            if user_id and ip_address:
+                query["$or"] = [
+                    {"user_id": user_id},
+                    {"ip_address": ip_address}
+                ]
+            elif user_id:
+                query["user_id"] = user_id
+            elif ip_address:
+                query["ip_address"] = ip_address
+            else:
+                return False, None  # No way to identify user
+            
+            existing_vote = await drug_db_manager.votes_collection.find_one(query)
+            
+            if existing_vote:
+                return True, existing_vote["vote_type"]
+            else:
+                return False, None
+                
+        except Exception as e:
+            logger.error(f"Failed to check user vote status: {str(e)}")
+            return False, None
+    
     async def vote_on_drug(self, drug_id: str, vote_type: VoteType, 
                           user_id: Optional[str] = None, reason: Optional[str] = None,
                           ip_address: Optional[str] = None, user_agent: Optional[str] = None) -> bool:

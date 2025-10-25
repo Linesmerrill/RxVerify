@@ -26,6 +26,7 @@ from app.models import (
     RetrievedDoc, SearchRequest, DrugSearchResult, SearchResponse,
     FeedbackRequest, FeedbackResponse, MLPipelineUpdate, Source
 )
+from app.drug_database_schema import DrugStatus
 
 # Validate settings
 settings.validate()

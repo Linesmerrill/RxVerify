@@ -1016,11 +1016,16 @@ class RxVerifyApp {
             // Check if user already voted on this drug
             const currentVote = this.voteStates.get(drugId);
             let isUnvote = false;
+            let needsUnvoteFirst = false;
             
             if (currentVote === voteType) {
                 // User is trying to unvote (clicking same vote type again)
                 isUnvote = true;
                 console.log(`Unvoting ${voteType} on drug:`, drugId);
+            } else if (currentVote && currentVote !== voteType) {
+                // User is switching vote types (e.g., helpful -> not helpful)
+                needsUnvoteFirst = true;
+                console.log(`Switching vote from ${currentVote} to ${voteType} on drug:`, drugId);
             } else {
                 console.log(`Voting ${voteType} on drug:`, drugId);
             }
@@ -1039,30 +1044,77 @@ class RxVerifyApp {
             // Set cooldown
             this.voteCooldowns.set(cooldownKey, now);
             
-            // Make API call in background
-            const response = await fetch(`${this.apiBaseUrl}/drugs/vote?drug_id=${encodeURIComponent(drugId)}&vote_type=${voteType}&is_unvote=${isUnvote}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+            // Handle vote switching (unvote first, then vote)
+            if (needsUnvoteFirst) {
+                try {
+                    // First, unvote the existing vote
+                    const unvoteResponse = await fetch(`${this.apiBaseUrl}/drugs/vote?drug_id=${encodeURIComponent(drugId)}&vote_type=${currentVote}&is_unvote=true`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    
+                    if (!unvoteResponse.ok) {
+                        const errorData = await unvoteResponse.json();
+                        throw new Error(errorData.detail || 'Failed to unvote');
+                    }
+                    
+                    console.log('Successfully unvoted previous vote');
+                    
+                    // Then, vote with the new type
+                    const voteResponse = await fetch(`${this.apiBaseUrl}/drugs/vote?drug_id=${encodeURIComponent(drugId)}&vote_type=${voteType}&is_unvote=false`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    
+                    if (!voteResponse.ok) {
+                        const errorData = await voteResponse.json();
+                        throw new Error(errorData.detail || 'Failed to vote');
+                    }
+                    
+                    const result = await voteResponse.json();
+                    console.log('Vote switch result:', result);
+                    
+                    // Show success message
+                    this.showMessage(`Vote switched to ${voteType} successfully!`, 'success');
+                    
+                } catch (error) {
+                    console.error('Failed to switch vote:', error);
+                    this.showMessage(`Failed to switch vote: ${error.message}`, 'error');
+                    
+                    // Revert UI changes on error
+                    this.revertVoteButtons(drugId, currentVote);
+                    return;
                 }
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Failed to vote');
-            }
-            
-            const result = await response.json();
-            console.log('Vote result:', result);
-            
-            // Show success message
-            const message = isUnvote ? `Vote removed successfully!` : `Vote recorded successfully!`;
-            this.showToast(message, 'success');
-            
-            // Refresh the search results to show updated ratings
-            const currentQuery = document.getElementById('searchInput').value;
-            if (currentQuery.trim()) {
-                await this.performSearch(currentQuery);
+            } else {
+                // Regular vote or unvote
+                const response = await fetch(`${this.apiBaseUrl}/drugs/vote?drug_id=${encodeURIComponent(drugId)}&vote_type=${voteType}&is_unvote=${isUnvote}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to vote');
+                }
+                
+                const result = await response.json();
+                console.log('Vote result:', result);
+                
+                // Show success message
+                const message = isUnvote ? `Vote removed successfully!` : `Vote recorded successfully!`;
+                this.showMessage(message, 'success');
+                
+                // Refresh the search results to show updated ratings
+                const currentQuery = document.getElementById('searchInput').value;
+                if (currentQuery.trim()) {
+                    await this.performSearch(currentQuery);
+                }
             }
             
         } catch (error) {
@@ -1426,6 +1478,36 @@ class RxVerifyApp {
         this.hideError();
         this.updateCharacterCount(0);
         this.showToast('Form reset successfully', 'info');
+    }
+    
+    revertVoteButtons(drugId, previousVoteType) {
+        // Find the result element for this drug
+        const resultElements = document.querySelectorAll('.search-result');
+        for (const element of resultElements) {
+            const drugIdElement = element.querySelector('[data-drug-id]');
+            if (drugIdElement && drugIdElement.getAttribute('data-drug-id') === drugId) {
+                const thumbsUpBtn = element.querySelector('.thumbs-up-btn');
+                const thumbsDownBtn = element.querySelector('.thumbs-down-btn');
+                
+                if (thumbsUpBtn && thumbsDownBtn) {
+                    // Reset both buttons to default state
+                    thumbsUpBtn.className = 'thumbs-up-btn flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors border border-transparent';
+                    thumbsDownBtn.className = 'thumbs-down-btn flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors border border-transparent';
+                    
+                    // Restore the previous vote state
+                    if (previousVoteType === 'upvote') {
+                        thumbsUpBtn.className += ' bg-green-100 border-green-300';
+                    } else if (previousVoteType === 'downvote') {
+                        thumbsDownBtn.className += ' bg-red-100 border-red-300';
+                    }
+                }
+                break;
+            }
+        }
+        
+        // Restore the vote state in cache
+        this.voteStates.set(drugId, previousVoteType);
+        this.saveVoteStates();
     }
 }
 

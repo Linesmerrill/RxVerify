@@ -727,7 +727,7 @@ async def get_metrics_summary(time_period_hours: int = 24):
     """Get comprehensive system metrics summary."""
     try:
         # Use persistent analytics database if available
-        if analytics_db_manager and analytics_db_manager.db:
+        if analytics_db_manager and analytics_db_manager.db is not None:
             metrics = await analytics_db_manager.get_metrics_summary(time_period_hours)
         else:
             # Fallback to in-memory monitor
@@ -757,7 +757,7 @@ async def get_time_series_data(metric_type: str = "searches", time_period_hours:
             return {"success": False, "message": "Invalid metric_type. Must be 'searches' or 'api_calls'"}
         
         # Use persistent analytics database if available
-        if analytics_db_manager and analytics_db_manager.db:
+        if analytics_db_manager and analytics_db_manager.db is not None:
             data = await analytics_db_manager.get_time_series_data(metric_type, time_period_hours, interval_hours)
         else:
             # Fallback to in-memory monitor
@@ -905,7 +905,7 @@ async def get_recent_activity(limit: int = 20):
     """Get recent activity data for admin dashboard."""
     try:
         # Use persistent analytics database if available
-        if analytics_db_manager and analytics_db_manager.db:
+        if analytics_db_manager and analytics_db_manager.db is not None:
             recent_requests = await analytics_db_manager.get_recent_requests(limit)
         else:
             # Fallback to in-memory monitor

@@ -1085,6 +1085,12 @@ class RxVerifyApp {
                     // Show success message
                     this.showToast(`Vote switched to ${voteType} successfully!`, 'success');
                     
+                    // Refresh the search results to show updated ratings
+                    const currentQuery = document.getElementById('searchInput').value;
+                    if (currentQuery.trim()) {
+                        await this.performSearch(currentQuery);
+                    }
+                    
                 } catch (error) {
                     console.error('Failed to switch vote:', error);
                     this.showToast(`Failed to switch vote: ${error.message}`, 'error');

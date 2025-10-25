@@ -17,8 +17,9 @@ logger = logging.getLogger(__name__)
 class SimpleMonitor:
     """Simple in-memory monitoring system for tracking metrics."""
     
-    def __init__(self):
+    def __init__(self, broadcast_callback=None):
         self._lock = threading.Lock()
+        self.broadcast_callback = broadcast_callback
         self._reset_metrics()
     
     def _reset_metrics(self):
@@ -67,6 +68,34 @@ class SimpleMonitor:
             else:
                 self.hourly_stats[hour_key]['failed'] += 1
             self.hourly_stats[hour_key]['total_response_time'] += response_time_ms
+            
+            # Broadcast real-time update if callback is available
+            if self.broadcast_callback:
+                try:
+                    # Calculate current metrics for broadcast
+                    success_rate = (self.successful_requests / self.total_requests * 100) if self.total_requests > 0 else 0
+                    avg_response_time = sum(self.response_times) / len(self.response_times) if self.response_times else 0
+                    
+                    broadcast_data = {
+                        "type": "metrics_update",
+                        "data": {
+                            "total_requests": self.total_requests,
+                            "success_rate": round(success_rate, 2),
+                            "average_response_time": round(avg_response_time, 2),
+                            "recent_activity": {
+                                "query": query,
+                                "endpoint": endpoint,
+                                "success": success,
+                                "response_time_ms": response_time_ms,
+                                "timestamp": request_record['timestamp']
+                            }
+                        }
+                    }
+                    # Schedule broadcast in a separate task to avoid blocking
+                    import asyncio
+                    asyncio.create_task(self.broadcast_callback(broadcast_data))
+                except Exception as e:
+                    logger.warning(f"Failed to broadcast metrics update: {e}")
     
     def get_metrics_summary(self, time_period_hours: int = 24) -> Dict[str, Any]:
         """Get comprehensive metrics summary."""

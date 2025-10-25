@@ -65,6 +65,26 @@
             50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.8); }
         }
         
+        /* Real-time animation classes */
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(-10px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        .animate-number {
+            transition: all 0.3s ease-out;
+        }
+        
         /* Dark mode styles */
         .dark {
             color-scheme: dark;
@@ -1729,6 +1749,192 @@
             });
         }
         
+        // WebSocket connection for real-time updates
+        let adminWebSocket = null;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        
+        // Animated number transition function
+        function animateNumber(element, targetValue, duration = 1000, suffix = '') {
+            const startValue = parseFloat(element.textContent.replace(/[^\d.-]/g, '')) || 0;
+            const startTime = performance.now();
+            
+            function updateNumber(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function for smooth animation
+                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                const currentValue = startValue + (targetValue - startValue) * easeOutQuart;
+                
+                // Format the number based on type
+                let displayValue;
+                if (suffix === '%') {
+                    displayValue = currentValue.toFixed(1) + suffix;
+                } else if (suffix === 'ms') {
+                    displayValue = Math.round(currentValue) + suffix;
+                } else {
+                    displayValue = Math.round(currentValue) + suffix;
+                }
+                
+                element.textContent = displayValue;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                }
+            }
+            
+            requestAnimationFrame(updateNumber);
+        }
+        
+        // Connect to WebSocket for real-time updates
+        function connectAdminWebSocket() {
+            const apiBaseUrl = getApiBaseUrl();
+            const wsUrl = apiBaseUrl.replace('http://', 'ws://').replace('https://', 'wss://');
+            
+            try {
+                adminWebSocket = new WebSocket(`${wsUrl}/ws/admin`);
+                
+                adminWebSocket.onopen = function() {
+                    console.log('Admin WebSocket connected');
+                    reconnectAttempts = 0;
+                    
+                    // Send ping to keep connection alive
+                    setInterval(() => {
+                        if (adminWebSocket && adminWebSocket.readyState === WebSocket.OPEN) {
+                            adminWebSocket.send('ping');
+                        }
+                    }, 30000); // Ping every 30 seconds
+                };
+                
+                adminWebSocket.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleRealtimeUpdate(data);
+                    } catch (e) {
+                        console.log('WebSocket ping/pong:', event.data);
+                    }
+                };
+                
+                adminWebSocket.onclose = function() {
+                    console.log('Admin WebSocket disconnected');
+                    adminWebSocket = null;
+                    
+                    // Attempt to reconnect
+                    if (reconnectAttempts < maxReconnectAttempts) {
+                        reconnectAttempts++;
+                        console.log(`Attempting to reconnect WebSocket (${reconnectAttempts}/${maxReconnectAttempts})`);
+                        setTimeout(connectAdminWebSocket, 2000 * reconnectAttempts);
+                    }
+                };
+                
+                adminWebSocket.onerror = function(error) {
+                    console.error('WebSocket error:', error);
+                };
+                
+            } catch (error) {
+                console.error('Failed to connect WebSocket:', error);
+            }
+        }
+        
+        // Handle real-time updates from WebSocket
+        function handleRealtimeUpdate(data) {
+            if (data.type === 'metrics_update') {
+                const metrics = data.data;
+                
+                // Animate number updates
+                const totalRequestsEl = document.getElementById('totalRequests');
+                const successRateEl = document.getElementById('successRate');
+                const avgResponseTimeEl = document.getElementById('avgResponseTime');
+                
+                if (totalRequestsEl) {
+                    animateNumber(totalRequestsEl, metrics.total_requests);
+                }
+                
+                if (successRateEl) {
+                    animateNumber(successRateEl, metrics.success_rate, 1000, '%');
+                }
+                
+                if (avgResponseTimeEl) {
+                    animateNumber(avgResponseTimeEl, metrics.average_response_time, 1000, 'ms');
+                }
+                
+                // Add new activity to Recent Activity table
+                if (metrics.recent_activity) {
+                    addNewActivity(metrics.recent_activity);
+                }
+                
+                // Update charts with new data
+                updateChartsRealtime(metrics);
+            }
+        }
+        
+        // Add new activity to the Recent Activity table
+        function addNewActivity(activity) {
+            const tbody = document.getElementById('recentActivityBody');
+            if (!tbody) return;
+            
+            // Create new row
+            const newRow = document.createElement('tr');
+            newRow.className = 'animate-fadeIn';
+            newRow.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${new Date(activity.timestamp * 1000).toLocaleTimeString()}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Search</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${activity.query}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${activity.success ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'}">
+                        ${activity.success ? 'Success' : 'Failed'}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${(activity.response_time_ms / 1000).toFixed(1)}s</td>
+            `;
+            
+            // Add to beginning of table
+            tbody.insertBefore(newRow, tbody.firstChild);
+            
+            // Remove old rows if we have too many
+            const rows = tbody.querySelectorAll('tr');
+            if (rows.length > 50) { // Keep last 50 activities
+                tbody.removeChild(rows[rows.length - 1]);
+            }
+            
+            // Update pagination if needed
+            activityData.unshift({
+                timestamp: activity.timestamp,
+                time_formatted: new Date(activity.timestamp * 1000).toLocaleTimeString(),
+                endpoint: activity.endpoint,
+                type: 'Search',
+                query: activity.query,
+                success: activity.success,
+                response_time_ms: activity.response_time_ms,
+                response_time_formatted: `${(activity.response_time_ms / 1000).toFixed(1)}s`
+            });
+            
+            // Re-render current page
+            renderActivityPage();
+        }
+        
+        // Update charts with real-time data
+        function updateChartsRealtime(metrics) {
+            // Update search trends chart with new data point
+            if (trendsChart && trendsChart.data && trendsChart.data.datasets[0]) {
+                const now = new Date();
+                const timeLabel = now.toLocaleTimeString();
+                
+                // Add new data point
+                trendsChart.data.labels.push(timeLabel);
+                trendsChart.data.datasets[0].data.push(1); // New search
+                
+                // Keep only last 20 data points
+                if (trendsChart.data.labels.length > 20) {
+                    trendsChart.data.labels.shift();
+                    trendsChart.data.datasets[0].data.shift();
+                }
+                
+                trendsChart.update('none'); // Update without animation for real-time feel
+            }
+        }
+        
         // Recent Activity pagination state
         let activityData = [];
         let currentActivityPage = 1;
@@ -1839,6 +2045,7 @@
             updateTimeFilterButtons();
             loadAdminData();
             setupActivityPagination();
+            connectAdminWebSocket(); // Connect to real-time updates
         }
         
         

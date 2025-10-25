@@ -1,9 +1,11 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import os
 import time
+import json
+import asyncio
 from typing import List, Dict, Optional
 from datetime import datetime
 from app.crosscheck import unify_with_crosscheck
@@ -27,6 +29,48 @@ from app.models import (
     FeedbackRequest, FeedbackResponse, MLPipelineUpdate, Source
 )
 from app.drug_database_schema import DrugStatus
+
+# WebSocket connection manager
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+    
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+        logger.info(f"WebSocket connected. Total connections: {len(self.active_connections)}")
+    
+    def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+        logger.info(f"WebSocket disconnected. Total connections: {len(self.active_connections)}")
+    
+    async def broadcast(self, message: dict):
+        if not self.active_connections:
+            return
+        
+        message_str = json.dumps(message)
+        disconnected = []
+        
+        for connection in self.active_connections:
+            try:
+                await connection.send_text(message_str)
+            except Exception as e:
+                logger.warning(f"Failed to send WebSocket message: {e}")
+                disconnected.append(connection)
+        
+        # Remove disconnected connections
+        for conn in disconnected:
+            self.disconnect(conn)
+
+manager = ConnectionManager()
+
+# Initialize monitor with broadcast callback
+async def broadcast_metrics(data):
+    await manager.broadcast(data)
+
+# Update the monitor to use the broadcast callback
+monitor.broadcast_callback = broadcast_metrics
 
 # Validate settings
 settings.validate()
@@ -851,6 +895,23 @@ async def get_recent_activity(limit: int = 20):
     except Exception as e:
         logger.error(f"Failed to get recent activity: {str(e)}")
         return {"success": False, "message": str(e)}
+
+@app.websocket("/ws/admin")
+async def websocket_admin_endpoint(websocket: WebSocket):
+    """WebSocket endpoint for real-time admin dashboard updates."""
+    await manager.connect(websocket)
+    try:
+        while True:
+            # Keep connection alive and handle any incoming messages
+            data = await websocket.receive_text()
+            # For now, just echo back or handle ping/pong
+            if data == "ping":
+                await websocket.send_text("pong")
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}")
+        manager.disconnect(websocket)
 
 @app.get("/admin/stats")
 async def get_admin_stats():

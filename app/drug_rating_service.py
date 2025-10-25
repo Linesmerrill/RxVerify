@@ -48,6 +48,10 @@ class DrugRatingService:
             bool: True if vote was recorded successfully
         """
         try:
+            # Generate user ID for anonymous voting if not provided
+            if not user_id:
+                user_id = self._generate_user_id(ip_address, user_agent)
+            
             # Check if drug exists
             drug = await drug_db_manager.get_drug_by_id(drug_id)
             if not drug:
@@ -95,13 +99,16 @@ class DrugRatingService:
             # Generate user ID for anonymous voting
             user_id = self._generate_user_id(ip_address, user_agent)
             
-            # Check if user has voted on this drug
-            if not await self._has_user_voted(drug_id, user_id, ip_address):
-                logger.warning(f"User {user_id} tried to unvote on {drug_id} but hasn't voted")
+            # Check if user has voted on this drug with the specific vote type
+            if not await self._has_user_voted_with_type(drug_id, vote_type, user_id, ip_address):
+                logger.warning(f"User {user_id} tried to unvote {vote_type.value} on {drug_id} but hasn't voted with that type")
                 return False
             
-            # Remove the vote from database
-            query = {"drug_id": drug_id}
+            # Remove the vote from database (only the specific vote type)
+            query = {
+                "drug_id": drug_id,
+                "vote_type": vote_type.value
+            }
             
             # Use the same logic as _has_user_voted for consistency
             if user_id and ip_address:
@@ -127,6 +134,35 @@ class DrugRatingService:
                 
         except Exception as e:
             logger.error(f"Failed to unvote on drug {drug_id}: {str(e)}")
+            return False
+    
+    async def _has_user_voted_with_type(self, drug_id: str, vote_type: VoteType, 
+                                       user_id: Optional[str], ip_address: Optional[str]) -> bool:
+        """Check if user has voted on this drug with a specific vote type."""
+        try:
+            query = {
+                "drug_id": drug_id,
+                "vote_type": vote_type.value
+            }
+            
+            # Check for votes by either user_id or ip_address
+            if user_id and ip_address:
+                query["$or"] = [
+                    {"user_id": user_id},
+                    {"ip_address": ip_address}
+                ]
+            elif user_id:
+                query["user_id"] = user_id
+            elif ip_address:
+                query["ip_address"] = ip_address
+            else:
+                return False  # No way to identify user
+            
+            existing_vote = await drug_db_manager.votes_collection.find_one(query)
+            return existing_vote is not None
+            
+        except Exception as e:
+            logger.error(f"Failed to check existing votes with type: {str(e)}")
             return False
     
     async def _has_user_voted(self, drug_id: str, user_id: Optional[str], 

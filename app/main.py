@@ -6,23 +6,18 @@ import os
 import time
 from typing import List, Dict, Optional
 from datetime import datetime
-from app.retriever import retrieve
 from app.crosscheck import unify_with_crosscheck
 from app.llm import generate_drug_response
-from app.monitoring import monitor, get_system_status
-from app.logging import logger
+from app.app_logging import logger
 from app.config import settings
 from app.medical_apis import close_medical_api_client
-from app.search_service import get_search_service
-from app.medication_cache import get_medication_cache
-from app.rxlist_database import get_rxlist_database
-from app.post_discharge_search import get_post_discharge_search_service
-from app.metrics_database import MetricsDatabase
 # Import database manager based on environment
 if 'MONGODB_URI' in os.environ or 'MONGODB_URL' in os.environ:
-    from app.mongodb_manager import mongodb_manager as db_manager
+    from app.mongodb_config import MongoDBConfig
+    mongodb_config = MongoDBConfig()
 else:
-    from app.database_manager import db_manager
+    # Fallback to SQLite if no MongoDB
+    mongodb_config = None
 from app.models import (
     RetrievedDoc, SearchRequest, DrugSearchResult, SearchResponse,
     FeedbackRequest, FeedbackResponse, MLPipelineUpdate, Source
@@ -30,9 +25,6 @@ from app.models import (
 
 # Validate settings
 settings.validate()
-
-# Initialize metrics database
-metrics_db = MetricsDatabase()
 
 app = FastAPI(
     title="RxVerify - Multi-Database Drug Assistant",
@@ -59,19 +51,16 @@ async def startup_event():
     # Disable ChromaDB telemetry to reduce log noise
     os.environ["ANONYMIZED_TELEMETRY"] = "False"
     
-    logger.info("🚀 RxVerify starting up - Real-time medical database integration enabled")
+    logger.info("🚀 RxVerify starting up - Drug search service enabled")
     
-    # Initialize database tables/collections
+    # Initialize MongoDB if configured
     try:
-        # Check if MongoDB is configured
         if 'MONGODB_URI' in os.environ or 'MONGODB_URL' in os.environ:
-            logger.info("MongoDB detected - initializing MongoDB collections")
-            await db_manager.create_indexes()
-            logger.info("✅ MongoDB collections initialized successfully")
+            logger.info("MongoDB detected - initializing MongoDB connection")
+            # MongoDB will be initialized when first accessed
+            logger.info("✅ MongoDB connection ready")
         else:
-            logger.info("SQL/PostgreSQL detected - initializing database tables")
-            db_manager.create_tables()
-            logger.info("✅ Database tables initialized successfully")
+            logger.info("No MongoDB configured - using local drug search service")
     except Exception as e:
         logger.error(f"❌ Failed to initialize database: {e}")
 
@@ -352,52 +341,191 @@ async def search_medications(request: SearchRequest):
 
 @app.get("/drugs/search")
 async def search_drugs(query: str = "", limit: int = 10):
-    """Drug search endpoint with autocomplete - drugs.com style."""
+    """Fast local drug search endpoint - uses curated MongoDB database."""
     if not query or len(query.strip()) < 2:
-        return {"results": [], "total": 0, "cache_stats": {"hit_rate": 0}}
+        return {"results": [], "total": 0, "search_stats": {"total_searches": 0}}
     
     try:
-        from app.drug_search_service import drug_search_service
+        from app.local_drug_search_service import local_drug_search_service
         
-        # Search for drugs
-        results = await drug_search_service.search_drugs(query.strip(), limit)
+        # Initialize service if not already done
+        if not hasattr(local_drug_search_service, '_initialized'):
+            await local_drug_search_service.initialize()
+            local_drug_search_service._initialized = True
         
-        # Get cache statistics
-        cache_stats = await drug_search_service.get_cache_stats()
+        results = await local_drug_search_service.search_drugs(query.strip(), limit)
+        search_stats = await local_drug_search_service.get_search_stats()
         
         return {
             "results": results,
             "total": len(results),
             "query": query,
-            "cache_stats": cache_stats
+            "search_stats": search_stats
         }
         
     except Exception as e:
-        logger.error(f"Drug search failed: {str(e)}")
+        logger.error(f"Local drug search failed: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Drug search failed: {str(e)}"
+            detail=f"Local drug search failed: {str(e)}"
         )
 
-@app.post("/drugs/populate-cache")
-async def populate_drug_cache():
-    """Populate the drug cache with common medications."""
+@app.post("/drugs/vote")
+async def vote_on_drug(
+    drug_id: str,
+    vote_type: str,
+    is_unvote: bool = False,
+    reason: Optional[str] = None,
+    request: Request = None
+):
+    """Vote on a drug (upvote or downvote) or unvote."""
     try:
-        from app.drug_search_service import drug_search_service
+        from app.drug_rating_service import drug_rating_service, VoteType
         
-        # Populate cache with common drugs
-        await drug_search_service.populate_common_drugs()
+        # Validate vote type
+        if vote_type.lower() not in ["upvote", "downvote"]:
+            raise HTTPException(
+                status_code=400,
+                detail="vote_type must be 'upvote' or 'downvote'"
+            )
+        
+        vote_type_enum = VoteType.UPVOTE if vote_type.lower() == "upvote" else VoteType.DOWNVOTE
+        
+        # Get client info for anonymous voting
+        ip_address = request.client.host if request and request.client else None
+        user_agent = request.headers.get("user-agent") if request else None
+        
+        if is_unvote:
+            # Handle unvoting
+            success = await drug_rating_service.unvote_drug(
+                drug_id=drug_id,
+                vote_type=vote_type_enum,
+                ip_address=ip_address,
+                user_agent=user_agent
+            )
+        else:
+            # Handle regular voting
+            success = await drug_rating_service.vote_on_drug(
+                drug_id=drug_id,
+                vote_type=vote_type_enum,
+                reason=reason,
+                ip_address=ip_address,
+                user_agent=user_agent
+            )
+        
+        if success:
+            return {
+                "success": True,
+                "message": f"Vote recorded successfully",
+                "drug_id": drug_id,
+                "vote_type": vote_type
+            }
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="Failed to record vote. Drug may not exist or you may have already voted."
+            )
+        
+    except Exception as e:
+        logger.error(f"Failed to vote on drug {drug_id}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to vote on drug: {str(e)}"
+        )
+
+@app.get("/drugs/rating/{drug_id}")
+async def get_drug_rating(drug_id: str):
+    """Get rating information for a specific drug."""
+    try:
+        from app.drug_rating_service import drug_rating_service
+        
+        rating = await drug_rating_service.get_drug_rating(drug_id)
+        
+        if rating:
+            return {
+                "drug_id": drug_id,
+                "rating_score": rating.rating_score,
+                "total_votes": rating.total_votes,
+                "upvotes": rating.upvotes,
+                "downvotes": rating.downvotes,
+                "is_hidden": rating.is_hidden,
+                "last_updated": rating.last_updated.isoformat()
+            }
+        else:
+            raise HTTPException(
+                status_code=404,
+                detail="Drug not found"
+            )
+        
+    except Exception as e:
+        logger.error(f"Failed to get rating for drug {drug_id}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get drug rating: {str(e)}"
+        )
+
+@app.get("/admin/hidden-drugs")
+async def get_hidden_drugs(limit: int = 50):
+    """Get list of hidden drugs for admin review."""
+    try:
+        from app.drug_rating_service import drug_rating_service
+        
+        hidden_drugs = await drug_rating_service.get_hidden_drugs(limit)
         
         return {
-            "success": True,
-            "message": "Drug cache populated successfully with common medications"
+            "hidden_drugs": hidden_drugs,
+            "total": len(hidden_drugs)
         }
         
     except Exception as e:
-        logger.error(f"Failed to populate drug cache: {str(e)}")
+        logger.error(f"Failed to get hidden drugs: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to populate drug cache: {str(e)}"
+            detail=f"Failed to get hidden drugs: {str(e)}"
+        )
+
+@app.post("/admin/unhide-drug/{drug_id}")
+async def unhide_drug(drug_id: str, admin_reason: str):
+    """Manually unhide a drug (admin function)."""
+    try:
+        from app.drug_rating_service import drug_rating_service
+        
+        success = await drug_rating_service.unhide_drug(drug_id, admin_reason)
+        
+        if success:
+            return {
+                "success": True,
+                "message": f"Drug {drug_id} has been unhidden",
+                "admin_reason": admin_reason
+            }
+        else:
+            raise HTTPException(
+                status_code=404,
+                detail="Drug not found or already active"
+            )
+        
+    except Exception as e:
+        logger.error(f"Failed to unhide drug {drug_id}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to unhide drug: {str(e)}"
+        )
+
+@app.get("/admin/rating-stats")
+async def get_rating_stats():
+    """Get overall rating statistics."""
+    try:
+        from app.drug_rating_service import drug_rating_service
+        
+        stats = await drug_rating_service.get_rating_stats()
+        
+        return stats
+        
+    except Exception as e:
+        logger.error(f"Failed to get rating stats: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get rating stats: {str(e)}"
         )
 
 @app.get("/rxlist/stats")

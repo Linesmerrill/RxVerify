@@ -11,6 +11,8 @@ class RxVerifyApp {
         this.currentQuery = null;
         this.searchTimeout = null;
         this.currentTab = 'ask';
+        this.voteStates = this.loadVoteStates(); // Load cached vote states
+        this.voteCooldowns = new Map(); // Track cooldowns to prevent spam
         this.init();
     }
 
@@ -56,6 +58,12 @@ class RxVerifyApp {
         // Search input with debounced search
         document.getElementById('searchInput').addEventListener('input', (e) => {
             this.handleSearchInput(e.target.value);
+            this.updateClearButtonVisibility(e.target.value);
+        });
+
+        // Clear search button
+        document.getElementById('clearSearchBtn').addEventListener('click', () => {
+            this.clearSearch();
         });
     }
 
@@ -690,6 +698,14 @@ class RxVerifyApp {
         document.getElementById('results').classList.add('hidden');
     }
 
+    hideSearchResults() {
+        const resultsContainer = document.getElementById('searchResults');
+        const noResults = document.getElementById('noResults');
+        
+        resultsContainer.classList.add('hidden');
+        noResults.classList.add('hidden');
+    }
+
     showError(message) {
         const errorState = document.getElementById('errorState');
         const errorMessage = document.getElementById('errorMessage');
@@ -801,6 +817,9 @@ class RxVerifyApp {
 
     async performSearch(query) {
         try {
+            // Show loading spinner
+            this.showSearchLoading(true);
+            
             // Store current search query for feedback
             this.currentSearchQuery = query;
             
@@ -839,16 +858,25 @@ class RxVerifyApp {
         const resultsDiv = resultsContainer.querySelector('.space-y-3');
         resultsDiv.innerHTML = '';
         
-        results.forEach(result => {
-            const resultElement = this.createSearchResultElement(result);
-            resultsDiv.appendChild(resultElement);
+        results.forEach((result, index) => {
+            try {
+                const resultElement = this.createSearchResultElement(result);
+                resultsDiv.appendChild(resultElement);
+                
+                // Load common uses asynchronously if not already present
+                if (!result.common_uses || result.common_uses.length === 0) {
+                    this.loadCommonUsesAsync(result.name, resultElement);
+                }
+            } catch (error) {
+                console.error(`Error creating result element ${index}:`, error, result);
+            }
         });
     }
 
     createSearchResultElement(result) {
-        console.log('Creating search result element for:', result.name);
         const div = document.createElement('div');
         div.className = 'search-result bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200';
+        div.setAttribute('data-drug-id', result.drug_id);
         
         // Create drug name and class
         const nameDiv = document.createElement('div');
@@ -890,17 +918,16 @@ class RxVerifyApp {
             `;
         }
         
-        // Create common uses
-        let usesDiv = '';
+        // Create common uses section
+        const usesDiv = document.createElement('div');
+        usesDiv.className = 'common-uses-section mb-2';
         if (result.common_uses && result.common_uses.length > 0) {
-            usesDiv = `
-                <div class="mb-2">
-                    <span class="text-xs font-medium text-gray-500">Common uses:</span>
-                    <div class="flex flex-wrap gap-1 mt-1">
-                        ${result.common_uses.map(use => 
-                            `<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">${use}</span>`
-                        ).join('')}
-                    </div>
+            usesDiv.innerHTML = `
+                <span class="text-xs font-medium text-gray-500">Common uses:</span>
+                <div class="flex flex-wrap gap-1 mt-1">
+                    ${result.common_uses.map(use => 
+                        `<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">${use}</span>`
+                    ).join('')}
                 </div>
             `;
         }
@@ -913,50 +940,48 @@ class RxVerifyApp {
         feedbackButtons.className = 'flex items-center space-x-2';
         
         const thumbsUpBtn = document.createElement('button');
-        thumbsUpBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors border border-transparent';
+        thumbsUpBtn.className = 'thumbs-up-btn flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors border border-transparent';
         thumbsUpBtn.innerHTML = `
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
             </svg>
             <span>Helpful</span>
-            <span class="helpful-count ml-1 text-xs font-medium">${result.helpful_count > 0 ? `(${result.helpful_count})` : ''}</span>
+            <span class="helpful-count ml-1 text-xs font-medium">${result.upvotes > 0 ? `(${result.upvotes})` : ''}</span>
         `;
         
         const thumbsDownBtn = document.createElement('button');
-        thumbsDownBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors border border-transparent';
+        thumbsDownBtn.className = 'thumbs-down-btn flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors border border-transparent';
         thumbsDownBtn.innerHTML = `
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.737 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.096c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path>
             </svg>
             <span>Not helpful</span>
-            <span class="not-helpful-count ml-1 text-xs font-medium">${result.not_helpful_count > 0 ? `(${result.not_helpful_count})` : ''}</span>
+            <span class="not-helpful-count ml-1 text-xs font-medium">${result.downvotes > 0 ? `(${result.downvotes})` : ''}</span>
         `;
         
-        // Add feedback event listeners
-        console.log('Adding event listeners to buttons for:', result.name);
-        
-        // Add proper feedback functionality
+        // Add voting event listeners
         thumbsUpBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            console.log('Helpful button clicked!', result.name);
-            const currentQuery = window.currentSearchQuery || this.currentSearchQuery || 'fallback';
-            this.handleVote(result.name, currentQuery, true, thumbsUpBtn, thumbsDownBtn);
+            this.voteOnDrug(result.drug_id, 'upvote');
         });
         
         thumbsDownBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            console.log('Not helpful button clicked!', result.name);
-            const currentQuery = window.currentSearchQuery || this.currentSearchQuery || 'fallback';
-            this.handleVote(result.name, currentQuery, false, thumbsUpBtn, thumbsDownBtn);
+            this.voteOnDrug(result.drug_id, 'downvote');
         });
-        
-        // Restore user's previous vote state
-        this.restoreVoteState(result.name, window.currentSearchQuery || this.currentSearchQuery || 'fallback', thumbsUpBtn, thumbsDownBtn);
         
         feedbackButtons.appendChild(thumbsUpBtn);
         feedbackButtons.appendChild(thumbsDownBtn);
         
         feedbackDiv.appendChild(feedbackButtons);
+        
+        // Apply initial vote state from cache
+        const currentVote = this.voteStates.get(result.drug_id);
+        if (currentVote === 'upvote') {
+            thumbsUpBtn.className += ' bg-green-100 border-green-300';
+        } else if (currentVote === 'downvote') {
+            thumbsDownBtn.className += ' bg-red-100 border-red-300';
+        }
         
         // Use appendChild instead of innerHTML to preserve event listeners
         div.appendChild(nameDiv);
@@ -965,16 +990,210 @@ class RxVerifyApp {
             brandDiv.innerHTML = brandNamesDiv;
             div.appendChild(brandDiv);
         }
-        if (usesDiv) {
-            const usesDivElement = document.createElement('div');
-            usesDivElement.innerHTML = usesDiv;
-            div.appendChild(usesDivElement);
-        }
+        div.appendChild(usesDiv);
         div.appendChild(feedbackDiv);
         
         // No click handler - these are just search results for feedback
         
         return div;
+    }
+
+    async voteOnDrug(drugId, voteType) {
+        try {
+            // Check cooldown to prevent spam clicking
+            const cooldownKey = `${drugId}_${voteType}`;
+            const now = Date.now();
+            const cooldownTime = 2000; // 2 seconds cooldown
+            
+            if (this.voteCooldowns.has(cooldownKey)) {
+                const lastVote = this.voteCooldowns.get(cooldownKey);
+                if (now - lastVote < cooldownTime) {
+                    console.log('Vote cooldown active, please wait...');
+                    return;
+                }
+            }
+            
+            // Check if user already voted on this drug
+            const currentVote = this.voteStates.get(drugId);
+            let isUnvote = false;
+            
+            if (currentVote === voteType) {
+                // User is trying to unvote (clicking same vote type again)
+                isUnvote = true;
+                console.log(`Unvoting ${voteType} on drug:`, drugId);
+            } else {
+                console.log(`Voting ${voteType} on drug:`, drugId);
+            }
+            
+            // IMMEDIATE UI UPDATE (Optimistic Update)
+            this.updateVoteButtonsImmediately(drugId, voteType, isUnvote);
+            
+            // Update vote state in cache immediately
+            if (isUnvote) {
+                this.voteStates.delete(drugId);
+            } else {
+                this.voteStates.set(drugId, voteType);
+            }
+            this.saveVoteStates();
+            
+            // Set cooldown
+            this.voteCooldowns.set(cooldownKey, now);
+            
+            // Make API call in background
+            const response = await fetch(`${this.apiBaseUrl}/drugs/vote?drug_id=${encodeURIComponent(drugId)}&vote_type=${voteType}&is_unvote=${isUnvote}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Failed to vote');
+            }
+            
+            const result = await response.json();
+            console.log('Vote result:', result);
+            
+            // Show success message
+            const message = isUnvote ? `Vote removed successfully!` : `Vote recorded successfully!`;
+            this.showToast(message, 'success');
+            
+            // Refresh the search results to show updated ratings
+            const currentQuery = document.getElementById('searchInput').value;
+            if (currentQuery.trim()) {
+                await this.performSearch(currentQuery);
+            }
+            
+        } catch (error) {
+            console.error('Voting error:', error);
+            
+            // REVERT UI CHANGES on error
+            this.revertVoteButtons(drugId);
+            
+            // Revert vote state in cache
+            const currentVote = this.voteStates.get(drugId);
+            if (currentVote === voteType) {
+                this.voteStates.delete(drugId);
+            } else {
+                this.voteStates.set(drugId, currentVote);
+            }
+            this.saveVoteStates();
+            
+            this.showToast(`Failed to vote: ${error.message}`, 'error');
+        }
+    }
+
+    // Vote state management methods
+    loadVoteStates() {
+        try {
+            const stored = localStorage.getItem('rxverify_vote_states');
+            if (stored) {
+                const states = JSON.parse(stored);
+                return new Map(Object.entries(states));
+            }
+        } catch (error) {
+            console.error('Error loading vote states:', error);
+        }
+        return new Map();
+    }
+
+    saveVoteStates() {
+        try {
+            const states = Object.fromEntries(this.voteStates);
+            localStorage.setItem('rxverify_vote_states', JSON.stringify(states));
+        } catch (error) {
+            console.error('Error saving vote states:', error);
+        }
+    }
+
+    updateVoteButtons(drugId, voteType, isUnvote) {
+        // Find the result element for this drug
+        const resultElements = document.querySelectorAll('.search-result');
+        for (const element of resultElements) {
+            const drugIdElement = element.querySelector('[data-drug-id]');
+            if (drugIdElement && drugIdElement.getAttribute('data-drug-id') === drugId) {
+                const thumbsUpBtn = element.querySelector('.thumbs-up-btn');
+                const thumbsDownBtn = element.querySelector('.thumbs-down-btn');
+                
+                if (thumbsUpBtn && thumbsDownBtn) {
+                    // Reset both buttons to default state
+                    thumbsUpBtn.className = 'thumbs-up-btn flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors border border-transparent';
+                    thumbsDownBtn.className = 'thumbs-down-btn flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors border border-transparent';
+                    
+                    // Apply active state based on current vote
+                    const currentVote = this.voteStates.get(drugId);
+                    if (currentVote === 'upvote') {
+                        thumbsUpBtn.className += ' bg-green-100 border-green-300';
+                    } else if (currentVote === 'downvote') {
+                        thumbsDownBtn.className += ' bg-red-100 border-red-300';
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    updateVoteButtonsImmediately(drugId, voteType, isUnvote) {
+        // Find the result element for this drug
+        const resultElements = document.querySelectorAll('.search-result');
+        for (const element of resultElements) {
+            const drugIdElement = element.querySelector('[data-drug-id]');
+            if (drugIdElement && drugIdElement.getAttribute('data-drug-id') === drugId) {
+                const thumbsUpBtn = element.querySelector('.thumbs-up-btn');
+                const thumbsDownBtn = element.querySelector('.thumbs-down-btn');
+                
+                if (thumbsUpBtn && thumbsDownBtn) {
+                    // Reset both buttons to default state
+                    thumbsUpBtn.className = 'thumbs-up-btn flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors border border-transparent';
+                    thumbsDownBtn.className = 'thumbs-down-btn flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors border border-transparent';
+                    
+                    // Apply active state based on new vote state
+                    if (!isUnvote && voteType === 'upvote') {
+                        thumbsUpBtn.className += ' bg-green-100 border-green-300';
+                    } else if (!isUnvote && voteType === 'downvote') {
+                        thumbsDownBtn.className += ' bg-red-100 border-red-300';
+                    }
+                    
+                    // Add a subtle animation effect
+                    const activeButton = isUnvote ? null : (voteType === 'upvote' ? thumbsUpBtn : thumbsDownBtn);
+                    if (activeButton) {
+                        activeButton.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            activeButton.style.transform = 'scale(1)';
+                        }, 150);
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    revertVoteButtons(drugId) {
+        // Find the result element for this drug and revert to cached state
+        const resultElements = document.querySelectorAll('.search-result');
+        for (const element of resultElements) {
+            const drugIdElement = element.querySelector('[data-drug-id]');
+            if (drugIdElement && drugIdElement.getAttribute('data-drug-id') === drugId) {
+                const thumbsUpBtn = element.querySelector('.thumbs-up-btn');
+                const thumbsDownBtn = element.querySelector('.thumbs-down-btn');
+                
+                if (thumbsUpBtn && thumbsDownBtn) {
+                    // Reset both buttons to default state
+                    thumbsUpBtn.className = 'thumbs-up-btn flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors border border-transparent';
+                    thumbsDownBtn.className = 'thumbs-down-btn flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors border border-transparent';
+                    
+                    // Apply cached vote state
+                    const currentVote = this.voteStates.get(drugId);
+                    if (currentVote === 'upvote') {
+                        thumbsUpBtn.className += ' bg-green-100 border-green-300';
+                    } else if (currentVote === 'downvote') {
+                        thumbsDownBtn.className += ' bg-red-100 border-red-300';
+                    }
+                }
+                break;
+            }
+        }
     }
 
     searchForDrug(drugName) {
@@ -992,16 +1211,96 @@ class RxVerifyApp {
 
     showSearchLoading(show) {
         const loading = document.getElementById('searchLoading');
+        const clearBtn = document.getElementById('clearSearchBtn');
+        
         if (show) {
             loading.classList.remove('hidden');
+            clearBtn.classList.add('hidden'); // Hide clear button when loading
         } else {
             loading.classList.add('hidden');
+            // Show clear button again if there's text in the input
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput.value && searchInput.value.trim().length > 0) {
+                clearBtn.classList.remove('hidden');
+            }
         }
     }
 
-    hideSearchResults() {
-        document.getElementById('searchResults').classList.add('hidden');
-        document.getElementById('noResults').classList.add('hidden');
+    updateClearButtonVisibility(value) {
+        const clearBtn = document.getElementById('clearSearchBtn');
+        const loadingSpinner = document.getElementById('searchLoading');
+        
+        if (value && value.trim().length > 0) {
+            // Show clear button when there's text
+            clearBtn.classList.remove('hidden');
+            // Hide loading spinner if it's showing
+            loadingSpinner.classList.add('hidden');
+        } else {
+            // Hide clear button when input is empty
+            clearBtn.classList.add('hidden');
+        }
+    }
+
+    clearSearch() {
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearSearchBtn');
+        
+        // Clear the input
+        searchInput.value = '';
+        
+        // Hide clear button
+        clearBtn.classList.add('hidden');
+        
+        // Clear any existing search results
+        this.hideSearchResults();
+        
+        // Clear any pending search timeout
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+        }
+        
+        // Focus back on the input
+        searchInput.focus();
+        
+        // Show a brief toast
+        this.showToast('Search cleared', 'info');
+    }
+
+    async loadCommonUsesAsync(drugName, resultElement) {
+        try {
+            // Fetch common uses from backend
+            const response = await fetch(`${this.apiBaseUrl}/drugs/common-uses?name=${encodeURIComponent(drugName)}`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.common_uses && data.common_uses.length > 0) {
+                    this.updateCommonUsesSection(resultElement, data.common_uses);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading common uses:', error);
+            // Remove skeleton on error
+            const usesSection = resultElement.querySelector('.common-uses-section');
+            if (usesSection) {
+                usesSection.innerHTML = '';
+            }
+        }
+    }
+
+    updateCommonUsesSection(resultElement, commonUses) {
+        const usesSection = resultElement.querySelector('.common-uses-section');
+        if (usesSection) {
+            usesSection.innerHTML = `
+                <div class="mb-2">
+                    <span class="text-xs font-medium text-gray-500">Common uses:</span>
+                    <div class="flex flex-wrap gap-1 mt-1">
+                        ${commonUses.map(use => 
+                            `<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">${use}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+        }
     }
 
     async submitFeedback(drugName, query, isPositive, isRemoval = false) {

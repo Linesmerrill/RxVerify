@@ -7,7 +7,6 @@ import asyncio
 import httpx
 from typing import List, Dict, Optional, Tuple
 from app.models import Source, RetrievedDoc
-from app.embeddings import embed
 import logging
 
 logger = logging.getLogger(__name__)
@@ -17,6 +16,7 @@ RXNORM_BASE_URL = "https://rxnav.nlm.nih.gov/REST"
 DAILYMED_BASE_URL = "https://dailymed.nlm.nih.gov/dailymed/services/v2"
 OPENFDA_BASE_URL = "https://api.fda.gov"
 DRUGBANK_BASE_URL = "https://go.drugbank.com/api/v1"
+PUBCHEM_BASE_URL = "https://pubchem.ncbi.nlm.nih.gov/rest/pug"
 
 class MedicalAPIClient:
     """Client for querying medical databases in real-time."""
@@ -63,6 +63,34 @@ class MedicalAPIClient:
         
         return drug_name
     
+    def _is_reasonable_drug_name(self, drug_name: str) -> bool:
+        """Check if a drug name looks reasonable (not random strings)."""
+        if not drug_name or len(drug_name) < 2:
+            return False
+        
+        # Skip obvious non-drug strings
+        if any(char.isdigit() for char in drug_name[-3:]):  # Ends with numbers
+            return False
+        
+        # Skip strings that contain numbers (most drug names don't have numbers)
+        if any(char.isdigit() for char in drug_name):
+            return False
+        
+        # Skip very short strings
+        if len(drug_name) < 3:
+            return False
+        
+        # Skip strings with too many special characters
+        special_chars = sum(1 for c in drug_name if not c.isalnum() and c != ' ')
+        if special_chars > len(drug_name) / 3:
+            return False
+        
+        # Skip strings that look like random combinations
+        if len(drug_name) > 10 and not any(char in drug_name.lower() for char in 'aeiou'):  # No vowels
+            return False
+        
+        return True
+
     async def search_rxnorm(self, query: str, limit: int = 10) -> List[Dict]:
         """Search RxNorm for drug information with enhanced context."""
         try:
@@ -577,6 +605,139 @@ class MedicalAPIClient:
             logger.error(f"OpenFDA API error: {e}")
             return []
     
+    async def search_pubchem(self, query: str, limit: int = 10) -> List[Dict]:
+        """Search PubChem for drug information - excellent for drug names and synonyms."""
+        try:
+            # Extract drug name from the query
+            drug_name = self._extract_drug_name(query)
+            results = []
+            
+            # Search PubChem by compound name
+            search_url = f"{PUBCHEM_BASE_URL}/compound/name/{drug_name}/synonyms/JSON"
+            
+            try:
+                response = await self.http_client.get(search_url)
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    # Extract synonyms and create results
+                    synonyms = data.get("InformationList", {}).get("Information", [{}])[0].get("Synonym", [])
+                    
+                    # Get compound ID for additional information
+                    compound_id = None
+                    if synonyms:
+                        # Try to get compound ID for the first synonym
+                        try:
+                            cid_url = f"{PUBCHEM_BASE_URL}/compound/name/{synonyms[0]}/cids/JSON"
+                            cid_response = await self.http_client.get(cid_url)
+                            if cid_response.status_code == 200:
+                                cid_data = cid_response.json()
+                                cids = cid_data.get("IdentifierList", {}).get("CID", [])
+                                if cids:
+                                    compound_id = cids[0]
+                        except Exception as cid_error:
+                            logger.warning(f"Failed to get compound ID: {cid_error}")
+                    
+                    # Create results from synonyms
+                    for i, synonym in enumerate(synonyms[:limit]):
+                        # Get additional compound information if we have a CID
+                        additional_info = ""
+                        if compound_id and i == 0:  # Only get detailed info for the first result
+                            try:
+                                # Get molecular formula and weight
+                                props_url = f"{PUBCHEM_BASE_URL}/compound/cid/{compound_id}/property/MolecularFormula,MolecularWeight/JSON"
+                                props_response = await self.http_client.get(props_url)
+                                if props_response.status_code == 200:
+                                    props_data = props_response.json()
+                                    props = props_data.get("PropertyTable", {}).get("Properties", [{}])[0]
+                                    formula = props.get("MolecularFormula", "")
+                                    weight = props.get("MolecularWeight", "")
+                                    
+                                    if formula or weight:
+                                        additional_info = f"\nMolecular Formula: {formula}\nMolecular Weight: {weight}"
+                            except Exception as props_error:
+                                logger.warning(f"Failed to get compound properties: {props_error}")
+                        
+                        text = f"PubChem Drug: {synonym}"
+                        if additional_info:
+                            text += additional_info
+                        text += f"\nSynonyms: {', '.join(synonyms[:5])}"  # Show first 5 synonyms
+                        
+                        results.append({
+                            "rxcui": "",  # PubChem doesn't provide RxCUI
+                            "source": "pubchem",
+                            "id": f"pubchem_{synonym.lower().replace(' ', '_')}",
+                            "url": f"https://pubchem.ncbi.nlm.nih.gov/compound/{synonym}",
+                            "title": f"PubChem: {synonym}",
+                            "text": text
+                        })
+                
+                # If no synonyms found, try searching by partial name
+                if not results and len(drug_name) >= 3:
+                    # Try fuzzy search using PubChem's text search
+                    try:
+                        text_search_url = f"{PUBCHEM_BASE_URL}/compound/name/{drug_name}/property/MolecularFormula,MolecularWeight/JSON"
+                        text_response = await self.http_client.get(text_search_url)
+                        if text_response.status_code == 200:
+                            text_data = text_response.json()
+                            compounds = text_data.get("PropertyTable", {}).get("Properties", [])
+                            
+                            for compound in compounds[:limit]:
+                                # Get compound name from CID
+                                cid = compound.get("CID", "")
+                                if cid:
+                                    try:
+                                        name_url = f"{PUBCHEM_BASE_URL}/compound/cid/{cid}/property/IUPACName/JSON"
+                                        name_response = await self.http_client.get(name_url)
+                                        if name_response.status_code == 200:
+                                            name_data = name_response.json()
+                                            names = name_data.get("PropertyTable", {}).get("Properties", [{}])[0]
+                                            iupac_name = names.get("IUPACName", "")
+                                            
+                                            formula = compound.get("MolecularFormula", "")
+                                            weight = compound.get("MolecularWeight", "")
+                                            
+                                            text = f"PubChem Compound: {iupac_name or drug_name}"
+                                            if formula:
+                                                text += f"\nMolecular Formula: {formula}"
+                                            if weight:
+                                                text += f"\nMolecular Weight: {weight}"
+                                            
+                                            results.append({
+                                                "rxcui": "",
+                                                "source": "pubchem",
+                                                "id": f"pubchem_cid_{cid}",
+                                                "url": f"https://pubchem.ncbi.nlm.nih.gov/compound/{cid}",
+                                                "title": f"PubChem: {iupac_name or drug_name}",
+                                                "text": text
+                                            })
+                                    except Exception as name_error:
+                                        logger.warning(f"Failed to get compound name for CID {cid}: {name_error}")
+                                        continue
+                    except Exception as text_error:
+                        logger.warning(f"Failed to search PubChem by text: {text_error}")
+                
+            except Exception as search_error:
+                logger.warning(f"PubChem search failed: {search_error}")
+            
+            # If still no results, only create a basic result for reasonable drug names
+            if not results and self._is_reasonable_drug_name(drug_name):
+                results.append({
+                    "rxcui": "",
+                    "source": "pubchem",
+                    "id": f"pubchem_{drug_name.lower().replace(' ', '_')}",
+                    "url": f"https://pubchem.ncbi.nlm.nih.gov/#query={drug_name}",
+                    "title": f"PubChem Search: {drug_name}",
+                    "text": f"PubChem search for {drug_name}. This compound may be available in the PubChem database. Visit the provided URL for detailed chemical information, properties, and related data."
+                })
+            
+            logger.info(f"PubChem search returned {len(results)} results for '{drug_name}'")
+            return results
+            
+        except Exception as e:
+            logger.error(f"PubChem API error: {e}")
+            return []
+
     async def search_drugbank(self, query: str, limit: int = 10) -> List[Dict]:
         """Search DrugBank for drug information (note: limited access to open data)."""
         try:
@@ -609,16 +770,17 @@ class MedicalAPIClient:
         """Search all medical databases and return unified results."""
         return await self.search_all_sources_custom(query, limit_per_source, limit_per_source, limit_per_source, limit_per_source)
     
-    async def search_all_sources_custom(self, query: str, daily_med_limit: int = 5, openfda_limit: int = 5, rxnorm_limit: int = 5, drugbank_limit: int = 5) -> List[RetrievedDoc]:
+    async def search_all_sources_custom(self, query: str, daily_med_limit: int = 5, openfda_limit: int = 5, rxnorm_limit: int = 5, drugbank_limit: int = 5, pubchem_limit: int = 5) -> List[RetrievedDoc]:
         """Search all medical databases with custom limits for each source."""
-        logger.info(f"Searching all medical databases for: '{query}' with custom limits (DailyMed: {daily_med_limit}, OpenFDA: {openfda_limit}, RxNorm: {rxnorm_limit}, DrugBank: {drugbank_limit})")
+        logger.info(f"Searching all medical databases for: '{query}' with custom limits (DailyMed: {daily_med_limit}, OpenFDA: {openfda_limit}, RxNorm: {rxnorm_limit}, DrugBank: {drugbank_limit}, PubChem: {pubchem_limit})")
         
         # Search all sources concurrently with custom limits
         tasks = [
             self.search_rxnorm(query, rxnorm_limit),
             self.search_dailymed(query, daily_med_limit),
             self.search_openfda(query, openfda_limit),
-            self.search_drugbank(query, drugbank_limit)
+            self.search_drugbank(query, drugbank_limit),
+            self.search_pubchem(query, pubchem_limit)
         ]
         
         # Execute all searches concurrently
@@ -632,26 +794,23 @@ class MedicalAPIClient:
                 logger.error(f"Search source {i} failed: {result}")
                 continue
             
-            source_name = ["rxnorm", "dailymed", "openfda", "drugbank"][i]
+            source_name = ["rxnorm", "dailymed", "openfda", "drugbank", "pubchem"][i]
             
             for doc_data in result:
                 try:
-                    # Generate embedding for the document text
-                    embeddings = await embed([doc_data["text"]])
-                    if embeddings and len(embeddings) > 0:
-                        # Calculate a basic similarity score (in real implementation, this would be more sophisticated)
-                        score = 0.8  # Base score for retrieved documents
-                        
-                        doc = RetrievedDoc(
-                            rxcui=doc_data["rxcui"],
-                            source=Source(source_name),
-                            id=doc_data["id"],
-                            url=doc_data["url"],
-                            title=doc_data["title"],
-                            text=doc_data["text"],
-                            score=score
-                        )
-                        all_docs.append(doc)
+                    # Create document without embedding
+                    score = 0.8  # Base score for retrieved documents
+                    
+                    doc = RetrievedDoc(
+                        rxcui=doc_data["rxcui"],
+                        source=Source(source_name),
+                        id=doc_data["id"],
+                        url=doc_data["url"],
+                        title=doc_data["title"],
+                        text=doc_data["text"],
+                        score=score
+                    )
+                    all_docs.append(doc)
                 except Exception as e:
                     logger.error(f"Error processing document from {source_name}: {e}")
                     continue

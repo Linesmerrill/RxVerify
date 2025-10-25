@@ -1,4 +1,5 @@
 // RxVerify Frontend Application
+console.log('RxVerify app.js loaded successfully!');
 let app;
 
 class RxVerifyApp {
@@ -17,8 +18,9 @@ class RxVerifyApp {
         this.setupEventListeners();
         this.setupCharacterCounter();
         this.checkSystemStatus();
-        this.showToast('Welcome to RxVerify! 🚀', 'success');
     }
+
+    // WebSocket functionality removed to fix feedback buttons
 
     setupEventListeners() {
         // Form submission
@@ -54,6 +56,12 @@ class RxVerifyApp {
         // Search input with debounced search
         document.getElementById('searchInput').addEventListener('input', (e) => {
             this.handleSearchInput(e.target.value);
+            this.updateClearButtonVisibility(e.target.value);
+        });
+
+        // Clear search button
+        document.getElementById('clearSearchBtn').addEventListener('click', () => {
+            this.clearSearch();
         });
     }
 
@@ -469,19 +477,40 @@ class RxVerifyApp {
     async checkSystemStatus() {
         try {
             const response = await this.callAPI('/health');
-            const statusIndicator = document.querySelector('.w-2.h-2.bg-green-400');
+            const statusIndicator = document.querySelector('.w-2.h-2.bg-green-400, .w-2.h-2.bg-red-400');
+            const statusText = document.querySelector('.flex.items-center.space-x-2 span');
             
             if (response.ok) {
-                statusIndicator.classList.remove('bg-red-400');
-                statusIndicator.classList.add('bg-green-400');
+                // Backend is healthy
+                if (statusIndicator) {
+                    statusIndicator.classList.remove('bg-red-400');
+                    statusIndicator.classList.add('bg-green-400');
+                }
+                if (statusText) {
+                    statusText.textContent = 'System Online';
+                }
             } else {
+                // Backend returned error
+                if (statusIndicator) {
+                    statusIndicator.classList.remove('bg-green-400');
+                    statusIndicator.classList.add('bg-red-400');
+                }
+                if (statusText) {
+                    statusText.textContent = 'System Offline';
+                }
+            }
+        } catch (error) {
+            // Backend is unreachable
+            const statusIndicator = document.querySelector('.w-2.h-2.bg-green-400, .w-2.h-2.bg-red-400');
+            const statusText = document.querySelector('.flex.items-center.space-x-2 span');
+            
+            if (statusIndicator) {
                 statusIndicator.classList.remove('bg-green-400');
                 statusIndicator.classList.add('bg-red-400');
             }
-        } catch (error) {
-            const statusIndicator = document.querySelector('.w-2.h-2.bg-green-400');
-            statusIndicator.classList.remove('bg-green-400');
-            statusIndicator.classList.add('bg-red-400');
+            if (statusText) {
+                statusText.textContent = 'System Offline';
+            }
         }
     }
 
@@ -504,7 +533,7 @@ class RxVerifyApp {
                 this.showToast('Unable to get system status', 'error');
             }
         } catch (error) {
-            this.showToast('System status check failed', 'error');
+            this.showToast('System status check failed - Backend may be offline', 'error');
         }
     }
 
@@ -749,6 +778,10 @@ class RxVerifyApp {
 
     // Search functionality
     handleSearchInput(query) {
+        // Set current search query for feedback
+        window.currentSearchQuery = query;
+        console.log('handleSearchInput called with query:', query);
+        
         // Clear previous timeout
         if (this.searchTimeout) {
             clearTimeout(this.searchTimeout);
@@ -757,7 +790,9 @@ class RxVerifyApp {
         // Hide previous results
         this.hideSearchResults();
         
+        // If query is empty or too short, hide loading and stop
         if (query.length < 2) {
+            this.showSearchLoading(false);
             return;
         }
         
@@ -772,16 +807,14 @@ class RxVerifyApp {
 
     async performSearch(query) {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/search`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    query: query,
-                    limit: 10
-                })
-            });
+            // Store current search query for feedback
+            this.currentSearchQuery = query;
+            
+            // Show skeleton loading
+            this.showSkeletonLoading(true);
+            
+            // Use the new drug search endpoint for autocomplete
+            const response = await fetch(`${this.apiBaseUrl}/drugs/search?query=${encodeURIComponent(query)}&limit=10`);
             
             if (!response.ok) {
                 throw new Error(`Search failed: ${response.statusText}`);
@@ -796,6 +829,7 @@ class RxVerifyApp {
             this.hideSearchResults();
         } finally {
             this.showSearchLoading(false);
+            this.showSkeletonLoading(false);
         }
     }
 
@@ -818,12 +852,18 @@ class RxVerifyApp {
         results.forEach(result => {
             const resultElement = this.createSearchResultElement(result);
             resultsDiv.appendChild(resultElement);
+            
+            // Load common uses asynchronously if not already present
+            if (!result.common_uses || result.common_uses.length === 0) {
+                this.loadCommonUsesAsync(result.name, resultElement);
+            }
         });
     }
 
     createSearchResultElement(result) {
+        console.log('Creating search result element for:', result.name);
         const div = document.createElement('div');
-        div.className = 'bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200 cursor-pointer';
+        div.className = 'search-result bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200';
         
         // Create drug name and class
         const nameDiv = document.createElement('div');
@@ -833,7 +873,7 @@ class RxVerifyApp {
         nameInfo.className = 'flex-1';
         
         const drugName = document.createElement('h4');
-        drugName.className = 'font-semibold text-gray-900 text-lg';
+        drugName.className = 'drug-name font-semibold text-gray-900 text-lg';
         drugName.textContent = result.name;
         
         const genericName = document.createElement('p');
@@ -865,39 +905,120 @@ class RxVerifyApp {
             `;
         }
         
-        // Create common uses
-        let usesDiv = '';
+        // Create common uses section
+        const usesDiv = document.createElement('div');
+        usesDiv.className = 'common-uses-section mb-2';
         if (result.common_uses && result.common_uses.length > 0) {
-            usesDiv = `
-                <div class="mb-2">
-                    <span class="text-xs font-medium text-gray-500">Common uses:</span>
-                    <div class="flex flex-wrap gap-1 mt-1">
-                        ${result.common_uses.map(use => 
-                            `<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">${use}</span>`
-                        ).join('')}
-                    </div>
+            usesDiv.innerHTML = `
+                <span class="text-xs font-medium text-gray-500">Common uses:</span>
+                <div class="flex flex-wrap gap-1 mt-1">
+                    ${result.common_uses.map(use => 
+                        `<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">${use}</span>`
+                    ).join('')}
                 </div>
             `;
         }
         
-        // Create RxCUI info
-        const rxcuiDiv = document.createElement('div');
-        rxcuiDiv.className = 'text-xs text-gray-400 mt-2';
-        rxcuiDiv.textContent = `RxCUI: ${result.rxcui}`;
+        // Create feedback section
+        const feedbackDiv = document.createElement('div');
+        feedbackDiv.className = 'flex items-center justify-between mt-3 pt-2 border-t border-gray-100';
         
-        div.innerHTML = `
-            ${nameDiv.outerHTML}
-            ${brandNamesDiv}
-            ${usesDiv}
-            ${rxcuiDiv.outerHTML}
+        const feedbackButtons = document.createElement('div');
+        feedbackButtons.className = 'flex items-center space-x-2';
+        
+        const thumbsUpBtn = document.createElement('button');
+        thumbsUpBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors border border-transparent';
+        thumbsUpBtn.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+            </svg>
+            <span>Helpful</span>
+            <span class="helpful-count ml-1 text-xs font-medium">${result.helpful_count > 0 ? `(${result.helpful_count})` : ''}</span>
         `;
         
-        // Add click handler to search for this drug
-        div.addEventListener('click', () => {
-            this.searchForDrug(result.name);
+        const thumbsDownBtn = document.createElement('button');
+        thumbsDownBtn.className = 'flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors border border-transparent';
+        thumbsDownBtn.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.737 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.096c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path>
+            </svg>
+            <span>Not helpful</span>
+            <span class="not-helpful-count ml-1 text-xs font-medium">${result.not_helpful_count > 0 ? `(${result.not_helpful_count})` : ''}</span>
+        `;
+        
+        // Add feedback event listeners
+        console.log('Adding event listeners to buttons for:', result.name);
+        
+        // Add proper feedback functionality
+        thumbsUpBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            console.log('Helpful button clicked!', result.name);
+            const currentQuery = window.currentSearchQuery || this.currentSearchQuery || 'fallback';
+            this.handleVote(result.name, currentQuery, true, thumbsUpBtn, thumbsDownBtn);
         });
         
+        thumbsDownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            console.log('Not helpful button clicked!', result.name);
+            const currentQuery = window.currentSearchQuery || this.currentSearchQuery || 'fallback';
+            this.handleVote(result.name, currentQuery, false, thumbsUpBtn, thumbsDownBtn);
+        });
+        
+        // Restore user's previous vote state
+        this.restoreVoteState(result.name, window.currentSearchQuery || this.currentSearchQuery || 'fallback', thumbsUpBtn, thumbsDownBtn);
+        
+        feedbackButtons.appendChild(thumbsUpBtn);
+        feedbackButtons.appendChild(thumbsDownBtn);
+        
+        votingDiv.appendChild(votingButtons);
+        
+        // Use appendChild instead of innerHTML to preserve event listeners
+        div.appendChild(nameDiv);
+        if (brandNamesDiv) {
+            const brandDiv = document.createElement('div');
+            brandDiv.innerHTML = brandNamesDiv;
+            div.appendChild(brandDiv);
+        }
+        div.appendChild(usesDiv);
+        div.appendChild(votingDiv);
+        
+        // No click handler - these are just search results for feedback
+        
         return div;
+    }
+
+    async voteOnDrug(drugId, voteType) {
+        try {
+            console.log(`Voting ${voteType} on drug:`, drugId);
+            
+            const response = await fetch(`/drugs/vote?drug_id=${encodeURIComponent(drugId)}&vote_type=${voteType}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Failed to vote');
+            }
+            
+            const result = await response.json();
+            console.log('Vote result:', result);
+            
+            // Show success message
+            this.showToast(`Vote recorded successfully!`, 'success');
+            
+            // Refresh the search results to show updated ratings
+            const currentQuery = document.getElementById('searchInput').value;
+            if (currentQuery.trim()) {
+                await this.performSearch(currentQuery);
+            }
+            
+        } catch (error) {
+            console.error('Voting error:', error);
+            this.showToast(`Failed to vote: ${error.message}`, 'error');
+        }
     }
 
     searchForDrug(drugName) {
@@ -915,16 +1036,285 @@ class RxVerifyApp {
 
     showSearchLoading(show) {
         const loading = document.getElementById('searchLoading');
+        const clearBtn = document.getElementById('clearSearchBtn');
+        
         if (show) {
             loading.classList.remove('hidden');
+            clearBtn.classList.add('hidden'); // Hide clear button when loading
         } else {
             loading.classList.add('hidden');
+            // Show clear button again if there's text in the input
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput.value && searchInput.value.trim().length > 0) {
+                clearBtn.classList.remove('hidden');
+            }
         }
     }
 
-    hideSearchResults() {
-        document.getElementById('searchResults').classList.add('hidden');
-        document.getElementById('noResults').classList.add('hidden');
+    updateClearButtonVisibility(value) {
+        const clearBtn = document.getElementById('clearSearchBtn');
+        const loadingSpinner = document.getElementById('searchLoading');
+        
+        if (value && value.trim().length > 0) {
+            // Show clear button when there's text
+            clearBtn.classList.remove('hidden');
+            // Hide loading spinner if it's showing
+            loadingSpinner.classList.add('hidden');
+        } else {
+            // Hide clear button when input is empty
+            clearBtn.classList.add('hidden');
+        }
+    }
+
+    clearSearch() {
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearSearchBtn');
+        
+        // Clear the input
+        searchInput.value = '';
+        
+        // Hide clear button
+        clearBtn.classList.add('hidden');
+        
+        // Clear any existing search results
+        this.hideSearchResults();
+        
+        // Clear any pending search timeout
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+        }
+        
+        // Focus back on the input
+        searchInput.focus();
+        
+        // Show a brief toast
+        this.showToast('Search cleared', 'info');
+    }
+
+    showSkeletonLoading(show) {
+        const resultsContainer = document.getElementById('searchResults');
+        const noResults = document.getElementById('noResults');
+        
+        if (show) {
+            // Hide other elements
+            noResults.classList.add('hidden');
+            
+            // Show skeleton loading
+            resultsContainer.classList.remove('hidden');
+            const resultsDiv = resultsContainer.querySelector('.space-y-3');
+            resultsDiv.innerHTML = this.createSkeletonLoading();
+        } else {
+            // Skeleton will be replaced by actual results
+        }
+    }
+
+    createSkeletonLoading() {
+        // Create 3 skeleton loading boxes
+        let skeletonHTML = '';
+        for (let i = 0; i < 3; i++) {
+            skeletonHTML += `
+                <div class="bg-white border border-gray-200 rounded-xl p-4 animate-pulse">
+                    <div class="flex items-start justify-between mb-2">
+                        <div class="flex-1">
+                            <div class="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                            <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                        <div class="h-6 bg-gray-200 rounded-full w-20"></div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="h-4 bg-gray-200 rounded w-1/4 mb-1"></div>
+                        <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
+                        <div class="flex flex-wrap gap-1">
+                            <div class="h-6 bg-gray-200 rounded-full w-16"></div>
+                            <div class="h-6 bg-gray-200 rounded-full w-20"></div>
+                            <div class="h-6 bg-gray-200 rounded-full w-14"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
+                        <div class="flex items-center space-x-2">
+                            <div class="h-8 bg-gray-200 rounded w-20"></div>
+                            <div class="h-8 bg-gray-200 rounded w-24"></div>
+                        </div>
+                        <div class="h-6 bg-gray-200 rounded w-16"></div>
+                    </div>
+                </div>
+            `;
+        }
+        return skeletonHTML;
+    }
+
+    async loadCommonUsesAsync(drugName, resultElement) {
+        try {
+            // Add skeleton loading for common uses
+            const usesSection = resultElement.querySelector('.common-uses-section');
+            if (usesSection) {
+                usesSection.innerHTML = this.createCommonUsesSkeleton();
+            }
+            
+            // Fetch common uses from backend
+            const response = await fetch(`${this.apiBaseUrl}/drugs/common-uses?name=${encodeURIComponent(drugName)}`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.common_uses && data.common_uses.length > 0) {
+                    this.updateCommonUsesSection(resultElement, data.common_uses);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading common uses:', error);
+            // Remove skeleton on error
+            const usesSection = resultElement.querySelector('.common-uses-section');
+            if (usesSection) {
+                usesSection.innerHTML = '';
+            }
+        }
+    }
+
+    createCommonUsesSkeleton() {
+        return `
+            <div class="mb-2">
+                <div class="h-4 bg-gray-200 rounded w-1/3 mb-2 animate-pulse"></div>
+                <div class="flex flex-wrap gap-1">
+                    <div class="h-6 bg-gray-200 rounded-full w-16 animate-pulse"></div>
+                    <div class="h-6 bg-gray-200 rounded-full w-20 animate-pulse"></div>
+                    <div class="h-6 bg-gray-200 rounded-full w-14 animate-pulse"></div>
+                </div>
+            </div>
+        `;
+    }
+
+    updateCommonUsesSection(resultElement, commonUses) {
+        const usesSection = resultElement.querySelector('.common-uses-section');
+        if (usesSection) {
+            usesSection.innerHTML = `
+                <div class="mb-2">
+                    <span class="text-xs font-medium text-gray-500">Common uses:</span>
+                    <div class="flex flex-wrap gap-1 mt-1">
+                        ${commonUses.map(use => 
+                            `<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">${use}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    async submitFeedback(drugName, query, isPositive, isRemoval = false) {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/feedback`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    drug_name: drugName,
+                    query: query,
+                    is_positive: isPositive,
+                    is_removal: isRemoval, // New field to indicate if this is removing a vote
+                    user_id: this.getUserId(),
+                    session_id: this.getSessionId(),
+                    timestamp: new Date().toISOString()
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Feedback submission failed: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log('Feedback submitted successfully:', data);
+            
+        } catch (error) {
+            console.error('Feedback submission error:', error);
+            // Don't show error toast for feedback failures to avoid annoying users
+        }
+    }
+
+    restoreVoteState(drugName, query, helpfulBtn, notHelpfulBtn) {
+        const voteKey = `vote_${drugName}_${query}`;
+        const currentVote = localStorage.getItem(voteKey);
+        
+        if (currentVote === 'helpful') {
+            // User previously voted helpful - highlight the helpful button
+            helpfulBtn.className = helpfulBtn.className.replace('border-transparent', 'border-green-500 bg-green-50');
+            // Don't disable the button - allow toggle functionality
+        } else if (currentVote === 'not_helpful') {
+            // User previously voted not helpful - highlight the not helpful button
+            notHelpfulBtn.className = notHelpfulBtn.className.replace('border-transparent', 'border-red-500 bg-red-50');
+            // Don't disable the button - allow toggle functionality
+        }
+    }
+
+    handleVote(drugName, query, isPositive, helpfulBtn, notHelpfulBtn) {
+        console.log('handleVote called:', { drugName, query, isPositive });
+        const voteKey = `vote_${drugName}_${query}`;
+        const currentVote = localStorage.getItem(voteKey);
+        
+        // Check if user is clicking the same button they already pressed (toggle off)
+        if ((currentVote === 'helpful' && isPositive) || (currentVote === 'not_helpful' && !isPositive)) {
+            // Remove the vote (toggle off)
+            localStorage.removeItem(voteKey);
+            
+            // Reset both buttons to default state
+            helpfulBtn.className = helpfulBtn.className.replace('border-green-500 bg-green-50', 'border-transparent');
+            notHelpfulBtn.className = notHelpfulBtn.className.replace('border-red-500 bg-red-50', 'border-transparent');
+            helpfulBtn.disabled = false;
+            notHelpfulBtn.disabled = false;
+            
+            // Submit negative feedback to backend (to decrement count)
+            this.submitFeedback(drugName, query, isPositive, true); // true = isRemoval
+            
+            // Show success message
+            this.showToast(`Feedback removed: ${isPositive ? 'Helpful' : 'Not helpful'}`, 'info');
+            return;
+        }
+        
+        // Store the new vote in localStorage
+        localStorage.setItem(voteKey, isPositive ? 'helpful' : 'not_helpful');
+        
+        // Reset both buttons to default state first
+        helpfulBtn.className = helpfulBtn.className.replace('border-green-500 bg-green-50', 'border-transparent');
+        notHelpfulBtn.className = notHelpfulBtn.className.replace('border-red-500 bg-red-50', 'border-transparent');
+        helpfulBtn.disabled = false;
+        notHelpfulBtn.disabled = false;
+        
+        // Apply new vote state
+        if (isPositive) {
+            helpfulBtn.className = helpfulBtn.className.replace('border-transparent', 'border-green-500 bg-green-50');
+            // Don't disable the button - allow toggle functionality
+        } else {
+            notHelpfulBtn.className = notHelpfulBtn.className.replace('border-transparent', 'border-red-500 bg-red-50');
+            // Don't disable the button - allow toggle functionality
+        }
+        
+        // Submit feedback to backend
+        this.submitFeedback(drugName, query, isPositive);
+        
+        // Show success message
+        this.showToast(`Feedback recorded: ${isPositive ? 'Helpful' : 'Not helpful'}`, 'success');
+    }
+
+    getUserId() {
+        // Generate or retrieve user ID (could be stored in localStorage)
+        let userId = localStorage.getItem('rxverify_user_id');
+        if (!userId) {
+            userId = 'user_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('rxverify_user_id', userId);
+        }
+        return userId;
+    }
+
+    getSessionId() {
+        // Generate or retrieve session ID
+        let sessionId = sessionStorage.getItem('rxverify_session_id');
+        if (!sessionId) {
+            sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
+            sessionStorage.setItem('rxverify_session_id', sessionId);
+        }
+        return sessionId;
     }
 
     resetForm() {
@@ -942,6 +1332,8 @@ class RxVerifyApp {
 
 document.addEventListener('DOMContentLoaded', () => {
     app = new RxVerifyApp();
+    // Make app globally available for index.html
+    window.rxVerifyApp = app;
 });
 
 // Add some nice keyboard shortcuts

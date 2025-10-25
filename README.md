@@ -1,6 +1,6 @@
 # RxVerify
 
-A real-time medication search and drug information system designed for post-discharge medication management. Features live API integration with RxNorm, DailyMed, OpenFDA, and DrugBank, plus intelligent feedback-driven ML pipeline optimization.
+A modern drug search and information system featuring intelligent ranking, user-driven feedback, and real-time analytics. Built with a curated MongoDB database of 100,000+ drugs, sophisticated search algorithms, and a self-improving voting system that learns from user preferences.
 
 ## 🗄️ Database Setup
 
@@ -147,71 +147,75 @@ make health         # Quick health check
 
 ## 🔌 API Endpoints
 
-### **Core Search Endpoints**
-- `POST /search` - Enhanced medication search with post-discharge focus
-- `POST /query` - General drug information queries (Ask Questions - coming soon)
+### **Core Drug Search**
+- `GET /drugs/search` - Fast local drug search with intelligent ranking
+- `GET /drugs/vote-status` - Check if user has voted on a specific drug
+- `POST /drugs/vote` - Vote on drugs (upvote/downvote) with anonymous tracking
+- `GET /drugs/common-uses` - Get common uses for specific drugs
 
-### **Feedback System**
-- `POST /feedback` - Submit thumbs up/down feedback on search results
-- `GET /feedback/stats` - Get feedback analytics and trends
+### **Admin Dashboard**
+- `GET /admin/stats` - System overview and database statistics
+- `GET /admin/recent-activity` - Recent search activity with pagination
+- `GET /metrics/summary` - Performance metrics and analytics
+- `GET /metrics/time-series` - Time-series data for charts
+- `GET /feedback/stats` - Feedback analytics and trends
 - `POST /feedback/remove` - Remove specific feedback entries
-- `POST /feedback/clear` - Clear all feedback data
 
-### **Admin & Management**
+### **Real-time Features**
+- `WebSocket /ws/admin` - Live updates for admin dashboard
 - `GET /status` - Comprehensive system status and health metrics
-- `GET /cache/stats` - Medication cache statistics
-- `POST /cache/clear` - Clear medication cache
-- `GET /rxlist/stats` - RxList database statistics
-- `POST /rxlist/clear` - Clear RxList database
-- `POST /rxlist/ingest` - Ingest new RxList data
-
-### **System Health**
 - `GET /health` - Basic health check
 - `GET /` - API information and version
 
 ## 🎯 Features
 
-### 🔍 **Core Search Features**
-- **Real-time Medication Search**: Live API queries to RxNorm, DailyMed, OpenFDA, and DrugBank
-- **Post-Discharge Focus**: Curated results for oral medications typically prescribed after hospital stays
-- **Intelligent Deduplication**: Combines duplicate drugs with different dosages into single results
-- **RxCUI Integration**: Direct links to RxNav for detailed drug information
-- **Partial Name Expansion**: Smart expansion of common drug prefixes (e.g., "metf" → "metformin")
+### 🔍 **Intelligent Drug Search**
+- **Curated Database**: 100,000+ drugs from Drugs.com with clean, deduplicated names
+- **Smart Ranking**: Multi-tier scoring system prioritizing prefix matches, single drugs, then combinations
+- **Real-time Search**: Instant results with debounced input and skeleton loading
+- **Drug Types**: Generic, brand, and combination drugs with proper categorization
+- **Prefix Matching**: "Met" shows drugs starting with "Met" first, then containing "Met"
 
-### 🤖 **AI & ML Features**
-- **Feedback-Driven Learning**: Thumbs up/down voting system for continuous improvement
-- **ML Pipeline Integration**: User feedback feeds into result ranking and optimization
-- **Real-time Analytics**: Admin dashboard with feedback trends and system metrics
-- **Zero Hallucinations**: All responses sourced from official medical databases
+### 🗳️ **Self-Improving Voting System**
+- **Anonymous Tracking**: IP + User Agent hash for consistent user identification
+- **Backend Verification**: Frontend checks with backend before voting to prevent false states
+- **Vote Switching**: Users can change votes (unvote old, vote new)
+- **Dynamic Ranking**: Vote scores significantly impact search ranking (+25/-25 points)
+- **Auto-Hiding**: Poorly rated drugs (rating ≤ -0.5, 3+ votes) disappear from results
+- **Social Proof**: Drugs with 5+ votes get bonus ranking points
 
-### 🎨 **User Experience**
-- **Modern UI**: Clean, responsive design with dark/light mode toggle
-- **Real-time Feedback**: Live vote counts and visual feedback on search results
-- **Admin Dashboard**: Comprehensive analytics and system management tools
-- **Mobile Responsive**: Optimized for all device sizes
-- **Progressive Web App**: PWA capabilities with offline support
+### 📊 **Real-time Analytics**
+- **Live Admin Dashboard**: WebSocket-powered real-time updates
+- **Search Metrics**: Total requests, success rate, average response time
+- **Feedback Analytics**: Vote trends, helpful/unhelpful ratios, drug ratings
+- **Recent Activity**: Paginated search history with local time conversion
+- **Performance Monitoring**: System health, database stats, and error tracking
 
-### 🔧 **System Features**
-- **Automated Versioning**: Dynamic version numbers with deployment timestamps
-- **Health Monitoring**: Comprehensive system status and performance metrics
-- **Cache Management**: Intelligent caching for improved performance
-- **Cross-Source Validation**: Detects and reports data discrepancies between sources
+### 🎨 **Modern User Experience**
+- **Responsive Design**: Works perfectly on desktop, tablet, and mobile
+- **Dark/Light Mode**: Automatic theme switching with persistent preferences
+- **Optimistic Updates**: Immediate UI feedback with error reversion
+- **Skeleton Loading**: Smooth loading states for better perceived performance
+- **Toast Notifications**: Real-time feedback for all user actions
+- **Keyboard Shortcuts**: Ctrl+Enter to search, Escape to clear
 
 ## 🔍 Testing the System
 
 1. **Start the servers**: `make run`
 2. **Open frontend**: `make open`
-3. **Test medication search**:
-   - Search for "metformin" or "metf"
-   - Search for "atorvastatin" or "ator"
-   - Search for "lisinopril" or "lisi"
-4. **Test feedback system**:
+3. **Test intelligent drug search**:
+   - Search for "metformin" or "met" (prefix matching)
+   - Search for "atorvastatin" or "ator" (generic vs combination)
+   - Search for "lisinopril" or "lisi" (single word drugs)
+4. **Test voting system**:
    - Vote on search results using thumbs up/down
-   - Check admin dashboard for feedback analytics
-5. **Test admin features**:
+   - Try vote switching (upvote → downvote → upvote)
+   - Check how votes affect search ranking
+5. **Test admin dashboard**:
    - Access admin dropdown in top navigation
-   - View feedback analytics and system metrics
-   - Clear caches and manage system data
+   - View real-time metrics and analytics
+   - Check recent activity with pagination
+   - Monitor WebSocket live updates
 
 ## 🚀 Deployment
 

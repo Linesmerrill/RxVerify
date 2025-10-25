@@ -1083,11 +1083,11 @@ class RxVerifyApp {
                     console.log('Vote switch result:', result);
                     
                     // Show success message
-                    this.showMessage(`Vote switched to ${voteType} successfully!`, 'success');
+                    this.showToast(`Vote switched to ${voteType} successfully!`, 'success');
                     
                 } catch (error) {
                     console.error('Failed to switch vote:', error);
-                    this.showMessage(`Failed to switch vote: ${error.message}`, 'error');
+                    this.showToast(`Failed to switch vote: ${error.message}`, 'error');
                     
                     // Revert UI changes on error
                     this.revertVoteButtons(drugId, currentVote);
@@ -1112,7 +1112,7 @@ class RxVerifyApp {
                 
                 // Show success message
                 const message = isUnvote ? `Vote removed successfully!` : `Vote recorded successfully!`;
-                this.showMessage(message, 'success');
+                this.showToast(message, 'success');
                 
                 // Refresh the search results to show updated ratings
                 const currentQuery = document.getElementById('searchInput').value;

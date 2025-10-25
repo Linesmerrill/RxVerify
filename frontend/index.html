@@ -903,10 +903,15 @@
 
                 <!-- Recent Activity -->
                 <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h4>
-                    <div class="overflow-x-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-semibold text-gray-900">Recent Activity</h4>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-500" id="activityPageInfo">Page 1 of 1</span>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto max-h-96 overflow-y-auto">
                         <table class="w-full">
-                            <thead class="bg-gray-50">
+                            <thead class="bg-gray-50 sticky top-0">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
@@ -923,6 +928,26 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <!-- Pagination Controls -->
+                    <div class="flex items-center justify-between mt-4">
+                        <div class="flex items-center space-x-2">
+                            <button id="prevActivityPage" class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                Previous
+                            </button>
+                            <button id="nextActivityPage" class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                Next
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-500">Show:</span>
+                            <select id="activityPageSize" class="px-2 py-1 text-sm border border-gray-300 rounded bg-white text-gray-700">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span class="text-sm text-gray-500">per page</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1704,48 +1729,103 @@
             });
         }
         
+        // Recent Activity pagination state
+        let activityData = [];
+        let currentActivityPage = 1;
+        let activityPageSize = 10;
+        
         async function updateRecentActivity() {
             try {
                 const apiBaseUrl = getApiBaseUrl();
-                const response = await fetch(`${apiBaseUrl}/admin/recent-activity?limit=10`);
+                const response = await fetch(`${apiBaseUrl}/admin/recent-activity?limit=100`); // Get more data for pagination
                 const data = await response.json();
                 
-                const tbody = document.getElementById('recentActivityBody');
-                
-                if (data.success && data.data && data.data.length > 0) {
-                    tbody.innerHTML = data.data.map(activity => `
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${activity.time_formatted}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${activity.type}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${activity.query}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${activity.success ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'}">
-                                    ${activity.success ? 'Success' : 'Failed'}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${activity.response_time_formatted}</td>
-                        </tr>
-                    `).join('');
+                if (data.success && data.data) {
+                    activityData = data.data;
+                    renderActivityPage();
                 } else {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                                No recent activity
-                            </td>
-                        </tr>
-                    `;
+                    activityData = [];
+                    renderActivityPage();
                 }
             } catch (error) {
                 console.error('Error loading recent activity:', error);
-                const tbody = document.getElementById('recentActivityBody');
+                activityData = [];
+                renderActivityPage();
+            }
+        }
+        
+        function renderActivityPage() {
+            const tbody = document.getElementById('recentActivityBody');
+            const pageInfo = document.getElementById('activityPageInfo');
+            const prevBtn = document.getElementById('prevActivityPage');
+            const nextBtn = document.getElementById('nextActivityPage');
+            
+            if (activityData.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                            Failed to load recent activity
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                            No recent activity
                         </td>
                     </tr>
                 `;
+                pageInfo.textContent = 'Page 1 of 1';
+                prevBtn.disabled = true;
+                nextBtn.disabled = true;
+                return;
             }
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(activityData.length / activityPageSize);
+            const startIndex = (currentActivityPage - 1) * activityPageSize;
+            const endIndex = Math.min(startIndex + activityPageSize, activityData.length);
+            const pageData = activityData.slice(startIndex, endIndex);
+            
+            // Render table rows
+            tbody.innerHTML = pageData.map(activity => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${activity.time_formatted}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${activity.type}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${activity.query}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${activity.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${activity.success ? 'Success' : 'Failed'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${activity.response_time_formatted}</td>
+                </tr>
+            `).join('');
+            
+            // Update pagination info and buttons
+            pageInfo.textContent = `Page ${currentActivityPage} of ${totalPages}`;
+            prevBtn.disabled = currentActivityPage <= 1;
+            nextBtn.disabled = currentActivityPage >= totalPages;
+        }
+        
+        function setupActivityPagination() {
+            const prevBtn = document.getElementById('prevActivityPage');
+            const nextBtn = document.getElementById('nextActivityPage');
+            const pageSizeSelect = document.getElementById('activityPageSize');
+            
+            prevBtn.addEventListener('click', () => {
+                if (currentActivityPage > 1) {
+                    currentActivityPage--;
+                    renderActivityPage();
+                }
+            });
+            
+            nextBtn.addEventListener('click', () => {
+                const totalPages = Math.ceil(activityData.length / activityPageSize);
+                if (currentActivityPage < totalPages) {
+                    currentActivityPage++;
+                    renderActivityPage();
+                }
+            });
+            
+            pageSizeSelect.addEventListener('change', (e) => {
+                activityPageSize = parseInt(e.target.value);
+                currentActivityPage = 1; // Reset to first page
+                renderActivityPage();
+            });
         }
         
         async function refreshAdminData() {
@@ -1758,6 +1838,7 @@
         function initializeAdminDashboard() {
             updateTimeFilterButtons();
             loadAdminData();
+            setupActivityPagination();
         }
         
         

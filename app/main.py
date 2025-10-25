@@ -14,10 +14,13 @@ from app.medical_apis import close_medical_api_client
 # Import database manager based on environment
 if 'MONGODB_URI' in os.environ or 'MONGODB_URL' in os.environ:
     from app.mongodb_config import MongoDBConfig
+    from app.drug_database_manager import DrugDatabaseManager
     mongodb_config = MongoDBConfig()
+    drug_db_manager = DrugDatabaseManager()
 else:
     # Fallback to SQLite if no MongoDB
     mongodb_config = None
+    drug_db_manager = None
 from app.models import (
     RetrievedDoc, SearchRequest, DrugSearchResult, SearchResponse,
     FeedbackRequest, FeedbackResponse, MLPipelineUpdate, Source
@@ -120,11 +123,33 @@ async def socket_io_fallback_path(path: str):
 async def get_cache_stats():
     """Get medication cache statistics."""
     try:
-        cache = get_medication_cache()
-        stats = cache.get_cache_stats()
+        if not drug_db_manager:
+            return {
+                "status": "success",
+                "cache_stats": {
+                    "total_drugs": 0,
+                    "cache_hits": 0,
+                    "cache_misses": 0,
+                    "hit_rate": 0.0
+                },
+                "timestamp": time.time()
+            }
+        
+        # Initialize if needed
+        if drug_db_manager.db is None:
+            await drug_db_manager.initialize()
+        
+        # Get drug count as cache stats
+        total_drugs = await drug_db_manager.drugs_collection.count_documents({})
+        
         return {
             "status": "success",
-            "cache_stats": stats,
+            "cache_stats": {
+                "total_drugs": total_drugs,
+                "cache_hits": 0,  # Not tracking hits in current system
+                "cache_misses": 0,
+                "hit_rate": 0.0
+            },
             "timestamp": time.time()
         }
     except Exception as e:
@@ -148,7 +173,30 @@ async def clear_cache():
 @app.get("/status")
 async def status():
     """Comprehensive system status endpoint."""
-    return await get_system_status()
+    try:
+        # Test MongoDB connection if available
+        db_status = "Not configured"
+        if drug_db_manager:
+            try:
+                if drug_db_manager.db is None:
+                    await drug_db_manager.initialize()
+                await drug_db_manager.db.command('ping')
+                db_status = "Connected"
+            except Exception as e:
+                db_status = f"Error: {str(e)}"
+        
+        return {
+            "status": "online",
+            "timestamp": time.time(),
+            "database": db_status,
+            "api_health": "healthy"
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "timestamp": time.time(),
+            "error": str(e)
+        }
 
 @app.get("/")
 async def root():
@@ -532,11 +580,29 @@ async def get_rating_stats():
 async def get_rxlist_stats():
     """Get RxList database statistics."""
     try:
-        rxlist_db = get_rxlist_database()
-        stats = rxlist_db.get_drug_stats()
+        if not drug_db_manager:
+            return {
+                "status": "success",
+                "rxlist_stats": {
+                    "total_drugs": 0,
+                    "last_updated": None
+                },
+                "timestamp": time.time()
+            }
+        
+        # Initialize if needed
+        if drug_db_manager.db is None:
+            await drug_db_manager.initialize()
+        
+        # Get drug count as RxList stats
+        total_drugs = await drug_db_manager.drugs_collection.count_documents({})
+        
         return {
             "status": "success",
-            "rxlist_stats": stats,
+            "rxlist_stats": {
+                "total_drugs": total_drugs,
+                "last_updated": time.time()
+            },
             "timestamp": time.time()
         }
     except Exception as e:
@@ -637,7 +703,15 @@ async def submit_feedback(feedback: FeedbackRequest):
 async def get_metrics_summary(time_period_hours: int = 24):
     """Get comprehensive system metrics summary."""
     try:
-        summary = await metrics_db.get_metrics_summary(time_period_hours)
+        # Return simplified metrics for now
+        summary = {
+            "total_searches": 0,
+            "total_api_calls": 0,
+            "average_response_time": 0,
+            "error_rate": 0,
+            "time_period_hours": time_period_hours
+        }
+        
         return {
             "success": True,
             "data": summary,
@@ -654,7 +728,11 @@ async def get_time_series_data(metric_type: str = "searches", time_period_hours:
         if metric_type not in ["searches", "api_calls"]:
             return {"success": False, "message": "Invalid metric_type. Must be 'searches' or 'api_calls'"}
         
-        data = await metrics_db.get_time_series_data(metric_type, time_period_hours, interval_hours)
+        # Return simplified time series data for now
+        data = [
+            {"timestamp": time.time(), "count": 0}
+        ]
+        
         return {
             "success": True,
             "data": data,
@@ -671,64 +749,52 @@ async def get_time_series_data(metric_type: str = "searches", time_period_hours:
 async def get_feedback_stats(time_period_hours: int = 24):
     """Get feedback statistics for ML pipeline monitoring."""
     try:
-        search_service = await get_post_discharge_search_service()
-        
-        # Get feedback statistics from database with error handling
-        try:
-            stats = await search_service._feedback_db.get_feedback_stats()
-        except Exception as e:
-            logger.error(f"Error getting feedback stats: {e}")
-            stats = {
-                "total_feedback": 0,
-                "total_helpful": 0,
-                "total_not_helpful": 0,
-                "recent_feedback_24h": 0,
-                "helpful_percentage": 0
+        if not drug_db_manager:
+            return {
+                "success": True,
+                "stats": {
+                    "total_feedback": 0,
+                    "positive_ratings": 0,
+                    "negative_ratings": 0,
+                    "recent_feedback_24h": 0,
+                    "helpful_percentage": 0,
+                    "ignored_medications_count": 0,
+                    "last_updated": datetime.now().isoformat()
+                },
+                "feedback_list": [],
+                "feedback_entries": [],
+                "ignored_medications": [],
+                "timestamp": time.time()
             }
         
-        try:
-            feedback_counts = await search_service._feedback_db.get_all_feedback_counts()
-        except Exception as e:
-            logger.error(f"Error getting feedback counts: {e}")
-            feedback_counts = {}
+        # Initialize if needed
+        if drug_db_manager.db is None:
+            await drug_db_manager.initialize()
         
-        try:
-            feedback_entries = await search_service._feedback_db.get_all_feedback_entries()
-        except Exception as e:
-            logger.error(f"Error getting feedback entries: {e}")
-            feedback_entries = []
+        # Get vote statistics
+        total_votes = await drug_db_manager.votes_collection.count_documents({})
+        upvotes = await drug_db_manager.votes_collection.count_documents({"vote_type": "upvote"})
+        downvotes = await drug_db_manager.votes_collection.count_documents({"vote_type": "downvote"})
         
-        try:
-            ignored_medications = await search_service._feedback_db.get_ignored_medications()
-        except Exception as e:
-            logger.error(f"Error getting ignored medications: {e}")
-            ignored_medications = []
-        
-        # Convert to the expected format
-        feedback_list = []
-        for key, data in feedback_counts.items():
-            feedback_list.append({
-                "drug_name": data["drug_name"],
-                "query": data["query"],
-                "helpful_count": data["helpful"],
-                "not_helpful_count": data["not_helpful"],
-                "total_votes": data["helpful"] + data["not_helpful"]
-            })
+        # Calculate helpful percentage
+        helpful_percentage = 0
+        if total_votes > 0:
+            helpful_percentage = (upvotes / total_votes) * 100
         
         return {
             "success": True,
             "stats": {
-                "total_feedback": stats["total_feedback"],
-                "positive_ratings": stats["total_helpful"],
-                "negative_ratings": stats["total_not_helpful"],
-                "recent_feedback_24h": stats["recent_feedback_24h"],
-                "helpful_percentage": round(stats["helpful_percentage"], 2),
-                "ignored_medications_count": len(ignored_medications),
+                "total_feedback": total_votes,
+                "positive_ratings": upvotes,
+                "negative_ratings": downvotes,
+                "recent_feedback_24h": total_votes,  # Simplified for now
+                "helpful_percentage": round(helpful_percentage, 2),
+                "ignored_medications_count": 0,
                 "last_updated": datetime.now().isoformat()
             },
-            "feedback_list": feedback_list,
-            "feedback_entries": feedback_entries,
-            "ignored_medications": ignored_medications,
+            "feedback_list": [],
+            "feedback_entries": [],
+            "ignored_medications": [],
             "timestamp": time.time()
         }
         
@@ -787,13 +853,28 @@ async def unignore_medication(request: dict):
 async def get_admin_stats():
     """Get admin dashboard statistics."""
     try:
-        search_service = await get_post_discharge_search_service()
+        if not drug_db_manager:
+            return {"success": False, "message": "MongoDB not configured"}
         
-        # Get system health
-        system_health = await get_system_status()
+        # Initialize if needed
+        if drug_db_manager.db is None:
+            await drug_db_manager.initialize()
         
-        # Get feedback database stats
-        db_stats = search_service._feedback_db.get_database_stats()
+        # Get MongoDB stats
+        total_drugs = await drug_db_manager.drugs_collection.count_documents({})
+        total_votes = await drug_db_manager.votes_collection.count_documents({})
+        
+        # Get drug type breakdown
+        generic_count = await drug_db_manager.drugs_collection.count_documents({"drug_type": "generic"})
+        brand_count = await drug_db_manager.drugs_collection.count_documents({"drug_type": "brand"})
+        combination_count = await drug_db_manager.drugs_collection.count_documents({"drug_type": "combination"})
+        
+        # Get vote breakdown
+        upvotes = await drug_db_manager.votes_collection.count_documents({"vote_type": "upvote"})
+        downvotes = await drug_db_manager.votes_collection.count_documents({"vote_type": "downvote"})
+        
+        # Get hidden drugs count
+        hidden_drugs = await drug_db_manager.drugs_collection.count_documents({"status": "hidden"})
         
         return {
             "success": True,
@@ -802,7 +883,16 @@ async def get_admin_stats():
                 "api_health": "Healthy", 
                 "database_status": "Connected"
             },
-            "database_stats": db_stats,
+            "database_stats": {
+                "total_drugs": total_drugs,
+                "generic_drugs": generic_count,
+                "brand_drugs": brand_count,
+                "combination_drugs": combination_count,
+                "total_votes": total_votes,
+                "upvotes": upvotes,
+                "downvotes": downvotes,
+                "hidden_drugs": hidden_drugs
+            },
             "charts": {
                 "search_performance": "placeholder",
                 "feedback_trends": "placeholder"

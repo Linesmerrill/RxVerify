@@ -829,19 +829,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-6 text-white">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-purple-100 text-sm font-medium">Cache Hit Rate</p>
-                                <p id="cacheHitRate" class="text-3xl font-bold">-</p>
-                            </div>
-                            <div class="w-12 h-12 bg-purple-400 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
                     <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-6 text-white">
                         <div class="flex items-center justify-between">
                             <div>
@@ -877,35 +864,13 @@
                 </div>
 
                 <!-- Database Statistics -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white rounded-xl border border-gray-200 p-6">
-                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Medication Cache</h4>
-                        <div class="space-y-3">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Total Entries:</span>
-                                <span id="cacheEntries" class="font-semibold">-</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Cache Size:</span>
-                                <span id="cacheSize" class="font-semibold">-</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Last Updated:</span>
-                                <span id="cacheLastUpdated" class="font-semibold">-</span>
-                            </div>
-                        </div>
-                    </div>
-
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     <div class="bg-white rounded-xl border border-gray-200 p-6">
                         <h4 class="text-lg font-semibold text-gray-900 mb-4">RxList Database</h4>
                         <div class="space-y-3">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Total Drugs:</span>
                                 <span id="rxlistDrugs" class="font-semibold">-</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Database Size:</span>
-                                <span id="rxlistSize" class="font-semibold">-</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Last Updated:</span>
@@ -1633,10 +1598,6 @@
                 document.getElementById('successRate').textContent = 
                     metrics.api_metrics?.success_rate ? `${metrics.api_metrics.success_rate.toFixed(1)}%` : 'N/A';
                 
-                // Cache Hit Rate (from search metrics)
-                document.getElementById('cacheHitRate').textContent = 
-                    metrics.search_metrics?.cache_hit_rate ? `${metrics.search_metrics.cache_hit_rate.toFixed(1)}%` : 'N/A';
-                
                 // Average Response Time (from search metrics)
                 document.getElementById('avgResponseTime').textContent = 
                     metrics.search_metrics?.avg_response_time_ms ? `${metrics.search_metrics.avg_response_time_ms.toFixed(0)}ms` : 'N/A';
@@ -1645,26 +1606,15 @@
                 document.getElementById('totalRequests').textContent = systemStatus.monitoring?.total_requests || 0;
                 document.getElementById('successRate').textContent = 
                     systemStatus.monitoring?.success_rate ? `${(systemStatus.monitoring.success_rate * 100).toFixed(1)}%` : 'N/A';
-                document.getElementById('cacheHitRate').textContent = 
-                    systemStatus.monitoring?.cache_hit_rate ? `${(systemStatus.monitoring.cache_hit_rate * 100).toFixed(1)}%` : 'N/A';
                 document.getElementById('avgResponseTime').textContent = 
                     systemStatus.monitoring?.avg_response_time ? `${systemStatus.monitoring.avg_response_time.toFixed(0)}ms` : 'N/A';
             }
         }
         
         function updateDatabaseStats(cacheStats, rxlistStats) {
-            // Update cache stats
-            if (cacheStats.cache_stats) {
-                document.getElementById('cacheEntries').textContent = cacheStats.cache_stats.total_medications || 0;
-                document.getElementById('cacheSize').textContent = cacheStats.cache_stats.total_searches || 0;
-                document.getElementById('cacheLastUpdated').textContent = 
-                    cacheStats.cache_stats.last_updated ? new Date(cacheStats.cache_stats.last_updated).toLocaleString() : 'N/A';
-            }
-            
             // Update RxList stats
             if (rxlistStats.rxlist_stats) {
                 document.getElementById('rxlistDrugs').textContent = rxlistStats.rxlist_stats.total_drugs || 0;
-                document.getElementById('rxlistSize').textContent = rxlistStats.rxlist_stats.database_size || 'N/A';
                 document.getElementById('rxlistLastUpdated').textContent = 
                     rxlistStats.rxlist_stats.last_updated ? new Date(rxlistStats.rxlist_stats.last_updated).toLocaleString() : 'N/A';
             }

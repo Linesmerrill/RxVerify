@@ -36,7 +36,7 @@ class SimpleMonitor:
                 'total_response_time': 0.0
             })
     
-    def record_request(self, success: bool, response_time_ms: float = 0.0, endpoint: str = "unknown"):
+    def record_request(self, success: bool, response_time_ms: float = 0.0, endpoint: str = "unknown", query: str = None):
         """Record a request with its outcome and response time."""
         with self._lock:
             self.total_requests += 1
@@ -54,7 +54,8 @@ class SimpleMonitor:
                 'timestamp': time.time(),
                 'success': success,
                 'response_time_ms': response_time_ms,
-                'endpoint': endpoint
+                'endpoint': endpoint,
+                'query': query
             }
             self.request_history.append(request_record)
             
@@ -147,7 +148,52 @@ class SimpleMonitor:
     def get_recent_requests(self, limit: int = 50) -> List[Dict[str, Any]]:
         """Get recent request history."""
         with self._lock:
-            return list(self.request_history)[-limit:]
+            recent_requests = list(self.request_history)[-limit:]
+            # Format for frontend display
+            formatted_requests = []
+            for req in recent_requests:
+                formatted_requests.append({
+                    "timestamp": req["timestamp"],
+                    "time_formatted": datetime.fromtimestamp(req["timestamp"]).strftime("%I:%M:%S %p"),
+                    "endpoint": req["endpoint"],
+                    "type": self._get_request_type(req["endpoint"]),
+                    "query": self._get_query_from_endpoint(req),
+                    "success": req["success"],
+                    "response_time_ms": req["response_time_ms"],
+                    "response_time_formatted": f"{req['response_time_ms']/1000:.1f}s"
+                })
+            return formatted_requests
+    
+    def _get_request_type(self, endpoint: str) -> str:
+        """Get request type based on endpoint."""
+        if "/drugs/search" in endpoint:
+            return "Search"
+        elif "/query" in endpoint:
+            return "Query"
+        elif "/feedback" in endpoint:
+            return "Feedback"
+        elif "/vote" in endpoint:
+            return "Vote"
+        else:
+            return "API Call"
+    
+    def _get_query_from_endpoint(self, req: Dict[str, Any]) -> str:
+        """Extract query from request for display."""
+        if req.get('query'):
+            return req['query']
+        
+        # Fallback based on endpoint
+        endpoint = req.get('endpoint', '')
+        if "/drugs/search" in endpoint:
+            return "Drug search query"
+        elif "/query" in endpoint:
+            return "General query"
+        elif "/feedback" in endpoint:
+            return "Feedback submission"
+        elif "/vote" in endpoint:
+            return "Drug vote"
+        else:
+            return endpoint
     
     def reset_metrics(self):
         """Reset all metrics (useful for testing)."""

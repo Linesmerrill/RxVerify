@@ -1704,33 +1704,48 @@
             });
         }
         
-        function updateRecentActivity() {
-            // Mock recent activity data
-            const tbody = document.getElementById('recentActivityBody');
-            tbody.innerHTML = `
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${new Date().toLocaleTimeString()}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Search</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">atorvastatin</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Success
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1.2s</td>
-                </tr>
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${new Date(Date.now() - 300000).toLocaleTimeString()}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Query</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">side effects of metformin</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Success
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2.1s</td>
-                </tr>
-            `;
+        async function updateRecentActivity() {
+            try {
+                const apiBaseUrl = getApiBaseUrl();
+                const response = await fetch(`${apiBaseUrl}/admin/recent-activity?limit=10`);
+                const data = await response.json();
+                
+                const tbody = document.getElementById('recentActivityBody');
+                
+                if (data.success && data.data && data.data.length > 0) {
+                    tbody.innerHTML = data.data.map(activity => `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${activity.time_formatted}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${activity.type}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${activity.query}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${activity.success ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'}">
+                                    ${activity.success ? 'Success' : 'Failed'}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${activity.response_time_formatted}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                No recent activity
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading recent activity:', error);
+                const tbody = document.getElementById('recentActivityBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                            Failed to load recent activity
+                        </td>
+                    </tr>
+                `;
+            }
         }
         
         async function refreshAdminData() {

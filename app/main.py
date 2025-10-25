@@ -314,7 +314,7 @@ async def search_medications(request: SearchRequest):
         processing_time = (time.time() - start_time) * 1000
         
         # Record successful request
-        monitor.record_request(success=True, response_time_ms=processing_time, endpoint="/drugs/search")
+        monitor.record_request(success=True, response_time_ms=processing_time, endpoint="/drugs/search", query=query.strip())
         
         # Convert results to dict format for JSON response
         results_dict = []
@@ -344,7 +344,7 @@ async def search_medications(request: SearchRequest):
     except Exception as e:
         # Record failed request
         processing_time = (time.time() - start_time) * 1000
-        monitor.record_request(success=False, response_time_ms=processing_time, endpoint="/drugs/search")
+        monitor.record_request(success=False, response_time_ms=processing_time, endpoint="/drugs/search", query=query.strip())
         
         logger.error(f"Enhanced medication search failed: {str(e)}", exc_info=True)
         raise HTTPException(
@@ -823,6 +823,21 @@ async def unignore_medication(request: dict):
             
     except Exception as e:
         logger.error(f"Error unignoring medication: {str(e)}")
+        return {"success": False, "message": str(e)}
+
+@app.get("/admin/recent-activity")
+async def get_recent_activity(limit: int = 20):
+    """Get recent activity data for admin dashboard."""
+    try:
+        recent_requests = monitor.get_recent_requests(limit)
+        
+        return {
+            "success": True,
+            "data": recent_requests,
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        logger.error(f"Failed to get recent activity: {str(e)}")
         return {"success": False, "message": str(e)}
 
 @app.get("/admin/stats")

@@ -29,7 +29,8 @@ from app.models import (
     RetrievedDoc, SearchRequest, DrugSearchResult, SearchResponse,
     FeedbackRequest, FeedbackResponse, MLPipelineUpdate, Source
 )
-from app.drug_database_schema import DrugStatus
+from app.drug_database_schema import DrugStatus, MissingDrugStatus
+from app.missing_drug_manager import missing_drug_manager
 
 # WebSocket connection manager
 class ConnectionManager:
@@ -113,6 +114,13 @@ async def startup_event():
             if drug_db_manager:
                 await drug_db_manager.initialize()
                 logger.info("✅ Drug database manager initialized")
+            
+            # Initialize missing drug manager
+            try:
+                await missing_drug_manager.initialize()
+                logger.info("✅ Missing drug manager initialized")
+            except Exception as e:
+                logger.warning(f"Failed to initialize missing drug manager: {str(e)}")
             
             # Initialize analytics database manager
             await analytics_db_manager.initialize()
@@ -537,6 +545,118 @@ async def vote_on_drug(
             status_code=500,
             detail=f"Failed to vote on drug: {str(e)}"
         )
+
+@app.post("/drugs/report-missing")
+async def report_missing_drug(drug_name: str, search_query: str, request: Request):
+    """Report a missing drug and search APIs for it."""
+    try:
+        if not drug_name or len(drug_name.strip()) < 2:
+            return {"success": False, "message": "Invalid drug name"}
+        
+        # Get user info
+        ip_address = request.client.host if request.client else None
+        user_agent = request.headers.get("user-agent")
+        
+        # Create missing drug request
+        missing_request = await missing_drug_manager.create_request(
+            drug_name=drug_name.strip(),
+            search_query=search_query.strip(),
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
+        
+        # Search APIs immediately
+        search_result = await missing_drug_manager.search_apis(missing_request.request_id)
+        
+        return {
+            "success": True,
+            "request_id": missing_request.request_id,
+            "drug_name": drug_name,
+            "api_search": search_result,
+            "message": "Drug reported and APIs searched"
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to report missing drug: {str(e)}")
+        return {"success": False, "message": str(e)}
+
+@app.post("/drugs/missing/{request_id}/suggest")
+async def suggest_missing_drug(request_id: str, selected_drug_data: dict):
+    """Submit a suggestion with selected drug data from API results."""
+    try:
+        success = await missing_drug_manager.submit_suggestion(request_id, selected_drug_data)
+        
+        if success:
+            return {
+                "success": True,
+                "message": "Suggestion submitted successfully. This drug will be reviewed by an admin."
+            }
+        else:
+            return {"success": False, "message": "Failed to submit suggestion"}
+            
+    except Exception as e:
+        logger.error(f"Failed to submit suggestion: {str(e)}")
+        return {"success": False, "message": str(e)}
+
+@app.get("/drugs/missing/{request_id}")
+async def get_missing_drug_request(request_id: str):
+    """Get a missing drug request by ID."""
+    try:
+        request = await missing_drug_manager.get_request(request_id)
+        if not request:
+            raise HTTPException(status_code=404, detail="Request not found")
+        
+        return {
+            "success": True,
+            "request": request.dict()
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get missing drug request: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/admin/missing-drugs")
+async def list_missing_drugs(status: Optional[str] = None, limit: int = 50):
+    """List missing drug requests for admin review."""
+    try:
+        status_enum = None
+        if status:
+            try:
+                status_enum = MissingDrugStatus(status)
+            except ValueError:
+                pass
+        
+        requests = await missing_drug_manager.list_requests(status=status_enum, limit=limit, sort_by_priority=True)
+        
+        return {
+            "success": True,
+            "requests": [r.dict() for r in requests],
+            "total": len(requests)
+        }
+    except Exception as e:
+        logger.error(f"Failed to list missing drugs: {str(e)}")
+        return {"success": False, "message": str(e), "requests": []}
+
+@app.post("/admin/missing-drugs/{request_id}/approve")
+async def approve_missing_drug(request_id: str, approved_by: str = "admin"):
+    """Approve a missing drug request and add it to the database."""
+    try:
+        result = await missing_drug_manager.approve_and_add(request_id, approved_by)
+        return result
+    except Exception as e:
+        logger.error(f"Failed to approve missing drug: {str(e)}")
+        return {"success": False, "message": str(e)}
+
+@app.post("/admin/missing-drugs/{request_id}/reject")
+async def reject_missing_drug(request_id: str, approved_by: str = "admin"):
+    """Reject a missing drug request."""
+    try:
+        success = await missing_drug_manager.reject_request(request_id, approved_by)
+        return {"success": success, "message": "Request rejected" if success else "Failed to reject"}
+    except Exception as e:
+        logger.error(f"Failed to reject missing drug: {str(e)}")
+        return {"success": False, "message": str(e)}
 
 @app.get("/drugs/rating/{drug_id}")
 async def get_drug_rating(drug_id: str):

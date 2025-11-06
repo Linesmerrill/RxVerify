@@ -473,7 +473,57 @@
                             </svg>
                         </div>
                         <h3 class="text-lg font-medium text-gray-900 mb-2">No medications found</h3>
-                        <p class="text-gray-600">Try searching with a different name or check your spelling.</p>
+                        <p class="text-gray-600 mb-4">Try searching with a different name or check your spelling.</p>
+                        <button 
+                            id="reportMissingBtn" 
+                            class="text-green-600 hover:text-green-700 font-medium text-sm underline focus:outline-none"
+                            onclick="handleReportMissing()"
+                        >
+                            Is this drug missing?
+                        </button>
+                    </div>
+                    
+                    <!-- Missing Drug Flow -->
+                    <div id="missingDrugFlow" class="hidden mt-6">
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                            <div id="missingDrugSearching" class="text-center">
+                                <div class="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+                                <p class="text-blue-800">Searching external APIs for this drug...</p>
+                            </div>
+                            
+                            <div id="missingDrugResults" class="hidden">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-4">Found in External APIs</h4>
+                                <div id="missingDrugApiResults" class="space-y-3 mb-4"></div>
+                                <button 
+                                    id="addMissingDrugBtn" 
+                                    class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    onclick="handleAddMissingDrug()"
+                                    disabled
+                                >
+                                    Suggest to add to Database
+                                </button>
+                            </div>
+                            
+                            <div id="missingDrugNotFound" class="hidden text-center">
+                                <p class="text-gray-700 mb-4">This drug was not found in external APIs.</p>
+                                <button 
+                                    id="requestAddMissingDrugBtn" 
+                                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+                                    onclick="handleRequestAddMissingDrug()"
+                                >
+                                    Request to Add This Drug
+                                </button>
+                            </div>
+                            
+                            <div id="missingDrugSuccess" class="hidden text-center">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-green-800 font-medium">Request submitted! This drug will be reviewed by an admin.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -831,7 +881,15 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-blue-100 text-sm font-medium">Total Requests</p>
-                                <p id="totalRequests" class="text-3xl font-bold">-</p>
+                                <p id="totalRequests" class="text-3xl font-bold">
+                                    <span id="totalRequestsLoading" class="inline-block">
+                                        <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    </span>
+                                    <span id="totalRequestsValue" class="hidden">-</span>
+                                </p>
                             </div>
                             <div class="w-12 h-12 bg-blue-400 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -844,7 +902,15 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-green-100 text-sm font-medium">Success Rate</p>
-                                <p id="successRate" class="text-3xl font-bold">-</p>
+                                <p id="successRate" class="text-3xl font-bold">
+                                    <span id="successRateLoading" class="inline-block">
+                                        <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    </span>
+                                    <span id="successRateValue" class="hidden">-</span>
+                                </p>
                             </div>
                             <div class="w-12 h-12 bg-green-400 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -857,7 +923,15 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-orange-100 text-sm font-medium">Avg Response Time</p>
-                                <p id="avgResponseTime" class="text-3xl font-bold">-</p>
+                                <p id="avgResponseTime" class="text-3xl font-bold">
+                                    <span id="avgResponseTimeLoading" class="inline-block">
+                                        <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    </span>
+                                    <span id="avgResponseTimeValue" class="hidden">-</span>
+                                </p>
                             </div>
                             <div class="w-12 h-12 bg-orange-400 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -874,7 +948,13 @@
                     <div class="bg-white rounded-xl border border-gray-200 p-6">
                         <h4 class="text-lg font-semibold text-gray-900 mb-4">Feedback Distribution</h4>
                         <div class="relative h-64">
-                            <canvas id="feedbackChart"></canvas>
+                            <div id="feedbackChartLoading" class="absolute inset-0 flex items-center justify-center">
+                                <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                            <canvas id="feedbackChart" class="hidden"></canvas>
                         </div>
                     </div>
 
@@ -882,7 +962,13 @@
                     <div class="bg-white rounded-xl border border-gray-200 p-6">
                         <h4 class="text-lg font-semibold text-gray-900 mb-4">Search Trends</h4>
                         <div class="relative h-64">
-                            <canvas id="trendsChart"></canvas>
+                            <div id="trendsChartLoading" class="absolute inset-0 flex items-center justify-center">
+                                <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                            <canvas id="trendsChart" class="hidden"></canvas>
                         </div>
                     </div>
                 </div>
@@ -894,11 +980,27 @@
                         <div class="space-y-3">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Total Drugs:</span>
-                                <span id="rxlistDrugs" class="font-semibold">-</span>
+                                <span id="rxlistDrugs" class="font-semibold">
+                                    <span id="rxlistDrugsLoading" class="inline-block">
+                                        <svg class="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    </span>
+                                    <span id="rxlistDrugsValue" class="hidden">-</span>
+                                </span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Last Updated:</span>
-                                <span id="rxlistLastUpdated" class="font-semibold">-</span>
+                                <span id="rxlistLastUpdated" class="font-semibold">
+                                    <span id="rxlistLastUpdatedLoading" class="inline-block">
+                                        <svg class="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    </span>
+                                    <span id="rxlistLastUpdatedValue" class="hidden">-</span>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -945,9 +1047,15 @@
                                 </tr>
                             </thead>
                             <tbody id="recentActivityBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                <tr>
+                                <tr id="recentActivityLoading">
                                     <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                                        Loading recent activity...
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <svg class="animate-spin h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            <span>Loading recent activity...</span>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -971,6 +1079,39 @@
                                 <option value="50">50</option>
                             </select>
                             <span class="text-sm text-gray-500 dark:text-gray-400">per page</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Missing Drugs Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mt-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Missing Drug Requests</h4>
+                        <button onclick="loadMissingDrugs()" class="px-3 py-1 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
+                            Refresh
+                        </button>
+                    </div>
+                    <div class="mb-4 flex gap-2">
+                        <button onclick="filterMissingDrugs('pending')" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                            Pending
+                        </button>
+                        <button onclick="filterMissingDrugs('found')" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                            Found
+                        </button>
+                        <button onclick="filterMissingDrugs('not_found')" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                            Not Found
+                        </button>
+                        <button onclick="filterMissingDrugs('all')" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                            All
+                        </button>
+                    </div>
+                    <div id="missingDrugsList" class="space-y-3">
+                        <div id="missingDrugsLoading" class="text-center py-8">
+                            <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <p class="text-gray-500 mt-2">Loading missing drug requests...</p>
                         </div>
                     </div>
                 </div>
@@ -1584,6 +1725,9 @@
         
         async function loadAdminData() {
             try {
+                // Show loading indicators
+                showAdminLoading(true);
+                
                 const apiBaseUrl = getApiBaseUrl();
                 console.log('Loading admin data from:', apiBaseUrl);
                 
@@ -1629,43 +1773,123 @@
                 updateCharts(feedbackStats, timeSeriesData);
                 updateRecentActivity();
                 
+                // Hide loading indicators
+                showAdminLoading(false);
+                
             } catch (error) {
                 console.error('Error loading admin data:', error);
                 showToast('Failed to load admin data: ' + error.message, 'error');
+                showAdminLoading(false);
+            }
+        }
+        
+        function showAdminLoading(show) {
+            // System overview cards
+            const totalRequestsLoading = document.getElementById('totalRequestsLoading');
+            const totalRequestsValue = document.getElementById('totalRequestsValue');
+            const successRateLoading = document.getElementById('successRateLoading');
+            const successRateValue = document.getElementById('successRateValue');
+            const avgResponseTimeLoading = document.getElementById('avgResponseTimeLoading');
+            const avgResponseTimeValue = document.getElementById('avgResponseTimeValue');
+            
+            if (show) {
+                if (totalRequestsLoading) totalRequestsLoading.classList.remove('hidden');
+                if (totalRequestsValue) totalRequestsValue.classList.add('hidden');
+                if (successRateLoading) successRateLoading.classList.remove('hidden');
+                if (successRateValue) successRateValue.classList.add('hidden');
+                if (avgResponseTimeLoading) avgResponseTimeLoading.classList.remove('hidden');
+                if (avgResponseTimeValue) avgResponseTimeValue.classList.add('hidden');
+            } else {
+                if (totalRequestsLoading) totalRequestsLoading.classList.add('hidden');
+                if (totalRequestsValue) totalRequestsValue.classList.remove('hidden');
+                if (successRateLoading) successRateLoading.classList.add('hidden');
+                if (successRateValue) successRateValue.classList.remove('hidden');
+                if (avgResponseTimeLoading) avgResponseTimeLoading.classList.add('hidden');
+                if (avgResponseTimeValue) avgResponseTimeValue.classList.remove('hidden');
+            }
+            
+            // Charts
+            const feedbackChartLoading = document.getElementById('feedbackChartLoading');
+            const feedbackChart = document.getElementById('feedbackChart');
+            const trendsChartLoading = document.getElementById('trendsChartLoading');
+            const trendsChart = document.getElementById('trendsChart');
+            
+            if (show) {
+                if (feedbackChartLoading) feedbackChartLoading.classList.remove('hidden');
+                if (feedbackChart) feedbackChart.classList.add('hidden');
+                if (trendsChartLoading) trendsChartLoading.classList.remove('hidden');
+                if (trendsChart) trendsChart.classList.add('hidden');
+            } else {
+                if (feedbackChartLoading) feedbackChartLoading.classList.add('hidden');
+                if (feedbackChart) feedbackChart.classList.remove('hidden');
+                if (trendsChartLoading) trendsChartLoading.classList.add('hidden');
+                if (trendsChart) trendsChart.classList.remove('hidden');
+            }
+            
+            // Database stats
+            const rxlistDrugsLoading = document.getElementById('rxlistDrugsLoading');
+            const rxlistDrugsValue = document.getElementById('rxlistDrugsValue');
+            const rxlistLastUpdatedLoading = document.getElementById('rxlistLastUpdatedLoading');
+            const rxlistLastUpdatedValue = document.getElementById('rxlistLastUpdatedValue');
+            
+            if (show) {
+                if (rxlistDrugsLoading) rxlistDrugsLoading.classList.remove('hidden');
+                if (rxlistDrugsValue) rxlistDrugsValue.classList.add('hidden');
+                if (rxlistLastUpdatedLoading) rxlistLastUpdatedLoading.classList.remove('hidden');
+                if (rxlistLastUpdatedValue) rxlistLastUpdatedValue.classList.add('hidden');
+            } else {
+                if (rxlistDrugsLoading) rxlistDrugsLoading.classList.add('hidden');
+                if (rxlistDrugsValue) rxlistDrugsValue.classList.remove('hidden');
+                if (rxlistLastUpdatedLoading) rxlistLastUpdatedLoading.classList.add('hidden');
+                if (rxlistLastUpdatedValue) rxlistLastUpdatedValue.classList.remove('hidden');
             }
         }
         
         function updateSystemOverview(systemStatus, feedbackStats, metricsSummary) {
             // Update overview cards with real metrics data
+            let totalRequests, successRate, avgResponseTime;
+            
             if (metricsSummary.success && metricsSummary.data) {
                 const metrics = metricsSummary.data;
                 
                 // Total Requests (from metrics)
-                document.getElementById('totalRequests').textContent = metrics.total_searches || 0;
+                totalRequests = metrics.total_searches || 0;
                 
                 // Success Rate (from metrics)
-                document.getElementById('successRate').textContent = 
-                    metrics.success_rate ? `${metrics.success_rate.toFixed(1)}%` : 'N/A';
+                successRate = metrics.success_rate ? `${metrics.success_rate.toFixed(1)}%` : 'N/A';
                 
                 // Average Response Time (from metrics)
-                document.getElementById('avgResponseTime').textContent = 
-                    metrics.average_response_time ? `${metrics.average_response_time.toFixed(0)}ms` : 'N/A';
+                avgResponseTime = metrics.average_response_time ? `${metrics.average_response_time.toFixed(0)}ms` : 'N/A';
             } else {
                 // Fallback to system status if metrics not available
-                document.getElementById('totalRequests').textContent = systemStatus.monitoring?.total_requests || 0;
-                document.getElementById('successRate').textContent = 
-                    systemStatus.monitoring?.success_rate ? `${(systemStatus.monitoring.success_rate * 100).toFixed(1)}%` : 'N/A';
-                document.getElementById('avgResponseTime').textContent = 
-                    systemStatus.monitoring?.avg_response_time ? `${systemStatus.monitoring.avg_response_time.toFixed(0)}ms` : 'N/A';
+                totalRequests = systemStatus.monitoring?.total_requests || 0;
+                successRate = systemStatus.monitoring?.success_rate ? `${(systemStatus.monitoring.success_rate * 100).toFixed(1)}%` : 'N/A';
+                avgResponseTime = systemStatus.monitoring?.avg_response_time ? `${systemStatus.monitoring.avg_response_time.toFixed(0)}ms` : 'N/A';
             }
+            
+            // Update values
+            const totalRequestsValue = document.getElementById('totalRequestsValue');
+            const successRateValue = document.getElementById('successRateValue');
+            const avgResponseTimeValue = document.getElementById('avgResponseTimeValue');
+            
+            if (totalRequestsValue) totalRequestsValue.textContent = totalRequests;
+            if (successRateValue) successRateValue.textContent = successRate;
+            if (avgResponseTimeValue) avgResponseTimeValue.textContent = avgResponseTime;
         }
         
         function updateDatabaseStats(cacheStats, rxlistStats) {
             // Update RxList stats
             if (rxlistStats.rxlist_stats) {
-                document.getElementById('rxlistDrugs').textContent = rxlistStats.rxlist_stats.total_drugs || 0;
-                document.getElementById('rxlistLastUpdated').textContent = 
-                    rxlistStats.rxlist_stats.last_updated ? new Date(rxlistStats.rxlist_stats.last_updated).toLocaleString() : 'N/A';
+                const rxlistDrugsValue = document.getElementById('rxlistDrugsValue');
+                const rxlistLastUpdatedValue = document.getElementById('rxlistLastUpdatedValue');
+                
+                if (rxlistDrugsValue) {
+                    rxlistDrugsValue.textContent = rxlistStats.rxlist_stats.total_drugs || 0;
+                }
+                if (rxlistLastUpdatedValue) {
+                    rxlistLastUpdatedValue.textContent = 
+                        rxlistStats.rxlist_stats.last_updated ? new Date(rxlistStats.rxlist_stats.last_updated).toLocaleString() : 'N/A';
+                }
             }
         }
         
@@ -1675,7 +1899,10 @@
                 feedbackChart.destroy();
             }
             
-            const feedbackCtx = document.getElementById('feedbackChart').getContext('2d');
+            const feedbackChartEl = document.getElementById('feedbackChart');
+            if (!feedbackChartEl) return;
+            
+            const feedbackCtx = feedbackChartEl.getContext('2d');
             feedbackChart = new Chart(feedbackCtx, {
                 type: 'doughnut',
                 data: {
@@ -1957,6 +2184,25 @@
         
         async function updateRecentActivity() {
             try {
+                const tbody = document.getElementById('recentActivityBody');
+                
+                // Show loading spinner
+                if (tbody) {
+                    tbody.innerHTML = `
+                        <tr id="recentActivityLoading">
+                            <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <svg class="animate-spin h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span>Loading recent activity...</span>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+                
                 const apiBaseUrl = getApiBaseUrl();
                 const response = await fetch(`${apiBaseUrl}/admin/recent-activity?limit=100`); // Get more data for pagination
                 const data = await response.json();
@@ -1975,7 +2221,16 @@
             } catch (error) {
                 console.error('Error loading recent activity:', error);
                 activityData = [];
-                renderActivityPage();
+                const tbody = document.getElementById('recentActivityBody');
+                if (tbody) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                Error loading recent activity
+                            </td>
+                        </tr>
+                    `;
+                }
             }
         }
         
@@ -2065,6 +2320,230 @@
             loadAdminData();
             setupActivityPagination();
             connectAdminWebSocket(); // Connect to real-time updates
+            loadMissingDrugs(); // Load missing drugs
+        }
+
+        // Missing Drugs Management
+        let currentMissingDrugsFilter = 'all';
+        let allMissingDrugs = [];
+
+        async function loadMissingDrugs() {
+            try {
+                const missingDrugsLoading = document.getElementById('missingDrugsLoading');
+                const missingDrugsList = document.getElementById('missingDrugsList');
+                
+                // Show loading
+                if (missingDrugsLoading) missingDrugsLoading.classList.remove('hidden');
+                
+                const apiBaseUrl = getApiBaseUrl();
+                const status = currentMissingDrugsFilter === 'all' ? '' : currentMissingDrugsFilter;
+                const url = status ? `${apiBaseUrl}/admin/missing-drugs?status=${status}` : `${apiBaseUrl}/admin/missing-drugs`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                // Hide loading
+                if (missingDrugsLoading) missingDrugsLoading.classList.add('hidden');
+                
+                if (data.success) {
+                    allMissingDrugs = data.requests || [];
+                    displayMissingDrugs(allMissingDrugs);
+                } else {
+                    console.error('Failed to load missing drugs:', data.message);
+                    if (missingDrugsList) {
+                        missingDrugsList.innerHTML = '<p class="text-gray-500 text-center py-4">Failed to load missing drug requests.</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading missing drugs:', error);
+                const missingDrugsLoading = document.getElementById('missingDrugsLoading');
+                const missingDrugsList = document.getElementById('missingDrugsList');
+                if (missingDrugsLoading) missingDrugsLoading.classList.add('hidden');
+                if (missingDrugsList) {
+                    missingDrugsList.innerHTML = '<p class="text-gray-500 text-center py-4">Error loading missing drug requests.</p>';
+                }
+            }
+        }
+
+        function filterMissingDrugs(status) {
+            currentMissingDrugsFilter = status;
+            loadMissingDrugs();
+        }
+
+        async function displayMissingDrugs(requests) {
+            const container = document.getElementById('missingDrugsList');
+            if (!container) return;
+            
+            // Hide loading indicator
+            const missingDrugsLoading = document.getElementById('missingDrugsLoading');
+            if (missingDrugsLoading) missingDrugsLoading.classList.add('hidden');
+            
+            if (requests.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No missing drug requests found.</p>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            // Get suggestion counts for all drugs
+            const apiBaseUrl = getApiBaseUrl();
+            const countsMap = {};
+            
+            // Group requests by drug name to get counts
+            const drugNames = [...new Set(requests.map(r => r.drug_name.toLowerCase().trim()))];
+            
+            // Fetch suggestion counts (we'll calculate from requests for now)
+            // In a real implementation, you'd fetch from the backend
+            requests.forEach(request => {
+                const drugName = request.drug_name.toLowerCase().trim();
+                countsMap[drugName] = (countsMap[drugName] || 0) + 1;
+            });
+            
+            requests.forEach(request => {
+                const div = document.createElement('div');
+                div.className = 'bg-gray-50 border border-gray-200 rounded-lg p-4';
+                
+                const statusColors = {
+                    'pending': 'bg-yellow-100 text-yellow-800',
+                    'found': 'bg-blue-100 text-blue-800',
+                    'not_found': 'bg-gray-100 text-gray-800',
+                    'approved': 'bg-green-100 text-green-800',
+                    'rejected': 'bg-red-100 text-red-800'
+                };
+                
+                const statusColor = statusColors[request.status] || 'bg-gray-100 text-gray-800';
+                const createdDate = new Date(request.created_at).toLocaleDateString();
+                const drugName = request.drug_name.toLowerCase().trim();
+                const suggestionCount = countsMap[drugName] || 0;
+                
+                let apiResultsHtml = '';
+                if (request.api_search_results && request.api_search_results.length > 0) {
+                    apiResultsHtml = '<div class="mt-2 text-sm"><strong>API Results:</strong><ul class="list-disc list-inside mt-1">';
+                    request.api_search_results.slice(0, 3).forEach(result => {
+                        apiResultsHtml += `<li>${result.source || 'Unknown'}: ${result.name || result.drug_name || 'N/A'}</li>`;
+                    });
+                    if (request.api_search_results.length > 3) {
+                        apiResultsHtml += `<li>... and ${request.api_search_results.length - 3} more</li>`;
+                    }
+                    apiResultsHtml += '</ul></div>';
+                }
+                
+                // Show selected drug if available
+                let selectedDrugHtml = '';
+                if (request.selected_drug_data) {
+                    const selected = request.selected_drug_data;
+                    // Format drug name (use formatDrugName if available, otherwise format inline)
+                    let selectedName = selected.name || selected.drug_name || 'N/A';
+                    if (typeof formatDrugName === 'function') {
+                        selectedName = formatDrugName(selectedName);
+                    } else {
+                        // Simple formatting if function not available
+                        selectedName = selectedName.split(' ').map((word, i) => {
+                            if (i === 0) return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                            return word;
+                        }).join(' ');
+                    }
+                    selectedDrugHtml = `<div class="mt-2 p-3 bg-white border-2 border-green-500 rounded-lg shadow-md">
+                        <p class="text-base">
+                            <strong class="text-green-700 font-bold">Selected:</strong> 
+                            <span class="text-gray-900 font-bold text-lg">${selectedName}</span> 
+                            <span class="text-gray-700 font-semibold">(${selected.source || 'Unknown'})</span>
+                        </p>
+                    </div>`;
+                }
+                
+                div.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h5 class="font-semibold text-gray-900">${request.drug_name}</h5>
+                                <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">
+                                    ${request.status}
+                                </span>
+                                ${suggestionCount > 1 ? `
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800" title="Number of times this drug has been suggested">
+                                        ${suggestionCount} suggestions
+                                    </span>
+                                ` : ''}
+                            </div>
+                            <p class="text-sm text-gray-600 mb-1">Query: "${request.search_query}"</p>
+                            <p class="text-xs text-gray-500">Requested: ${createdDate}</p>
+                            ${selectedDrugHtml}
+                            ${apiResultsHtml}
+                        </div>
+                        <div class="flex gap-2 ml-4">
+                            ${request.status === 'found' || request.status === 'not_found' ? `
+                                <button 
+                                    onclick="approveMissingDrug('${request.request_id}')" 
+                                    class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                                >
+                                    Approve
+                                </button>
+                            ` : ''}
+                            ${request.status !== 'approved' && request.status !== 'rejected' ? `
+                                <button 
+                                    onclick="rejectMissingDrug('${request.request_id}')" 
+                                    class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                                >
+                                    Reject
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+        async function approveMissingDrug(requestId) {
+            if (!confirm('Are you sure you want to approve and add this drug to the database?')) {
+                return;
+            }
+            
+            try {
+                const apiBaseUrl = getApiBaseUrl();
+                const response = await fetch(`${apiBaseUrl}/admin/missing-drugs/${requestId}/approve`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Drug approved and added successfully!');
+                    loadMissingDrugs();
+                } else {
+                    alert('Failed to approve drug: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error approving missing drug:', error);
+                alert('Failed to approve drug. Please try again.');
+            }
+        }
+
+        async function rejectMissingDrug(requestId) {
+            if (!confirm('Are you sure you want to reject this request?')) {
+                return;
+            }
+            
+            try {
+                const apiBaseUrl = getApiBaseUrl();
+                const response = await fetch(`${apiBaseUrl}/admin/missing-drugs/${requestId}/reject`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Request rejected.');
+                    loadMissingDrugs();
+                } else {
+                    alert('Failed to reject request: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error rejecting missing drug:', error);
+                alert('Failed to reject request. Please try again.');
+            }
         }
         
         

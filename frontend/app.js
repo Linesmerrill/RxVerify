@@ -1558,6 +1558,285 @@ class RxVerifyApp {
     }
 }
 
+// Missing Drug Functions
+let currentMissingDrugRequest = null;
+
+async function handleReportMissing() {
+    const searchInput = document.getElementById('searchInput');
+    const drugName = searchInput.value.trim();
+    
+    if (!drugName || drugName.length < 2) {
+        alert('Please enter a drug name first');
+        return;
+    }
+    
+    // Reset selected result
+    selectedApiResult = null;
+    
+    // Show missing drug flow
+    const missingDrugFlow = document.getElementById('missingDrugFlow');
+    const missingDrugSearching = document.getElementById('missingDrugSearching');
+    const missingDrugResults = document.getElementById('missingDrugResults');
+    const missingDrugNotFound = document.getElementById('missingDrugNotFound');
+    const missingDrugSuccess = document.getElementById('missingDrugSuccess');
+    
+    missingDrugFlow.classList.remove('hidden');
+    missingDrugSearching.classList.remove('hidden');
+    missingDrugResults.classList.add('hidden');
+    missingDrugNotFound.classList.add('hidden');
+    missingDrugSuccess.classList.add('hidden');
+    
+    // Disable submit button
+    const submitBtn = document.getElementById('addMissingDrugBtn');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+    
+    try {
+        const apiBaseUrl = window.rxVerifyApp ? window.rxVerifyApp.apiBaseUrl : 'http://localhost:8000';
+        const response = await fetch(`${apiBaseUrl}/drugs/report-missing?drug_name=${encodeURIComponent(drugName)}&search_query=${encodeURIComponent(drugName)}`, {
+            method: 'POST'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            currentMissingDrugRequest = data;
+            
+            // Hide searching
+            missingDrugSearching.classList.add('hidden');
+            
+            if (data.api_search && data.api_search.found && data.api_search.results && data.api_search.results.length > 0) {
+                // Show API results
+                displayApiResults(data.api_search.results);
+                missingDrugResults.classList.remove('hidden');
+            } else {
+                // Show not found
+                missingDrugNotFound.classList.remove('hidden');
+            }
+        } else {
+            throw new Error(data.message || 'Failed to report missing drug');
+        }
+    } catch (error) {
+        console.error('Error reporting missing drug:', error);
+        missingDrugSearching.classList.add('hidden');
+        alert('Failed to search for drug. Please try again.');
+    }
+}
+
+function formatDrugName(name) {
+    if (!name || name.trim() === '') return name;
+    
+    // Words that should remain uppercase (units, abbreviations)
+    const uppercaseWords = ['MG', 'ML', 'MCG', 'G', 'KG', 'MG/ML', 'MCG/ML', 'IU', 'MEQ', 'MMOL', 'L', 'ML/HR', 'MG/HR'];
+    
+    // Words that should remain lowercase (prepositions, articles)
+    const lowercaseWords = ['of', 'the', 'and', 'or', 'in', 'on', 'at', 'to', 'for', 'with', 'by'];
+    
+    return name.split(' ').map((word, index) => {
+        // Remove punctuation temporarily for processing
+        const cleanWord = word.replace(/[.,;:!?()[\]{}'"]/g, '');
+        const punctuation = word.replace(/[^.,;:!?()[\]{}'"]/g, '');
+        
+        // Check if it's a number or contains numbers (keep as is)
+        if (/^\d+/.test(cleanWord) || /^\d+\.\d+/.test(cleanWord)) {
+            return word;
+        }
+        
+        // Check if it's an uppercase word (units, abbreviations)
+        if (uppercaseWords.includes(cleanWord.toUpperCase())) {
+            return cleanWord.toUpperCase() + punctuation;
+        }
+        
+        // First word should always be capitalized
+        if (index === 0) {
+            return cleanWord.charAt(0).toUpperCase() + cleanWord.slice(1).toLowerCase() + punctuation;
+        }
+        
+        // Check if it's a lowercase word (prepositions, articles)
+        if (lowercaseWords.includes(cleanWord.toLowerCase())) {
+            return cleanWord.toLowerCase() + punctuation;
+        }
+        
+        // Default: capitalize first letter, lowercase rest
+        return cleanWord.charAt(0).toUpperCase() + cleanWord.slice(1).toLowerCase() + punctuation;
+    }).join(' ');
+}
+
+function displayApiResults(results) {
+    const container = document.getElementById('missingDrugApiResults');
+    container.innerHTML = '';
+    
+    // Add explanatory text with better contrast
+    const explanation = document.createElement('div');
+    explanation.className = 'mb-4 p-3 bg-blue-50 border border-blue-300 rounded-lg';
+    explanation.innerHTML = `
+        <p class="text-sm text-blue-900">
+            <strong class="text-blue-900">Select the drug that matches what you're looking for:</strong> We found several possible matches in external databases. 
+            Please select the one that best matches the drug you searched for, then click "Suggest to add to Database" below.
+        </p>
+    `;
+    container.appendChild(explanation);
+    
+    results.forEach((result, index) => {
+        const div = document.createElement('div');
+        div.className = 'bg-white border-2 border-gray-300 rounded-lg p-4 cursor-pointer hover:border-green-500 hover:shadow-md transition-all duration-200';
+        div.setAttribute('data-result-index', index);
+        div.setAttribute('data-is-drug-result', 'true');
+        
+        const source = result.source || 'Unknown';
+        const rawName = result.name || result.drug_name || 'Unknown';
+        const name = formatDrugName(rawName);
+        const rxcui = result.rxcui || result.rxnorm_id || '';
+        
+        div.innerHTML = `
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="selectedDrug" value="${index}" class="w-4 h-4 text-green-600 focus:ring-green-500 focus:ring-2" aria-label="Select ${name}" />
+                        <h5 class="font-semibold text-gray-900">${name}</h5>
+                    </div>
+                    <p class="text-sm text-gray-700 mt-1 ml-6">Source: ${source}</p>
+                    ${rxcui ? `<p class="text-xs text-gray-600 mt-1 ml-6">RxCUI: ${rxcui}</p>` : ''}
+                </div>
+            </div>
+        `;
+        
+        // Add click handler
+        div.onclick = (e) => {
+            // Don't trigger if clicking on radio button directly
+            if (e.target.type !== 'radio') {
+                selectApiResult(index, result, div);
+            }
+        };
+        
+        // Also handle radio button click
+        const radio = div.querySelector('input[type="radio"]');
+        if (radio) {
+            radio.onclick = (e) => {
+                e.stopPropagation();
+                selectApiResult(index, result, div);
+            };
+        }
+        
+        container.appendChild(div);
+    });
+}
+
+let selectedApiResult = null;
+
+function selectApiResult(index, result, element) {
+    // Remove previous selection (skip explanation div)
+    document.querySelectorAll('#missingDrugApiResults > div[data-is-drug-result="true"]').forEach(div => {
+        if (div !== element) {
+            div.classList.remove('border-green-600', 'bg-green-100', 'ring-2', 'ring-green-500');
+            div.classList.add('border-gray-300');
+            // Reset text colors to default
+            const nameEl = div.querySelector('h5');
+            const sourceEl = div.querySelector('p.text-sm');
+            const rxcuiEl = div.querySelector('p.text-xs');
+            if (nameEl) nameEl.className = 'font-semibold text-gray-900';
+            if (sourceEl) sourceEl.className = 'text-sm text-gray-700 mt-1 ml-6';
+            if (rxcuiEl) rxcuiEl.className = 'text-xs text-gray-600 mt-1 ml-6';
+            const radio = div.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = false;
+            }
+        }
+    });
+    
+    // Update current selection with better contrast colors
+    element.classList.remove('border-gray-300');
+    element.classList.add('border-green-600', 'bg-green-50', 'ring-2', 'ring-green-500');
+    
+    // Update text colors for better contrast on selected background
+    const nameEl = element.querySelector('h5');
+    const sourceEl = element.querySelector('p.text-sm');
+    const rxcuiEl = element.querySelector('p.text-xs');
+    if (nameEl) nameEl.className = 'font-semibold text-gray-900';
+    if (sourceEl) sourceEl.className = 'text-sm text-gray-800 mt-1 ml-6';
+    if (rxcuiEl) rxcuiEl.className = 'text-xs text-gray-700 mt-1 ml-6';
+    
+    // Update radio button
+    const radio = element.querySelector('input[type="radio"]');
+    if (radio) {
+        radio.checked = true;
+    }
+    
+    selectedApiResult = result;
+    
+    // Enable submit button
+    const submitBtn = document.getElementById('addMissingDrugBtn');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+}
+
+async function handleAddMissingDrug() {
+    if (!currentMissingDrugRequest || !currentMissingDrugRequest.request_id) {
+        alert('No request to submit');
+        return;
+    }
+    
+    if (!selectedApiResult) {
+        alert('Please select a drug from the list above');
+        return;
+    }
+    
+    try {
+        const apiBaseUrl = window.rxVerifyApp ? window.rxVerifyApp.apiBaseUrl : 'http://localhost:8000';
+        const response = await fetch(`${apiBaseUrl}/drugs/missing/${currentMissingDrugRequest.request_id}/suggest`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(selectedApiResult)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Show success message
+            const missingDrugResults = document.getElementById('missingDrugResults');
+            const missingDrugSuccess = document.getElementById('missingDrugSuccess');
+            
+            missingDrugResults.classList.add('hidden');
+            missingDrugSuccess.classList.remove('hidden');
+            
+            // Show toast
+            if (window.rxVerifyApp) {
+                window.rxVerifyApp.showToast('Suggestion submitted! This drug will be reviewed by an admin.', 'success');
+            }
+        } else {
+            throw new Error(data.message || 'Failed to submit suggestion');
+        }
+    } catch (error) {
+        console.error('Error submitting suggestion:', error);
+        alert('Failed to submit suggestion. Please try again.');
+    }
+}
+
+async function handleRequestAddMissingDrug() {
+    if (!currentMissingDrugRequest || !currentMissingDrugRequest.request_id) {
+        alert('No request to submit');
+        return;
+    }
+    
+    // Show success message
+    const missingDrugNotFound = document.getElementById('missingDrugNotFound');
+    const missingDrugSuccess = document.getElementById('missingDrugSuccess');
+    
+    missingDrugNotFound.classList.add('hidden');
+    missingDrugSuccess.classList.remove('hidden');
+    
+    // Show toast
+    if (window.rxVerifyApp) {
+        window.rxVerifyApp.showToast('Request submitted! This drug will be reviewed by an admin.', 'success');
+    }
+}
+
 // Initialize the application
 
 document.addEventListener('DOMContentLoaded', () => {

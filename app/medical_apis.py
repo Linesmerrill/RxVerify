@@ -512,8 +512,17 @@ class MedicalAPIClient:
                 
                 for result in label_data.get("results", [])[:limit // 2]:
                     # Extract key information
-                    generic_name = result.get("openfda", {}).get("generic_name", [""])[0]
-                    brand_name = result.get("openfda", {}).get("brand_name", [""])[0]
+                    openfda_data = result.get("openfda", {})
+                    generic_name_list = openfda_data.get("generic_name", [])
+                    brand_name_list = openfda_data.get("brand_name", [])
+                    
+                    # Get first non-empty value, or use drug_name from query
+                    generic_name = generic_name_list[0] if generic_name_list and generic_name_list[0] else drug_name
+                    brand_name = brand_name_list[0] if brand_name_list and brand_name_list[0] else ""
+                    
+                    # Skip if we still don't have a valid name (shouldn't happen since we fallback to drug_name)
+                    if not generic_name or generic_name.strip() == "":
+                        continue
                     
                     text_parts = [f"OpenFDA Drug Label: {generic_name}"]
                     if brand_name:
@@ -542,12 +551,17 @@ class MedicalAPIClient:
                     
                     full_text = "\n\n".join(text_parts)
                     
+                    # Create display name
+                    display_name = f"{generic_name} ({brand_name})" if brand_name else generic_name
+                    
                     results.append({
+                        "name": generic_name,  # Add name field for consistency
+                        "drug_name": generic_name,  # Add drug_name field
                         "rxcui": "",  # OpenFDA doesn't provide RxCUI directly
                         "source": "openfda",
-                        "id": f"openfda_{generic_name}_{brand_name}".replace(" ", "_"),
+                        "id": f"openfda_{generic_name}_{brand_name}".replace(" ", "_").replace("/", "_"),
                         "url": "https://www.accessdata.fda.gov/scripts/cder/drugsatfda/",
-                        "title": f"{generic_name} ({brand_name})" if brand_name else generic_name,
+                        "title": display_name,
                         "text": full_text
                     })
             
@@ -565,7 +579,11 @@ class MedicalAPIClient:
                 valid_adverse_events = []
                 for result in event_data.get("results", []):
                     drug_info = result.get("patient", {}).get("drug", [{}])[0]
-                    medicinal_product = drug_info.get("medicinalproduct", "Unknown")
+                    medicinal_product = drug_info.get("medicinalproduct", "")
+                    
+                    # Skip if medicinal_product is missing or "Unknown"
+                    if not medicinal_product or medicinal_product.strip() == "" or medicinal_product.lower() == "unknown":
+                        continue
                     
                     # Validate that this result is actually for the drug we're searching for
                     if medicinal_product.lower() == drug_name.lower() or drug_name.lower() in medicinal_product.lower():
@@ -583,9 +601,11 @@ class MedicalAPIClient:
                         full_text = "\n\n".join(text_parts)
                         
                         valid_adverse_events.append({
+                            "name": medicinal_product,  # Add name field for consistency
+                            "drug_name": medicinal_product,  # Add drug_name field
                             "rxcui": "",
                             "source": "openfda",
-                            "id": f"openfda_ae_{medicinal_product}".replace(" ", "_"),
+                            "id": f"openfda_ae_{medicinal_product}".replace(" ", "_").replace("/", "_"),
                             "url": "https://www.accessdata.fda.gov/scripts/cder/drugsatfda/",
                             "title": f"Adverse Event: {medicinal_product}",
                             "text": full_text

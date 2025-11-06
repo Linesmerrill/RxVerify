@@ -154,6 +154,46 @@ class DrugDatabaseStats(BaseModel):
     data_sources: List[str]
 
 
+class MissingDrugStatus(str, Enum):
+    """Status of missing drug request."""
+    PENDING = "pending"           # Awaiting review
+    FOUND = "found"               # Found in APIs, awaiting approval
+    NOT_FOUND = "not_found"       # Not found in APIs, awaiting manual addition
+    APPROVED = "approved"         # Approved and added to database
+    REJECTED = "rejected"         # Rejected by admin
+
+
+class MissingDrugRequest(BaseModel):
+    """Request for a missing drug to be added to the database."""
+    
+    request_id: str = Field(..., description="Unique identifier for this request")
+    drug_name: str = Field(..., description="Name of the drug that was searched")
+    search_query: str = Field(..., description="Original search query")
+    status: MissingDrugStatus = Field(default=MissingDrugStatus.PENDING, description="Current status")
+    
+    # API search results
+    api_search_results: Optional[List[Dict[str, Any]]] = Field(None, description="Results from API searches")
+    api_search_performed: bool = Field(default=False, description="Whether API search was performed")
+    api_search_timestamp: Optional[datetime] = Field(None, description="When API search was performed")
+    
+    # Drug data if found
+    found_drug_data: Optional[Dict[str, Any]] = Field(None, description="Drug data if found in APIs")
+    
+    # Metadata
+    created_at: datetime = Field(default_factory=datetime.utcnow, description="When request was created")
+    updated_at: datetime = Field(default_factory=datetime.utcnow, description="Last update timestamp")
+    created_by_ip: Optional[str] = Field(None, description="IP address of requester")
+    created_by_user_agent: Optional[str] = Field(None, description="User agent of requester")
+    
+    # Approval information
+    approved_at: Optional[datetime] = Field(None, description="When approved")
+    approved_by: Optional[str] = Field(None, description="Who approved (admin identifier)")
+    added_drug_id: Optional[str] = Field(None, description="Drug ID if added to database")
+    
+    # Selected drug data (user-selected from API results)
+    selected_drug_data: Optional[Dict[str, Any]] = Field(None, description="User-selected drug data from API results")
+
+
 # Example drug entries for reference
 EXAMPLE_DRUGS = [
     # Generic Metformin

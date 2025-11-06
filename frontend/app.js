@@ -800,6 +800,12 @@ class RxVerifyApp {
         // Hide previous results
         this.hideSearchResults();
         
+        // Always hide missing drug flow section when user types (so they need to click "Is this drug missing?" again)
+        const missingDrugFlow = document.getElementById('missingDrugFlow');
+        if (missingDrugFlow) {
+            missingDrugFlow.classList.add('hidden');
+        }
+        
         // If query is empty or too short, hide loading and stop
         if (query.length < 2) {
             this.showSearchLoading(false);
@@ -1352,6 +1358,12 @@ class RxVerifyApp {
         
         // Clear any existing search results
         this.hideSearchResults();
+        
+        // Hide missing drug flow section
+        const missingDrugFlow = document.getElementById('missingDrugFlow');
+        if (missingDrugFlow) {
+            missingDrugFlow.classList.add('hidden');
+        }
         
         // Clear any pending search timeout
         if (this.searchTimeout) {

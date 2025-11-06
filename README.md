@@ -249,7 +249,7 @@ git subtree push --prefix=. heroku-backend main
 
 ## 📚 Architecture
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed system architecture and data flow diagrams.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed system architecture, data flow diagrams, and component descriptions.
 
 ## 🤝 Contributing
 

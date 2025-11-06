@@ -2385,115 +2385,297 @@
             
             container.innerHTML = '';
             
-            // Get suggestion counts for all drugs
-            const apiBaseUrl = getApiBaseUrl();
-            const countsMap = {};
-            
-            // Group requests by drug name to get counts
-            const drugNames = [...new Set(requests.map(r => r.drug_name.toLowerCase().trim()))];
-            
-            // Fetch suggestion counts (we'll calculate from requests for now)
-            // In a real implementation, you'd fetch from the backend
+            // Group requests by drug name (normalized)
+            const groupedRequests = {};
             requests.forEach(request => {
                 const drugName = request.drug_name.toLowerCase().trim();
-                countsMap[drugName] = (countsMap[drugName] || 0) + 1;
+                if (!groupedRequests[drugName]) {
+                    groupedRequests[drugName] = [];
+                }
+                groupedRequests[drugName].push(request);
             });
             
-            requests.forEach(request => {
-                const div = document.createElement('div');
-                div.className = 'bg-gray-50 border border-gray-200 rounded-lg p-4';
+            const statusColors = {
+                'pending': 'bg-yellow-100 text-yellow-800',
+                'found': 'bg-blue-100 text-blue-800',
+                'not_found': 'bg-gray-100 text-gray-800',
+                'approved': 'bg-green-100 text-green-800',
+                'rejected': 'bg-red-100 text-red-800'
+            };
+            
+            // Sort groups by count (descending), then by most recent
+            const sortedGroups = Object.entries(groupedRequests).sort((a, b) => {
+                const countDiff = b[1].length - a[1].length;
+                if (countDiff !== 0) return countDiff;
+                const aLatest = Math.max(...a[1].map(r => new Date(r.created_at).getTime()));
+                const bLatest = Math.max(...b[1].map(r => new Date(r.created_at).getTime()));
+                return bLatest - aLatest;
+            });
+            
+            sortedGroups.forEach(([normalizedName, groupRequests]) => {
+                const count = groupRequests.length;
+                const displayName = groupRequests[0].drug_name; // Use original casing from first request
                 
-                const statusColors = {
-                    'pending': 'bg-yellow-100 text-yellow-800',
-                    'found': 'bg-blue-100 text-blue-800',
-                    'not_found': 'bg-gray-100 text-gray-800',
-                    'approved': 'bg-green-100 text-green-800',
-                    'rejected': 'bg-red-100 text-red-800'
-                };
-                
-                const statusColor = statusColors[request.status] || 'bg-gray-100 text-gray-800';
-                const createdDate = new Date(request.created_at).toLocaleDateString();
-                const drugName = request.drug_name.toLowerCase().trim();
-                const suggestionCount = countsMap[drugName] || 0;
-                
-                let apiResultsHtml = '';
-                if (request.api_search_results && request.api_search_results.length > 0) {
-                    apiResultsHtml = '<div class="mt-2 text-sm"><strong>API Results:</strong><ul class="list-disc list-inside mt-1">';
-                    request.api_search_results.slice(0, 3).forEach(result => {
-                        apiResultsHtml += `<li>${result.source || 'Unknown'}: ${result.name || result.drug_name || 'N/A'}</li>`;
-                    });
-                    if (request.api_search_results.length > 3) {
-                        apiResultsHtml += `<li>... and ${request.api_search_results.length - 3} more</li>`;
+                // Determine primary status (prioritize found > pending > not_found > others)
+                const statusPriority = { 'found': 3, 'pending': 2, 'not_found': 1 };
+                const primaryRequest = groupRequests.reduce((prev, curr) => {
+                    const prevPriority = statusPriority[prev.status] || 0;
+                    const currPriority = statusPriority[curr.status] || 0;
+                    if (currPriority > prevPriority) return curr;
+                    if (currPriority === prevPriority) {
+                        return new Date(curr.created_at) > new Date(prev.created_at) ? curr : prev;
                     }
-                    apiResultsHtml += '</ul></div>';
-                }
+                    return prev;
+                });
                 
-                // Show selected drug if available
-                let selectedDrugHtml = '';
-                if (request.selected_drug_data) {
-                    const selected = request.selected_drug_data;
-                    // Format drug name (use formatDrugName if available, otherwise format inline)
-                    let selectedName = selected.name || selected.drug_name || 'N/A';
-                    if (typeof formatDrugName === 'function') {
-                        selectedName = formatDrugName(selectedName);
-                    } else {
-                        // Simple formatting if function not available
-                        selectedName = selectedName.split(' ').map((word, i) => {
-                            if (i === 0) return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-                            return word;
-                        }).join(' ');
-                    }
-                    selectedDrugHtml = `<div class="mt-2 p-3 bg-white border-2 border-green-500 rounded-lg shadow-md">
-                        <p class="text-base">
-                            <strong class="text-green-700 font-bold">Selected:</strong> 
-                            <span class="text-gray-900 font-bold text-lg">${selectedName}</span> 
-                            <span class="text-gray-700 font-semibold">(${selected.source || 'Unknown'})</span>
-                        </p>
-                    </div>`;
-                }
+                const primaryStatus = primaryRequest.status;
+                const statusColor = statusColors[primaryStatus] || 'bg-gray-100 text-gray-800';
                 
-                div.innerHTML = `
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-2">
-                                <h5 class="font-semibold text-gray-900">${request.drug_name}</h5>
+                // Create main card
+                const mainCard = document.createElement('div');
+                mainCard.className = 'bg-gray-50 border border-gray-200 rounded-lg p-4 mb-3';
+                
+                const groupId = `group-${normalizedName.replace(/\s+/g, '-')}`;
+                const detailsId = `details-${groupId}`;
+                
+                // Create summary section
+                const summaryHtml = `
+                    <div class="flex items-start gap-2 ${count > 1 ? 'cursor-pointer' : ''}" ${count > 1 ? `onclick="toggleGroupDetails('${groupId}')"` : ''}>
+                        ${count > 1 ? `
+                            <button 
+                                onclick="event.stopPropagation(); toggleGroupDetails('${groupId}')" 
+                                class="flex-shrink-0 mt-1 p-1 text-gray-500 hover:text-gray-700 transition-colors"
+                                id="toggle-${groupId}"
+                            >
+                                <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                        ` : '<div class="flex-shrink-0 w-7"></div>'}
+                        <div class="flex-1 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
+                                <h5 class="font-semibold text-gray-900">${displayName}</h5>
                                 <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">
-                                    ${request.status}
+                                    ${primaryStatus}
                                 </span>
-                                ${suggestionCount > 1 ? `
-                                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800" title="Number of times this drug has been suggested">
-                                        ${suggestionCount} suggestions
+                                ${count > 1 ? `
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                                        Suggested ${count} times
                                     </span>
                                 ` : ''}
                             </div>
-                            <p class="text-sm text-gray-600 mb-1">Query: "${request.search_query}"</p>
-                            <p class="text-xs text-gray-500">Requested: ${createdDate}</p>
-                            ${selectedDrugHtml}
-                            ${apiResultsHtml}
+                            ${count === 1 ? `
+                                <p class="text-sm text-gray-600 mb-1">Query: "${primaryRequest.search_query}"</p>
+                                <p class="text-xs text-gray-500">Requested: ${new Date(primaryRequest.created_at).toLocaleDateString()}</p>
+                            ` : `
+                                <p class="text-xs text-gray-500">Most recent: ${new Date(primaryRequest.created_at).toLocaleDateString()}</p>
+                            `}
                         </div>
-                        <div class="flex gap-2 ml-4">
-                            ${request.status === 'found' || request.status === 'not_found' ? `
-                                <button 
-                                    onclick="approveMissingDrug('${request.request_id}')" 
-                                    class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                                >
-                                    Approve
-                                </button>
-                            ` : ''}
-                            ${request.status !== 'approved' && request.status !== 'rejected' ? `
-                                <button 
-                                    onclick="rejectMissingDrug('${request.request_id}')" 
-                                    class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                                >
-                                    Reject
-                                </button>
-                            ` : ''}
-                        </div>
+                        ${count === 1 ? `
+                            <div class="flex gap-2 ml-4 flex-shrink-0" onclick="event.stopPropagation()">
+                                ${primaryRequest.status === 'found' || primaryRequest.status === 'not_found' ? `
+                                    <button 
+                                        onclick="event.stopPropagation(); approveMissingDrug('${primaryRequest.request_id}')" 
+                                        class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                                    >
+                                        Approve
+                                    </button>
+                                ` : ''}
+                                ${primaryRequest.status !== 'approved' && primaryRequest.status !== 'rejected' ? `
+                                    <button 
+                                        onclick="event.stopPropagation(); rejectMissingDrug('${primaryRequest.request_id}')" 
+                                        class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                                    >
+                                        Reject
+                                    </button>
+                                ` : ''}
+                            </div>
+                        ` : ''}
                     </div>
                 `;
                 
-                container.appendChild(div);
+                // Create expandable details section
+                let detailsHtml = '';
+                if (count > 1) {
+                    // Compute eligible request IDs for approve/reject buttons
+                    const approveIds = groupRequests.filter(r => r.status === 'found' || r.status === 'not_found').map(r => r.request_id);
+                    const rejectIds = groupRequests.filter(r => r.status !== 'approved' && r.status !== 'rejected').map(r => r.request_id);
+                    const approveIdsJson = JSON.stringify(approveIds);
+                    const rejectIdsJson = JSON.stringify(rejectIds);
+                    
+                    detailsHtml = `
+                        <div id="${detailsId}" class="hidden mt-4 pt-4 border-t border-gray-300" onclick="event.stopPropagation()">
+                            <div class="flex items-center justify-between mb-4">
+                                <h6 class="font-semibold text-gray-700">Individual Requests (${count}):</h6>
+                                <div class="flex gap-2">
+                                    ${primaryRequest.status === 'found' || primaryRequest.status === 'not_found' ? `
+                                        <button 
+                                            data-request-ids='${approveIdsJson.replace(/'/g, "&#39;")}'
+                                            onclick="event.stopPropagation(); try { const ids = JSON.parse(this.getAttribute('data-request-ids')); approveAllMissingDrugs(ids); } catch(e) { console.error('Error parsing request IDs:', e); alert('Error processing request. Please try again.'); }" 
+                                            class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                                        >
+                                            Approve All
+                                        </button>
+                                    ` : ''}
+                                    ${primaryRequest.status !== 'approved' && primaryRequest.status !== 'rejected' ? `
+                                        <button 
+                                            data-request-ids='${rejectIdsJson.replace(/'/g, "&#39;")}'
+                                            onclick="event.stopPropagation(); try { const ids = JSON.parse(this.getAttribute('data-request-ids')); rejectAllMissingDrugs(ids); } catch(e) { console.error('Error parsing request IDs:', e); alert('Error processing request. Please try again.'); }" 
+                                            class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                                        >
+                                            Reject All
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                ${groupRequests.map(request => {
+                                    const requestStatusColor = statusColors[request.status] || 'bg-gray-100 text-gray-800';
+                                    const createdDate = new Date(request.created_at).toLocaleDateString();
+                                    
+                                    let apiResultsHtml = '';
+                                    if (request.api_search_results && request.api_search_results.length > 0) {
+                                        apiResultsHtml = '<div class="mt-2 text-sm"><strong>API Results:</strong><ul class="list-disc list-inside mt-1">';
+                                        request.api_search_results.slice(0, 3).forEach(result => {
+                                            apiResultsHtml += `<li>${result.source || 'Unknown'}: ${result.name || result.drug_name || 'N/A'}</li>`;
+                                        });
+                                        if (request.api_search_results.length > 3) {
+                                            apiResultsHtml += `<li>... and ${request.api_search_results.length - 3} more</li>`;
+                                        }
+                                        apiResultsHtml += '</ul></div>';
+                                    }
+                                    
+                                    let selectedDrugHtml = '';
+                                    if (request.selected_drug_data) {
+                                        const selected = request.selected_drug_data;
+                                        let selectedName = selected.name || selected.drug_name || 'N/A';
+                                        if (typeof formatDrugName === 'function') {
+                                            selectedName = formatDrugName(selectedName);
+                                        } else {
+                                            selectedName = selectedName.split(' ').map((word, i) => {
+                                                if (i === 0) return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                                                return word;
+                                            }).join(' ');
+                                        }
+                                        selectedDrugHtml = `<div class="mt-2 p-3 bg-white border-2 border-green-500 rounded-lg shadow-md">
+                                            <p class="text-base">
+                                                <strong class="text-green-700 font-bold">Selected:</strong> 
+                                                <span class="text-gray-900 font-bold text-lg">${selectedName}</span> 
+                                                <span class="text-gray-700 font-semibold">(${selected.source || 'Unknown'})</span>
+                                            </p>
+                                        </div>`;
+                                    }
+                                    
+                                    return `
+                                        <div class="bg-white border border-gray-200 rounded p-3">
+                                            <div class="flex items-start justify-between">
+                                                <div class="flex-1">
+                                                    <div class="flex items-center gap-2 mb-2">
+                                                        <span class="px-2 py-1 text-xs font-medium rounded-full ${requestStatusColor}">
+                                                            ${request.status}
+                                                        </span>
+                                                        <span class="text-xs text-gray-500">Requested: ${createdDate}</span>
+                                                    </div>
+                                                    <p class="text-sm text-gray-600 mb-1">Query: "${request.search_query}"</p>
+                                                    ${selectedDrugHtml}
+                                                    ${apiResultsHtml}
+                                                </div>
+                                                <div class="flex gap-2 ml-4" onclick="event.stopPropagation()">
+                                                    ${request.status === 'found' || request.status === 'not_found' ? `
+                                                        <button 
+                                                            onclick="event.stopPropagation(); approveMissingDrug('${request.request_id}')" 
+                                                            class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                                                        >
+                                                            Approve
+                                                        </button>
+                                                    ` : ''}
+                                                    ${request.status !== 'approved' && request.status !== 'rejected' ? `
+                                                        <button 
+                                                            onclick="event.stopPropagation(); rejectMissingDrug('${request.request_id}')" 
+                                                            class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                                                        >
+                                                            Reject
+                                                        </button>
+                                                    ` : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Single request - show full details inline
+                    const request = groupRequests[0];
+                    let apiResultsHtml = '';
+                    if (request.api_search_results && request.api_search_results.length > 0) {
+                        apiResultsHtml = '<div class="mt-2 text-sm"><strong>API Results:</strong><ul class="list-disc list-inside mt-1">';
+                        request.api_search_results.slice(0, 3).forEach(result => {
+                            apiResultsHtml += `<li>${result.source || 'Unknown'}: ${result.name || result.drug_name || 'N/A'}</li>`;
+                        });
+                        if (request.api_search_results.length > 3) {
+                            apiResultsHtml += `<li>... and ${request.api_search_results.length - 3} more</li>`;
+                        }
+                        apiResultsHtml += '</ul></div>';
+                    }
+                    
+                    let selectedDrugHtml = '';
+                    if (request.selected_drug_data) {
+                        const selected = request.selected_drug_data;
+                        let selectedName = selected.name || selected.drug_name || 'N/A';
+                        if (typeof formatDrugName === 'function') {
+                            selectedName = formatDrugName(selectedName);
+                        } else {
+                            selectedName = selectedName.split(' ').map((word, i) => {
+                                if (i === 0) return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                                return word;
+                            }).join(' ');
+                        }
+                        selectedDrugHtml = `<div class="mt-2 p-3 bg-white border-2 border-green-500 rounded-lg shadow-md">
+                            <p class="text-base">
+                                <strong class="text-green-700 font-bold">Selected:</strong> 
+                                <span class="text-gray-900 font-bold text-lg">${selectedName}</span> 
+                                <span class="text-gray-700 font-semibold">(${selected.source || 'Unknown'})</span>
+                            </p>
+                        </div>`;
+                    }
+                    
+                    detailsHtml = `
+                        <div class="mt-3">
+                            ${selectedDrugHtml}
+                            ${apiResultsHtml}
+                        </div>
+                    `;
+                }
+                
+                mainCard.innerHTML = summaryHtml + detailsHtml;
+                container.appendChild(mainCard);
             });
+        }
+        
+        function toggleGroupDetails(groupId) {
+            const detailsId = `details-${groupId}`;
+            const toggleId = `toggle-${groupId}`;
+            const details = document.getElementById(detailsId);
+            const toggle = document.getElementById(toggleId);
+            
+            if (!details || !toggle) return;
+            
+            const isHidden = details.classList.contains('hidden');
+            const svg = toggle.querySelector('svg');
+            
+            if (isHidden) {
+                details.classList.remove('hidden');
+                if (svg) {
+                    svg.classList.add('rotate-180');
+                }
+            } else {
+                details.classList.add('hidden');
+                if (svg) {
+                    svg.classList.remove('rotate-180');
+                }
+            }
         }
 
         async function approveMissingDrug(requestId) {
@@ -2543,6 +2725,98 @@
             } catch (error) {
                 console.error('Error rejecting missing drug:', error);
                 alert('Failed to reject request. Please try again.');
+            }
+        }
+        
+        async function rejectAllMissingDrugs(requestIds) {
+            if (!requestIds || !Array.isArray(requestIds) || requestIds.length === 0) {
+                alert('No eligible requests to reject.');
+                return;
+            }
+            
+            const count = requestIds.length;
+            if (!confirm(`Are you sure you want to reject all ${count} request(s)?`)) {
+                return;
+            }
+            
+            try {
+                const apiBaseUrl = getApiBaseUrl();
+                let successCount = 0;
+                let failCount = 0;
+                
+                for (const requestId of requestIds) {
+                    try {
+                        const response = await fetch(`${apiBaseUrl}/admin/missing-drugs/${requestId}/reject`, {
+                            method: 'POST'
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            successCount++;
+                        } else {
+                            failCount++;
+                            console.error(`Failed to reject request ${requestId}:`, data.message);
+                        }
+                    } catch (error) {
+                        console.error(`Error rejecting request ${requestId}:`, error);
+                        failCount++;
+                    }
+                }
+                
+                if (failCount === 0) {
+                    alert(`All ${successCount} request(s) rejected successfully.`);
+                } else {
+                    alert(`Rejected ${successCount} request(s). ${failCount} failed.`);
+                }
+                loadMissingDrugs();
+            } catch (error) {
+                console.error('Error rejecting missing drugs:', error);
+                alert('Failed to reject requests. Please try again.');
+            }
+        }
+        
+        async function approveAllMissingDrugs(requestIds) {
+            if (!requestIds || !Array.isArray(requestIds) || requestIds.length === 0) {
+                alert('No eligible requests to approve.');
+                return;
+            }
+            
+            const count = requestIds.length;
+            if (!confirm(`Are you sure you want to approve and add all ${count} request(s) to the database?`)) {
+                return;
+            }
+            
+            try {
+                const apiBaseUrl = getApiBaseUrl();
+                let successCount = 0;
+                let failCount = 0;
+                
+                for (const requestId of requestIds) {
+                    try {
+                        const response = await fetch(`${apiBaseUrl}/admin/missing-drugs/${requestId}/approve`, {
+                            method: 'POST'
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            successCount++;
+                        } else {
+                            failCount++;
+                            console.error(`Failed to approve request ${requestId}:`, data.message);
+                        }
+                    } catch (error) {
+                        console.error(`Error approving request ${requestId}:`, error);
+                        failCount++;
+                    }
+                }
+                
+                if (failCount === 0) {
+                    alert(`All ${successCount} request(s) approved and added successfully.`);
+                } else {
+                    alert(`Approved ${successCount} request(s). ${failCount} failed.`);
+                }
+                loadMissingDrugs();
+            } catch (error) {
+                console.error('Error approving missing drugs:', error);
+                alert('Failed to approve requests. Please try again.');
             }
         }
         

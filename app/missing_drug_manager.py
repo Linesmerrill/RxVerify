@@ -5,8 +5,9 @@ Manages missing drug requests, API searches, and approval workflow.
 """
 
 import logging
+import re
 import uuid
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Iterable
 from datetime import datetime
 from app.mongodb_config import mongodb_config
 from app.drug_database_schema import MissingDrugRequest, MissingDrugStatus
@@ -20,9 +21,133 @@ logger = logging.getLogger(__name__)
 class MissingDrugManager:
     """Manager for missing drug requests."""
     
+    _UPPERCASE_WORDS = {
+        "MG", "ML", "MCG", "G", "KG", "MG/ML", "MCG/ML", "IU", "MEQ",
+        "MMOL", "L", "ML/HR", "MG/HR", "HR", "IN", "IV"
+    }
+    _LOWERCASE_WORDS = {"of", "the", "and", "or", "in", "on", "at", "to", "for", "with", "by"}
+    _DOSAGE_PATTERN = re.compile(r"\b\d+(\.\d+)?\s*(mg|mcg|g|ml|iu|unit|units|meq|mmol|%)\b", re.IGNORECASE)
+    _FORM_WORDS_PATTERN = re.compile(
+        r"\b(tablet|tablets|tab|tabs|capsule|capsules|cap|caps|oral|solution|suspension|injection|injectable|cream|ointment|patch|spray|drops|drop|syrup|elixir|powder|pack|packet|extended-release|extended release|delayed-release|delayed release|chewable|topical|gel|lozenge|suppository|kit)\b",
+        re.IGNORECASE,
+    )
+    
     def __init__(self):
         self.collection = None
         self.api_client = None
+    
+    @staticmethod
+    def _normalize_whitespace(value: Optional[str]) -> str:
+        if not value:
+            return ""
+        return re.sub(r"\s+", " ", value).strip()
+    
+    @classmethod
+    def _format_name(cls, value: Optional[str]) -> Optional[str]:
+        if not value:
+            return None
+        value = cls._normalize_whitespace(value)
+        if not value:
+            return None
+        
+        formatted = value.title()
+        
+        for unit in cls._UPPERCASE_WORDS:
+            formatted = re.sub(rf"\b{re.escape(unit.title())}\b", unit, formatted)
+        
+        for word in cls._LOWERCASE_WORDS:
+            formatted = re.sub(rf"\b{re.escape(word.title())}\b", word, formatted)
+        
+        return formatted
+    
+    @classmethod
+    def _strip_strength_and_forms(cls, value: Optional[str]) -> str:
+        if not value:
+            return ""
+        
+        cleaned = cls._normalize_whitespace(value)
+        cleaned = re.sub(r"\[.*?\]", "", cleaned)  # Remove bracketed brand hints
+        cleaned = re.sub(r"\(.*?\)", "", cleaned)  # Remove parenthetical notes
+        cleaned = cls._DOSAGE_PATTERN.sub("", cleaned)
+        cleaned = cls._FORM_WORDS_PATTERN.sub("", cleaned)
+        cleaned = re.sub(r"[\/\-]+", " ", cleaned)
+        cleaned = cls._normalize_whitespace(cleaned)
+        return cleaned
+    
+    @classmethod
+    def _normalize_term(cls, value: Optional[str]) -> Optional[str]:
+        if not value:
+            return None
+        normalized = cls._normalize_whitespace(value).lower()
+        return normalized or None
+    
+    @classmethod
+    def _extract_brand_names(
+        cls,
+        data: Optional[Dict[str, Any]],
+        api_name: Optional[str],
+        request_name: Optional[str]
+    ) -> List[str]:
+        candidates: List[str] = []
+        
+        def add_candidate(raw: Optional[str]):
+            if not raw:
+                return
+            parts = re.split(r"[;,|]", raw)
+            for part in parts:
+                cleaned = cls._strip_strength_and_forms(part)
+                if cleaned:
+                    candidates.append(cleaned)
+        
+        if data:
+            if isinstance(data.get("brand_names"), list):
+                for item in data["brand_names"]:
+                    add_candidate(item)
+            else:
+                add_candidate(data.get("brand_names"))
+            
+            add_candidate(data.get("brand_name"))
+            add_candidate(data.get("brands"))
+            add_candidate(data.get("synonym"))
+            add_candidate(data.get("title"))
+        
+        for value in (api_name, request_name):
+            if value and "[" in value:
+                bracketed = re.findall(r"\[(.*?)\]", value)
+                for entry in bracketed:
+                    add_candidate(entry)
+        
+        formatted = {
+            cls._format_name(candidate)
+            for candidate in candidates
+            if candidate
+        }
+        
+        return sorted(name for name in formatted if name)
+    
+    @classmethod
+    def _build_search_terms(cls, values: Iterable[Optional[str]]) -> List[str]:
+        terms: set[str] = set()
+        
+        for value in values:
+            if not value:
+                continue
+            normalized = cls._normalize_term(value)
+            if not normalized:
+                continue
+            
+            variations = {
+                normalized,
+                normalized.replace("-", " "),
+                normalized.replace(" ", ""),
+            }
+            
+            for variation in variations:
+                clean_variation = cls._normalize_term(variation)
+                if clean_variation:
+                    terms.add(clean_variation)
+        
+        return sorted(term for term in terms if term)
     
     async def initialize(self):
         """Initialize the missing drug manager."""
@@ -318,46 +443,101 @@ class MissingDrugManager:
     async def _create_drug_entry(self, request: MissingDrugRequest, drug_data: Optional[Dict[str, Any]] = None) -> DrugEntry:
         """Create a DrugEntry from a MissingDrugRequest."""
         drug_id = f"missing_{request.request_id[:8]}"
-        drug_name = request.drug_name
         
         # Use provided drug_data or fall back to request data
-        data = drug_data or request.selected_drug_data or request.found_drug_data
+        data = drug_data or request.selected_drug_data or request.found_drug_data or {}
         
-        # Try to extract data from API results if available
+        request_name = request.drug_name or data.get("drug_name") or data.get("name") or ""
+        request_name_formatted = self._format_name(request_name) or request_name.strip() or "Unknown Drug"
+        
+        api_name = data.get("name") or data.get("title")
+        cleaned_generic_candidate = self._strip_strength_and_forms(api_name or request_name)
+        formatted_generic_candidate = self._format_name(cleaned_generic_candidate) or request_name_formatted
+        
+        brand_names = self._extract_brand_names(data, api_name, request_name)
+        brand_names = [
+            bn for bn in brand_names
+            if self._normalize_term(bn) != self._normalize_term(formatted_generic_candidate)
+        ]
+        brand_normalized = {self._normalize_term(name) for name in brand_names}
+        
+        primary_search_term = (
+            self._normalize_term(request.drug_name)
+            or self._normalize_term(request.search_query)
+            or self._normalize_term(formatted_generic_candidate)
+            or self._normalize_term(api_name)
+        )
+        
+        search_terms = self._build_search_terms([
+            request.drug_name,
+            request.search_query,
+            api_name,
+            data.get("synonym"),
+            formatted_generic_candidate,
+            request_name_formatted,
+            *(brand_names or []),
+        ])
+        
+        if not primary_search_term and search_terms:
+            primary_search_term = search_terms[0]
+        elif not primary_search_term:
+            primary_search_term = self._normalize_term(request_name_formatted)
+        
+        if primary_search_term and primary_search_term not in search_terms:
+            search_terms.append(primary_search_term)
+        
         drug_type = DrugType.GENERIC
+        name = formatted_generic_candidate or request_name_formatted
         generic_name = None
-        brand_names = []
-        drug_class = None
-        common_uses = []
-        rxnorm_id = None
-        manufacturer = None
-        data_source = "User Request"
         
-        if data:
-            # Use drug name from data if available
-            if "name" in data and data["name"]:
-                drug_name = data["name"]
-            elif "drug_name" in data and data["drug_name"]:
-                drug_name = data["drug_name"]
-            
-            if "rxcui" in data:
-                rxnorm_id = str(data["rxcui"])
-            if "drug_class" in data:
-                drug_class = data["drug_class"]
-            if "common_uses" in data:
-                common_uses = data["common_uses"] if isinstance(data["common_uses"], list) else [data["common_uses"]]
-            if "manufacturer" in data:
-                manufacturer = data["manufacturer"]
-            if "source" in data:
-                data_source = data["source"]
+        api_term_type = (data.get("term_type") or "").upper()
+        normalized_primary = self._normalize_term(name) or primary_search_term
         
-        # Create search terms
-        search_terms = [drug_name.lower()]
-        primary_search_term = drug_name.lower()
+        is_combination = False
+        if normalized_primary:
+            is_combination = any(separator in normalized_primary for separator in [" and ", " + ", " / "])
+        
+        if is_combination:
+            drug_type = DrugType.COMBINATION
+        elif api_term_type in {"SBD", "SBDG", "SBDF", "BPCK", "BN"} or (
+            normalized_primary and brand_normalized and normalized_primary in brand_normalized
+        ):
+            drug_type = DrugType.BRAND
+            name = self._format_name(api_name) or request_name_formatted
+            generic_name_candidate = formatted_generic_candidate
+            if generic_name_candidate and self._normalize_term(generic_name_candidate) != self._normalize_term(name):
+                generic_name = generic_name_candidate
+        else:
+            drug_type = DrugType.GENERIC
+            name = formatted_generic_candidate or request_name_formatted
+            generic_name = None
+        
+        rxnorm_id = str(data.get("rxcui")) if data.get("rxcui") else None
+        drug_class = data.get("drug_class")
+        manufacturer = data.get("manufacturer")
+        
+        common_uses_raw = data.get("common_uses")
+        if isinstance(common_uses_raw, list):
+            common_uses = common_uses_raw
+        elif common_uses_raw:
+            common_uses = [str(common_uses_raw)]
+        else:
+            common_uses = []
+        
+        source_label = data.get("source")
+        if source_label:
+            data_source = f"Missing Drug Request ({self._format_name(str(source_label))})"
+        else:
+            data_source = "Missing Drug Request"
+        
+        if not search_terms:
+            search_terms = [primary_search_term] if primary_search_term else []
+        else:
+            search_terms = sorted(set(search_terms))
         
         drug_entry = DrugEntry(
             drug_id=drug_id,
-            name=drug_name,
+            name=name or request_name_formatted,
             drug_type=drug_type,
             generic_name=generic_name,
             brand_names=brand_names,

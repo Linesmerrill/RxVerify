@@ -6,6 +6,7 @@ including CRUD operations, search functionality, and database management.
 """
 
 import logging
+import re
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase, AsyncIOMotorCollection
@@ -188,8 +189,10 @@ class DrugDatabaseManager:
     def _determine_search_strategy(self, query: str) -> str:
         """Determine the best search strategy based on query content."""
         
-        # Check for combination indicators
-        if any(word in query for word in ["and", "with", "plus", "+", "-"]):
+        # Check for combination indicators (match whole words or explicit separators)
+        if re.search(r"\b(and|with|plus)\b", query):
+            return "combination_search"
+        if re.search(r"[a-z]\s*[\+\/-]\s*[a-z]", query):
             return "combination_search"
         
         # Check if query looks like a brand name (capitalized, specific)

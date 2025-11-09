@@ -1091,18 +1091,21 @@
                             Refresh
                         </button>
                     </div>
-                    <div class="mb-4 flex gap-2">
-                        <button onclick="filterMissingDrugs('pending')" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-                            Pending
+                    <div class="mb-4 flex gap-2 flex-wrap">
+                        <button data-missing-filter="found" data-label="Found" onclick="filterMissingDrugs('found')" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                            <span class="filter-label">Found</span>
                         </button>
-                        <button onclick="filterMissingDrugs('found')" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-                            Found
+                        <button data-missing-filter="not_found" data-label="Not Found" onclick="filterMissingDrugs('not_found')" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                            <span class="filter-label">Not Found</span>
                         </button>
-                        <button onclick="filterMissingDrugs('not_found')" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-                            Not Found
+                        <button data-missing-filter="approved" data-label="Approved" onclick="filterMissingDrugs('approved')" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                            <span class="filter-label">Approved</span>
                         </button>
-                        <button onclick="filterMissingDrugs('all')" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-                            All
+                        <button data-missing-filter="rejected" data-label="Rejected" onclick="filterMissingDrugs('rejected')" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                            <span class="filter-label">Rejected</span>
+                        </button>
+                        <button data-missing-filter="all" data-label="All" onclick="filterMissingDrugs('all')" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                            <span class="filter-label">All</span>
                         </button>
                     </div>
                     <div id="missingDrugsList" class="space-y-3">
@@ -2320,15 +2323,18 @@
             loadAdminData();
             setupActivityPagination();
             connectAdminWebSocket(); // Connect to real-time updates
-            loadMissingDrugs(); // Load missing drugs
+            updateMissingDrugsFilterButtons();
+            loadMissingDrugs(); // Load initial missing drugs view
         }
 
         // Missing Drugs Management
-        let currentMissingDrugsFilter = 'all';
+        let currentMissingDrugsFilter = 'found';
         let allMissingDrugs = [];
+        let missingDrugsCounts = {};
 
         async function loadMissingDrugs() {
             try {
+                updateMissingDrugsFilterButtons();
                 const missingDrugsLoading = document.getElementById('missingDrugsLoading');
                 const missingDrugsList = document.getElementById('missingDrugsList');
                 
@@ -2336,8 +2342,7 @@
                 if (missingDrugsLoading) missingDrugsLoading.classList.remove('hidden');
                 
                 const apiBaseUrl = getApiBaseUrl();
-                const status = currentMissingDrugsFilter === 'all' ? '' : currentMissingDrugsFilter;
-                const url = status ? `${apiBaseUrl}/admin/missing-drugs?status=${status}` : `${apiBaseUrl}/admin/missing-drugs`;
+                const url = `${apiBaseUrl}/admin/missing-drugs`;
                 
                 const response = await fetch(url);
                 const data = await response.json();
@@ -2347,7 +2352,9 @@
                 
                 if (data.success) {
                     allMissingDrugs = data.requests || [];
-                    displayMissingDrugs(allMissingDrugs);
+                    missingDrugsCounts = computeMissingDrugsCounts(allMissingDrugs);
+                    updateMissingDrugsFilterButtons();
+                    applyMissingDrugsFilter();
                 } else {
                     console.error('Failed to load missing drugs:', data.message);
                     if (missingDrugsList) {
@@ -2366,8 +2373,76 @@
         }
 
         function filterMissingDrugs(status) {
-            currentMissingDrugsFilter = status;
-            loadMissingDrugs();
+            const normalizedStatus = status || 'all';
+            currentMissingDrugsFilter = normalizedStatus;
+            updateMissingDrugsFilterButtons();
+            if (allMissingDrugs.length === 0) {
+                loadMissingDrugs();
+            } else {
+                applyMissingDrugsFilter();
+            }
+        }
+
+        function computeMissingDrugsCounts(requests) {
+            const counts = {
+                found: 0,
+                not_found: 0,
+                approved: 0,
+                rejected: 0,
+                all: 0
+            };
+            
+            requests.forEach(request => {
+                const status = request.status || 'unknown';
+                if (counts[status] === undefined) {
+                    counts[status] = 0;
+                }
+                counts[status] += 1;
+                counts.all += 1;
+            });
+            
+            return counts;
+        }
+
+        function applyMissingDrugsFilter() {
+            let filteredRequests;
+            if (currentMissingDrugsFilter === 'all') {
+                filteredRequests = allMissingDrugs;
+            } else {
+                filteredRequests = allMissingDrugs.filter(
+                    request => request.status === currentMissingDrugsFilter
+                );
+            }
+            displayMissingDrugs(filteredRequests);
+        }
+
+        function updateMissingDrugsFilterButtons() {
+            const buttons = document.querySelectorAll('[data-missing-filter]');
+            buttons.forEach(button => {
+                const value = button.getAttribute('data-missing-filter');
+                const isActive = value === currentMissingDrugsFilter;
+                const baseLabel = button.getAttribute('data-label') || value;
+                const count =
+                    value === 'all'
+                        ? (missingDrugsCounts.all ?? allMissingDrugs.length ?? 0)
+                        : (missingDrugsCounts[value] ?? 0);
+                const labelText = `${baseLabel} (${count})`;
+                const labelElement = button.querySelector('.filter-label');
+                
+                if (labelElement) {
+                    labelElement.textContent = labelText;
+                } else {
+                    button.textContent = labelText;
+                }
+                
+                if (isActive) {
+                    button.classList.add('bg-indigo-600', 'text-white', 'shadow-sm');
+                    button.classList.remove('bg-gray-100', 'text-gray-700');
+                } else {
+                    button.classList.remove('bg-indigo-600', 'text-white', 'shadow-sm');
+                    button.classList.add('bg-gray-100', 'text-gray-700');
+                }
+            });
         }
 
         async function displayMissingDrugs(requests) {
@@ -2379,7 +2454,15 @@
             if (missingDrugsLoading) missingDrugsLoading.classList.add('hidden');
             
             if (requests.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-center py-4">No missing drug requests found.</p>';
+                const emptyMessages = {
+                    'found': 'No missing drug requests awaiting approval.',
+                    'not_found': 'No missing drug requests marked as not found.',
+                    'approved': 'No recently approved requests.',
+                    'rejected': 'No rejected requests.',
+                    'all': 'No missing drug requests found.'
+                };
+                const message = emptyMessages[currentMissingDrugsFilter] || emptyMessages['all'];
+                container.innerHTML = `<p class="text-gray-500 text-center py-4">${message}</p>`;
                 return;
             }
             
@@ -2416,8 +2499,8 @@
                 const count = groupRequests.length;
                 const displayName = groupRequests[0].drug_name; // Use original casing from first request
                 
-                // Determine primary status (prioritize found > pending > not_found > others)
-                const statusPriority = { 'found': 3, 'pending': 2, 'not_found': 1 };
+                // Determine primary status (prioritize approved > found > pending > not_found > others)
+                const statusPriority = { 'approved': 4, 'found': 3, 'pending': 2, 'not_found': 1, 'rejected': 0 };
                 const primaryRequest = groupRequests.reduce((prev, curr) => {
                     const prevPriority = statusPriority[prev.status] || 0;
                     const currPriority = statusPriority[curr.status] || 0;
@@ -2430,6 +2513,14 @@
                 
                 const primaryStatus = primaryRequest.status;
                 const statusColor = statusColors[primaryStatus] || 'bg-gray-100 text-gray-800';
+                const approvedRequest = groupRequests.find(r => r.status === 'approved');
+                const approvedInfoHtml = approvedRequest ? `
+                    <div class="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <p class="text-sm text-green-800 font-medium">
+                            Added to drug database${approvedRequest.added_drug_id ? ` as <span class="font-semibold">${approvedRequest.added_drug_id}</span>` : ''}${approvedRequest.approved_at ? ` on ${new Date(approvedRequest.approved_at).toLocaleDateString()}` : ''}.
+                        </p>
+                    </div>
+                ` : '';
                 
                 // Create main card
                 const mainCard = document.createElement('div');
@@ -2470,6 +2561,7 @@
                             ` : `
                                 <p class="text-xs text-gray-500">Most recent: ${new Date(primaryRequest.created_at).toLocaleDateString()}</p>
                             `}
+                            ${approvedInfoHtml}
                         </div>
                         ${count === 1 ? `
                             <div class="flex gap-2 ml-4 flex-shrink-0" onclick="event.stopPropagation()">
@@ -2579,6 +2671,11 @@
                                                     <p class="text-sm text-gray-600 mb-1">Query: "${request.search_query}"</p>
                                                     ${selectedDrugHtml}
                                                     ${apiResultsHtml}
+                                                    ${request.status === 'approved' ? `
+                                                        <div class="mt-2 text-xs text-green-700">
+                                                            Added to database${request.added_drug_id ? ` as <span class="font-semibold">${request.added_drug_id}</span>` : ''}${request.approved_at ? ` on ${new Date(request.approved_at).toLocaleDateString()}` : ''}.
+                                                        </div>
+                                                    ` : ''}
                                                 </div>
                                                 <div class="flex gap-2 ml-4" onclick="event.stopPropagation()">
                                                     ${request.status === 'found' || request.status === 'not_found' ? `
@@ -2645,6 +2742,11 @@
                         <div class="mt-3">
                             ${selectedDrugHtml}
                             ${apiResultsHtml}
+                            ${request.status === 'approved' ? `
+                                <div class="mt-2 text-sm text-green-700">
+                                    Added to database${request.added_drug_id ? ` as <span class="font-semibold">${request.added_drug_id}</span>` : ''}${request.approved_at ? ` on ${new Date(request.approved_at).toLocaleDateString()}` : ''}.
+                                </div>
+                            ` : ''}
                         </div>
                     `;
                 }

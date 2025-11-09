@@ -10,6 +10,7 @@ import uuid
 from typing import List, Dict, Optional, Any, Iterable
 from datetime import datetime
 from app.mongodb_config import mongodb_config
+from pymongo import ASCENDING
 from app.drug_database_schema import MissingDrugRequest, MissingDrugStatus
 from app.medical_apis import MedicalAPIClient
 from app.drug_database_manager import drug_db_manager
@@ -397,6 +398,42 @@ class MissingDrugManager:
             logger.error(f"Failed to count missing drug requests: {str(e)}")
             return 0
     
+    def _calculate_entry_diff(self, existing: DrugEntry, new_entry: DrugEntry) -> Dict[str, Any]:
+        """Calculate field differences between existing and new drug entries."""
+        diff: Dict[str, Any] = {}
+        list_fields = {"brand_names", "common_uses", "search_terms"}
+        fields_to_compare = {
+            "name",
+            "drug_type",
+            "generic_name",
+            "brand_names",
+            "manufacturer",
+            "drug_class",
+            "common_uses",
+            "rxnorm_id",
+            "primary_search_term",
+            "search_terms",
+            "data_source",
+        }
+        
+        existing_dict = existing.dict()
+        new_dict = new_entry.dict()
+        
+        for field in fields_to_compare:
+            existing_value = existing_dict.get(field)
+            new_value = new_dict.get(field)
+            
+            if field in list_fields:
+                existing_list = sorted(existing_value or [])
+                new_list = sorted(new_value or [])
+                if existing_list != new_list:
+                    diff[field] = new_value or []
+            else:
+                if existing_value != new_value:
+                    diff[field] = new_value
+        
+        return diff
+    
     async def approve_and_add(
         self, 
         request_id: str, 
@@ -408,19 +445,87 @@ class MissingDrugManager:
             if not request:
                 raise ValueError(f"Request {request_id} not found")
             
-            if request.status == MissingDrugStatus.APPROVED:
-                return {"success": False, "message": "Request already approved"}
-            
             # Use selected_drug_data if available, otherwise use found_drug_data
             drug_data = request.selected_drug_data or request.found_drug_data
             
             # Create drug entry from request data
             drug_entry = await self._create_drug_entry(request, drug_data)
+            target_drug_id = request.added_drug_id or drug_entry.drug_id
+            drug_entry.drug_id = target_drug_id
+            
+            existing_entry: Optional[DrugEntry] = None
+            if request.added_drug_id:
+                existing_entry = await drug_db_manager.get_drug_by_id(request.added_drug_id)
+            
+            if not existing_entry:
+                existing_doc = await drug_db_manager.drugs_collection.find_one({"primary_search_term": drug_entry.primary_search_term})
+                if not existing_doc:
+                    existing_doc = await drug_db_manager.drugs_collection.find_one({"name": drug_entry.name})
+                if existing_doc:
+                    existing_entry = DrugEntry(**existing_doc)
+            
+            async def finalize_existing(entry: DrugEntry, message_prefix: str) -> Dict[str, Any]:
+                nonlocal target_drug_id
+                target_drug_id = entry.drug_id
+                differences = self._calculate_entry_diff(entry, drug_entry)
+                if differences:
+                    await drug_db_manager.update_drug(target_drug_id, differences)
+                
+                update_data = {
+                    "status": MissingDrugStatus.APPROVED,
+                    "approved_at": datetime.utcnow(),
+                    "approved_by": approved_by,
+                    "added_drug_id": target_drug_id,
+                    "updated_at": datetime.utcnow()
+                }
+                
+                await self.collection.update_one(
+                    {"request_id": request_id},
+                    {"$set": update_data}
+                )
+                
+                previous_request_doc = await self.collection.find_one(
+                    {
+                        "added_drug_id": target_drug_id,
+                        "status": MissingDrugStatus.APPROVED
+                    },
+                    sort=[("approved_at", ASCENDING)]
+                )
+                
+                approved_at = None
+                import_source = entry.data_source
+                if previous_request_doc:
+                    previous_request = MissingDrugRequest(**previous_request_doc)
+                    if previous_request.approved_at:
+                        approved_at = previous_request.approved_at.isoformat()
+                    if previous_request.selected_drug_data:
+                        import_source = previous_request.selected_drug_data.get("source") or import_source
+                
+                logger.info(f"Approved existing drug: {entry.name} ({target_drug_id})")
+                
+                return {
+                    "success": True,
+                    "drug_id": target_drug_id,
+                    "drug_name": entry.name,
+                    "message": message_prefix,
+                    "already_exists": True,
+                    "updated_fields": list(differences.keys()),
+                    "approved_at": approved_at,
+                    "data_source": import_source
+                }
+            
+            if existing_entry:
+                return await finalize_existing(existing_entry, "Drug already approved" if request.status == MissingDrugStatus.APPROVED else "Drug already approved; attributes refreshed")
             
             # Insert drug into database
             success = await drug_db_manager.insert_drug(drug_entry)
             
             if not success:
+                fallback_doc = await drug_db_manager.drugs_collection.find_one({"drug_id": target_drug_id}) or \
+                               await drug_db_manager.drugs_collection.find_one({"primary_search_term": drug_entry.primary_search_term})
+                if fallback_doc:
+                    existing_entry = DrugEntry(**fallback_doc)
+                    return await finalize_existing(existing_entry, "Drug already approved")
                 raise Exception("Failed to insert drug into database")
             
             # Update request status
@@ -428,7 +533,7 @@ class MissingDrugManager:
                 "status": MissingDrugStatus.APPROVED,
                 "approved_at": datetime.utcnow(),
                 "approved_by": approved_by,
-                "added_drug_id": drug_entry.drug_id,
+                "added_drug_id": target_drug_id,
                 "updated_at": datetime.utcnow()
             }
             
@@ -437,13 +542,14 @@ class MissingDrugManager:
                 {"$set": update_data}
             )
             
-            logger.info(f"Approved and added drug: {drug_entry.name} ({drug_entry.drug_id})")
+            logger.info(f"Approved and added drug: {drug_entry.name} ({target_drug_id})")
             
             return {
                 "success": True,
-                "drug_id": drug_entry.drug_id,
+                "drug_id": target_drug_id,
                 "drug_name": drug_entry.name,
-                "message": "Drug added successfully"
+                "message": "Drug added successfully",
+                "already_exists": False
             }
             
         except Exception as e:
@@ -563,9 +669,31 @@ class MissingDrugManager:
         
         return drug_entry
     
-    async def reject_request(self, request_id: str, approved_by: str = "admin") -> bool:
+    async def reject_request(self, request_id: str, approved_by: str = "admin", force: bool = False) -> Dict[str, Any]:
         """Reject a missing drug request."""
         try:
+            request = await self.get_request(request_id)
+            if not request:
+                return {"success": False, "message": "Request not found"}
+            
+            if request.status == MissingDrugStatus.APPROVED and not force:
+                data_source = None
+                if request.added_drug_id:
+                    existing_drug = await drug_db_manager.get_drug_by_id(request.added_drug_id)
+                    if existing_drug:
+                        data_source = existing_drug.data_source
+                return {
+                    "success": False,
+                    "message": "Request already approved",
+                    "already_approved": True,
+                    "approved_at": request.approved_at.isoformat() if request.approved_at else None,
+                    "added_drug_id": request.added_drug_id,
+                    "data_source": data_source
+                }
+            
+            if request.status == MissingDrugStatus.APPROVED and force and request.added_drug_id:
+                await drug_db_manager.delete_drug(request.added_drug_id)
+            
             update_data = {
                 "status": MissingDrugStatus.REJECTED,
                 "approved_at": datetime.utcnow(),
@@ -578,10 +706,11 @@ class MissingDrugManager:
                 {"$set": update_data}
             )
             
-            return result.modified_count > 0
+            success_flag = result.modified_count > 0 or request.status == MissingDrugStatus.REJECTED
+            return {"success": success_flag}
         except Exception as e:
             logger.error(f"Failed to reject request {request_id}: {str(e)}")
-            return False
+            return {"success": False, "message": str(e)}
 
 
 # Global instance

@@ -854,27 +854,14 @@
                         </div>
                         <div class="mt-4 sm:mt-0">
                             <div class="flex flex-wrap gap-2">
-                                <button onclick="setTimeFilter(24)" id="filter24h" class="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg transition-colors">
-                                    24 Hours
+                                <button onclick="setTimeFilter('all')" id="filterAll" data-time-filter="all" class="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg transition-colors">
+                                    All Time
                                 </button>
-                                <button onclick="setTimeFilter(168)" id="filter7d" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                                <!-- Future filters: kept for styling reference
+                                <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg transition-colors opacity-50 cursor-not-allowed">
                                     7 Days
                                 </button>
-                                <button onclick="setTimeFilter(336)" id="filter2w" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
-                                    2 Weeks
-                                </button>
-                                <button onclick="setTimeFilter(720)" id="filter1m" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
-                                    1 Month
-                                </button>
-                                <button onclick="setTimeFilter(2160)" id="filter3m" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
-                                    3 Months
-                                </button>
-                                <button onclick="setTimeFilter(4320)" id="filter6m" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
-                                    6 Months
-                                </button>
-                                <button onclick="setTimeFilter(8760)" id="filter1y" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
-                                    1 Year
-                                </button>
+                                -->
                             </div>
                         </div>
                     </div>
@@ -992,7 +979,10 @@
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     </span>
-                                    <span id="rxlistDrugsValue" class="hidden">-</span>
+                                    <span id="rxlistDrugsValueContainer" class="hidden flex items-center gap-2">
+                                        <span id="rxlistDrugsValue">-</span>
+                                        <span id="rxlistDelta" class="hidden text-sm font-medium"></span>
+                                    </span>
                                 </span>
                             </div>
                             <div class="flex justify-between">
@@ -1553,8 +1543,156 @@
             });
         }
         
+        const modalVariants = {
+            primary: {
+                button: 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500',
+                iconWrapper: 'bg-indigo-100 dark:bg-indigo-900',
+                icon: 'text-indigo-600 dark:text-indigo-300'
+            },
+            danger: {
+                button: 'bg-red-600 hover:bg-red-700 focus:ring-red-500',
+                iconWrapper: 'bg-red-100 dark:bg-red-900',
+                icon: 'text-red-600 dark:text-red-300'
+            },
+            success: {
+                button: 'bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500',
+                iconWrapper: 'bg-emerald-100 dark:bg-emerald-900',
+                icon: 'text-emerald-600 dark:text-emerald-300'
+            },
+            warning: {
+                button: 'bg-amber-500 hover:bg-amber-600 focus:ring-amber-500',
+                iconWrapper: 'bg-amber-100 dark:bg-amber-900',
+                icon: 'text-amber-600 dark:text-amber-300'
+            },
+            info: {
+                button: 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500',
+                iconWrapper: 'bg-blue-100 dark:bg-blue-900',
+                icon: 'text-blue-600 dark:text-blue-300'
+            }
+        };
+
+        async function showConfirmModal({
+            title = 'Confirm Action',
+            message = 'Are you sure you want to proceed?',
+            subtitle = '',
+            confirmText = 'Confirm',
+            cancelText = 'Cancel',
+            variant = 'primary',
+            details = [],
+            showCancel = true
+        } = {}) {
+            const modal = document.getElementById('confirmationModal');
+            const modalContent = document.getElementById('modalContent');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalSubtitle = document.getElementById('modalSubtitle');
+            const modalDetails = document.getElementById('modalDetails');
+            const modalDetailsBody = document.getElementById('modalDetailsBody');
+            const modalConfirm = document.getElementById('modalConfirm');
+            const modalCancel = document.getElementById('modalCancel');
+            const modalIconWrapper = document.getElementById('modalIconWrapper');
+            const modalIcon = document.getElementById('modalIcon');
+
+            const selectedVariant = modalVariants[variant] || modalVariants.primary;
+            const baseConfirmClasses = 'flex-1 px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800';
+            const cancelClasses = 'flex-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200';
+
+            modalConfirm.className = `${baseConfirmClasses} ${selectedVariant.button}`;
+            modalCancel.className = cancelClasses;
+            modalCancel.classList.toggle('hidden', !showCancel);
+
+            modalIconWrapper.className = `w-10 h-10 rounded-full flex items-center justify-center ${selectedVariant.iconWrapper}`;
+            modalIcon.className = `w-6 h-6 ${selectedVariant.icon}`;
+
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            if (modalSubtitle) {
+                modalSubtitle.textContent = subtitle;
+                modalSubtitle.classList.toggle('hidden', !subtitle);
+            }
+
+            if (details && details.length > 0) {
+                modalDetails.classList.remove('hidden');
+                modalDetailsBody.innerHTML = '';
+                details.forEach(detail => {
+                    const row = document.createElement('div');
+                    row.className = 'flex justify-between text-sm py-1 gap-4';
+
+                    const label = document.createElement('span');
+                    label.className = 'text-gray-500 dark:text-gray-400';
+                    label.textContent = `${detail.label}:`;
+
+                    const value = document.createElement('span');
+                    value.className = 'font-medium text-gray-900 dark:text-white text-right break-words';
+                    value.textContent = detail.value;
+
+                    row.appendChild(label);
+                    row.appendChild(value);
+                    modalDetailsBody.appendChild(row);
+                });
+            } else {
+                modalDetails.classList.add('hidden');
+                modalDetailsBody.innerHTML = '';
+            }
+
+            modalConfirm.textContent = confirmText;
+            modalCancel.textContent = cancelText;
+
+            return new Promise((resolve) => {
+                const closeModal = (result) => {
+                    modalContent.classList.remove('scale-100', 'opacity-100');
+                    modalContent.classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                    }, 200);
+                    document.removeEventListener('keydown', keyHandler);
+                    modal.removeEventListener('click', backdropHandler);
+                    modalConfirm.onclick = null;
+                    modalCancel.onclick = null;
+                    resolve(result);
+                };
+
+                const keyHandler = (event) => {
+                    if (event.key === 'Escape') {
+                        closeModal(false);
+                    }
+                };
+
+                const backdropHandler = (event) => {
+                    if (event.target === modal) {
+                        closeModal(false);
+                    }
+                };
+
+                modalConfirm.onclick = () => closeModal(true);
+                modalCancel.onclick = () => closeModal(false);
+
+                document.addEventListener('keydown', keyHandler);
+                modal.addEventListener('click', backdropHandler);
+
+                modal.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    modalContent.classList.remove('scale-95', 'opacity-0');
+                    modalContent.classList.add('scale-100', 'opacity-100');
+                });
+            });
+        }
+
         async function unignoreMedication(drugName, query) {
-            if (!confirm(`Are you sure you want to unignore "${drugName}" for query "${query}"? This will make it appear in search results again.`)) {
+            const confirmed = await showConfirmModal({
+                title: 'Unignore Medication',
+                message: `Are you sure you want to unignore “${drugName}” for query “${query}”? This will make it appear in search results again.`,
+                confirmText: 'Unignore',
+                cancelText: 'Cancel',
+                variant: 'primary',
+                details: [
+                    { label: 'Drug', value: drugName },
+                    { label: 'Query', value: query }
+                ]
+            });
+            
+            if (!confirmed) {
+                showToast('Unignore cancelled.', 'info');
                 return;
             }
             
@@ -1574,113 +1712,70 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    alert('Medication unignored successfully!');
+                    showToast('Medication unignored successfully.', 'success');
                     loadFeedbackData(); // Refresh the data
                 } else {
-                    alert('Failed to unignore medication: ' + data.message);
+                    showToast('Failed to unignore medication: ' + data.message, 'error');
                 }
             } catch (error) {
                 console.error('Error unignoring medication:', error);
-                alert('Error unignoring medication');
+                showToast('Error unignoring medication.', 'error');
             }
         }
         
-        // Modern confirmation modal functions
-        function showConfirmationModal(drugName, query, onConfirm) {
-            const modal = document.getElementById('confirmationModal');
-            const modalContent = document.getElementById('modalContent');
-            const modalDrugName = document.getElementById('modalDrugName');
-            const modalQuery = document.getElementById('modalQuery');
-            const modalCancel = document.getElementById('modalCancel');
-            const modalConfirm = document.getElementById('modalConfirm');
-            
-            // Set the drug name and query
-            modalDrugName.textContent = drugName;
-            modalQuery.textContent = query;
-            
-            // Show modal with animation
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modalContent.classList.remove('scale-95', 'opacity-0');
-                modalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
-            
-            // Handle cancel
-            const handleCancel = () => {
-                modalContent.classList.remove('scale-100', 'opacity-100');
-                modalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                }, 300);
-            };
-            
-            // Handle confirm
-            const handleConfirm = () => {
-                modalContent.classList.remove('scale-100', 'opacity-100');
-                modalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    onConfirm();
-                }, 300);
-            };
-            
-            // Remove existing event listeners
-            modalCancel.replaceWith(modalCancel.cloneNode(true));
-            modalConfirm.replaceWith(modalConfirm.cloneNode(true));
-            
-            // Add new event listeners
-            document.getElementById('modalCancel').addEventListener('click', handleCancel);
-            document.getElementById('modalConfirm').addEventListener('click', handleConfirm);
-            
-            // Close on backdrop click
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    handleCancel();
-                }
-            });
-            
-            // Close on Escape key
-            const handleEscape = (e) => {
-                if (e.key === 'Escape') {
-                    handleCancel();
-                    document.removeEventListener('keydown', handleEscape);
-                }
-            };
-            document.addEventListener('keydown', handleEscape);
-        }
-        
         async function removeFeedback(drugName, query) {
-            showConfirmationModal(drugName, query, async () => {
-                try {
-                    const apiBaseUrl = getApiBaseUrl();
-                    const response = await fetch(`${apiBaseUrl}/feedback/remove`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            drug_name: drugName,
-                            query: query
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    if (data.success) {
-                        showToast('Feedback removed successfully', 'success');
-                        loadFeedbackData(); // Refresh the data
-                    } else {
-                        showToast('Failed to remove feedback: ' + data.message, 'error');
-                    }
-                } catch (error) {
-                    console.error('Error removing feedback:', error);
-                    showToast('Error removing feedback', 'error');
-                }
+            const confirmed = await showConfirmModal({
+                title: 'Remove Feedback',
+                message: 'This action cannot be undone.',
+                confirmText: 'Remove Feedback',
+                cancelText: 'Cancel',
+                variant: 'danger',
+                details: [
+                    { label: 'Drug', value: drugName },
+                    { label: 'Query', value: query }
+                ]
             });
+            
+            if (!confirmed) {
+                showToast('Removal cancelled.', 'info');
+                return;
+            }
+            
+            try {
+                const apiBaseUrl = getApiBaseUrl();
+                const response = await fetch(`${apiBaseUrl}/feedback/remove`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        drug_name: drugName,
+                        query: query
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showToast('Feedback removed successfully.', 'success');
+                    loadFeedbackData(); // Refresh the data
+                } else {
+                    showToast('Failed to remove feedback: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error removing feedback:', error);
+                showToast('Error removing feedback.', 'error');
+            }
         }
         
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+            const colorMap = {
+                success: 'bg-emerald-500',
+                error: 'bg-rose-500',
+                warning: 'bg-amber-500',
+                info: 'bg-blue-500'
+            };
+            const bgColor = colorMap[type] || colorMap.info;
             
             toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg mb-2 transition-all duration-300`;
             toast.textContent = message;
@@ -1697,36 +1792,24 @@
         // Admin Dashboard Functions
         let feedbackChart = null;
         let trendsChart = null;
-        let currentTimeFilter = 24; // Default to 24 hours
+        let currentTimeFilter = 'all'; // Default to all time
         
-        function setTimeFilter(hours) {
-            currentTimeFilter = hours;
+        function setTimeFilter(filterValue) {
+            currentTimeFilter = filterValue;
             updateTimeFilterButtons();
             loadAdminData();
         }
         
         function updateTimeFilterButtons() {
             // Reset all buttons
-            const buttons = ['filter24h', 'filter7d', 'filter2w', 'filter1m', 'filter3m', 'filter6m', 'filter1y'];
-            buttons.forEach(id => {
-                const btn = document.getElementById(id);
+            const buttons = document.querySelectorAll('[data-time-filter]');
+            buttons.forEach(btn => {
                 btn.className = 'px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors';
             });
             
             // Highlight active button
-            let activeId = '';
-            switch(currentTimeFilter) {
-                case 24: activeId = 'filter24h'; break;
-                case 168: activeId = 'filter7d'; break;
-                case 336: activeId = 'filter2w'; break;
-                case 720: activeId = 'filter1m'; break;
-                case 2160: activeId = 'filter3m'; break;
-                case 4320: activeId = 'filter6m'; break;
-                case 8760: activeId = 'filter1y'; break;
-            }
-            
-            if (activeId) {
-                const activeBtn = document.getElementById(activeId);
+            const activeBtn = document.querySelector(`[data-time-filter="${currentTimeFilter}"]`);
+            if (activeBtn) {
                 activeBtn.className = 'px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg transition-colors';
             }
         }
@@ -1738,6 +1821,9 @@
                 
                 const apiBaseUrl = getApiBaseUrl();
                 console.log('Loading admin data from:', apiBaseUrl);
+                
+                const filterHours = currentTimeFilter === 'all' ? 0 : Number(currentTimeFilter);
+                const intervalHours = filterHours > 0 ? Math.max(1, Math.floor(filterHours / 24)) : 24;
                 
                 // Load all admin data in parallel with time filter
                 const [systemStatus, cacheStats, rxlistStats, feedbackStats, metricsSummary, timeSeriesData] = await Promise.all([
@@ -1753,15 +1839,15 @@
                         console.log('RxList stats response:', r.status);
                         return r.json();
                     }),
-                    fetch(`${apiBaseUrl}/feedback/stats?time_period_hours=${currentTimeFilter}`).then(r => {
+                    fetch(`${apiBaseUrl}/feedback/stats?time_period_hours=${filterHours}`).then(r => {
                         console.log('Feedback stats response:', r.status);
                         return r.json();
                     }),
-                    fetch(`${apiBaseUrl}/metrics/summary?time_period_hours=${currentTimeFilter}`).then(r => {
+                    fetch(`${apiBaseUrl}/metrics/summary?time_period_hours=${filterHours}`).then(r => {
                         console.log('Metrics summary response:', r.status);
                         return r.json();
                     }),
-                    fetch(`${apiBaseUrl}/metrics/time-series?metric_type=searches&time_period_hours=${currentTimeFilter}&interval_hours=${Math.max(1, Math.floor(currentTimeFilter / 24))}`).then(r => {
+                    fetch(`${apiBaseUrl}/metrics/time-series?metric_type=searches&time_period_hours=${filterHours}&interval_hours=${intervalHours}`).then(r => {
                         console.log('Time series response:', r.status);
                         return r.json();
                     })
@@ -1836,18 +1922,18 @@
             
             // Database stats
             const rxlistDrugsLoading = document.getElementById('rxlistDrugsLoading');
-            const rxlistDrugsValue = document.getElementById('rxlistDrugsValue');
+            const rxlistDrugsValueContainer = document.getElementById('rxlistDrugsValueContainer');
             const rxlistLastUpdatedLoading = document.getElementById('rxlistLastUpdatedLoading');
             const rxlistLastUpdatedValue = document.getElementById('rxlistLastUpdatedValue');
             
             if (show) {
                 if (rxlistDrugsLoading) rxlistDrugsLoading.classList.remove('hidden');
-                if (rxlistDrugsValue) rxlistDrugsValue.classList.add('hidden');
+                if (rxlistDrugsValueContainer) rxlistDrugsValueContainer.classList.add('hidden');
                 if (rxlistLastUpdatedLoading) rxlistLastUpdatedLoading.classList.remove('hidden');
                 if (rxlistLastUpdatedValue) rxlistLastUpdatedValue.classList.add('hidden');
             } else {
                 if (rxlistDrugsLoading) rxlistDrugsLoading.classList.add('hidden');
-                if (rxlistDrugsValue) rxlistDrugsValue.classList.remove('hidden');
+                if (rxlistDrugsValueContainer) rxlistDrugsValueContainer.classList.remove('hidden');
                 if (rxlistLastUpdatedLoading) rxlistLastUpdatedLoading.classList.add('hidden');
                 if (rxlistLastUpdatedValue) rxlistLastUpdatedValue.classList.remove('hidden');
             }
@@ -1888,15 +1974,41 @@
         function updateDatabaseStats(cacheStats, rxlistStats) {
             // Update RxList stats
             if (rxlistStats.rxlist_stats) {
+                const rxlistDrugsValueContainer = document.getElementById('rxlistDrugsValueContainer');
                 const rxlistDrugsValue = document.getElementById('rxlistDrugsValue');
+                const rxlistDelta = document.getElementById('rxlistDelta');
                 const rxlistLastUpdatedValue = document.getElementById('rxlistLastUpdatedValue');
                 
                 if (rxlistDrugsValue) {
-                    rxlistDrugsValue.textContent = rxlistStats.rxlist_stats.total_drugs || 0;
+                    const total = Number(rxlistStats.rxlist_stats.total_drugs || 0);
+                    rxlistDrugsValue.textContent = total.toLocaleString();
                 }
+                
+                if (rxlistDrugsValueContainer) {
+                    rxlistDrugsValueContainer.classList.remove('hidden');
+                }
+                
+                if (rxlistDelta) {
+                    const deltaValue = Number(rxlistStats.rxlist_stats.delta || 0);
+                    rxlistDelta.classList.remove('text-green-600', 'text-red-600');
+                    
+                    if (deltaValue > 0) {
+                        rxlistDelta.textContent = `▲ ${deltaValue.toLocaleString()}`;
+                        rxlistDelta.classList.add('text-green-600');
+                        rxlistDelta.classList.remove('hidden');
+                    } else if (deltaValue < 0) {
+                        rxlistDelta.textContent = `▼ ${Math.abs(deltaValue).toLocaleString()}`;
+                        rxlistDelta.classList.add('text-red-600');
+                        rxlistDelta.classList.remove('hidden');
+                    } else {
+                        rxlistDelta.classList.add('hidden');
+                        rxlistDelta.textContent = '';
+                    }
+                }
+                
                 if (rxlistLastUpdatedValue) {
-                    rxlistLastUpdatedValue.textContent = 
-                        rxlistStats.rxlist_stats.last_updated ? new Date(rxlistStats.rxlist_stats.last_updated).toLocaleString() : 'N/A';
+                    const rawDate = rxlistStats.rxlist_stats.last_updated;
+                    rxlistLastUpdatedValue.textContent = formatLocalDateTime(rawDate);
                 }
             }
         }
@@ -1947,10 +2059,10 @@
             
             if (timeSeriesData.success && timeSeriesData.data) {
                 chartData = timeSeriesData.data.map(point => point.count);
-                chartLabels = timeSeriesData.data.map(point => {
-                    const date = new Date(point.timestamp * 1000);
-                    return date.toLocaleTimeString();
-                });
+                chartLabels = timeSeriesData.data.map(point => formatLocalDateTime(point.timestamp, {
+                    month: 'short',
+                    day: 'numeric'
+                }));
             } else {
                 // Fallback data
                 chartData = [0];
@@ -1976,7 +2088,11 @@
                     maintainAspectRatio: false,
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                precision: 0
+                            }
                         }
                     },
                     plugins: {
@@ -2111,10 +2227,54 @@
             }
         }
         
-        // Utility function to convert UTC timestamp to local time
+        // Timestamp utilities
+        function parseTimestampToDate(timestamp) {
+            if (timestamp === undefined || timestamp === null) return null;
+            
+            if (timestamp instanceof Date) return timestamp;
+            
+            if (typeof timestamp === 'number') {
+                // Assume seconds if value is small, milliseconds otherwise
+                if (timestamp > 1e12) {
+                    return new Date(timestamp);
+                }
+                return new Date(timestamp * 1000);
+            }
+            
+            if (typeof timestamp === 'string') {
+                const numeric = Number(timestamp);
+                if (!Number.isNaN(numeric)) {
+                    if (numeric > 1e12) {
+                        return new Date(numeric);
+                    }
+                    return new Date(numeric * 1000);
+                }
+                
+                const isoCandidate = timestamp.endsWith('Z') ? timestamp : `${timestamp}Z`;
+                const parsedIso = new Date(isoCandidate);
+                if (!Number.isNaN(parsedIso.getTime())) {
+                    return parsedIso;
+                }
+                
+                const fallbackDate = new Date(timestamp);
+                if (!Number.isNaN(fallbackDate.getTime())) {
+                    return fallbackDate;
+                }
+            }
+            
+            return null;
+        }
+        
+        function formatLocalDateTime(timestamp, options = undefined) {
+            const date = parseTimestampToDate(timestamp);
+            if (!date || Number.isNaN(date.getTime())) {
+                return 'N/A';
+            }
+            return date.toLocaleString(undefined, options);
+        }
+        
         function formatLocalTime(timestamp) {
-            const date = new Date(timestamp * 1000);
-            return date.toLocaleTimeString('en-US', {
+            return formatLocalDateTime(timestamp, {
                 hour12: true,
                 hour: 'numeric',
                 minute: '2-digit',
@@ -2130,8 +2290,9 @@
             // Create new row
             const newRow = document.createElement('tr');
             newRow.className = 'animate-fadeIn';
+            const localDateTime = formatLocalDateTime(activity.timestamp);
             newRow.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${formatLocalTime(activity.timestamp)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${localDateTime}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Search</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${activity.query}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -2154,7 +2315,7 @@
             // Update pagination if needed
             activityData.unshift({
                 timestamp: activity.timestamp,
-                time_formatted: formatLocalTime(activity.timestamp),
+                time_formatted: localDateTime,
                 endpoint: activity.endpoint,
                 type: 'Search',
                 query: activity.query,
@@ -2222,7 +2383,7 @@
                     // Convert backend time_formatted to local time
                     activityData = data.data.map(activity => ({
                         ...activity,
-                        time_formatted: formatLocalTime(activity.timestamp)
+                        time_formatted: formatLocalDateTime(activity.timestamp)
                     }));
                     renderActivityPage();
                 } else {
@@ -2611,7 +2772,7 @@
                                     ${primaryRequest.status === 'found' || primaryRequest.status === 'not_found' ? `
                                         <button 
                                             data-request-ids='${approveIdsJson.replace(/'/g, "&#39;")}'
-                                            onclick="event.stopPropagation(); try { const ids = JSON.parse(this.getAttribute('data-request-ids')); approveAllMissingDrugs(ids); } catch(e) { console.error('Error parsing request IDs:', e); alert('Error processing request. Please try again.'); }" 
+                                            onclick="event.stopPropagation(); try { const ids = JSON.parse(this.getAttribute('data-request-ids')); approveAllMissingDrugs(ids); } catch(e) { console.error('Error parsing request IDs:', e); showToast('Error processing request. Please try again.', 'error'); }" 
                                             class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
                                         >
                                             Approve All
@@ -2620,7 +2781,7 @@
                                     ${primaryRequest.status !== 'approved' && primaryRequest.status !== 'rejected' ? `
                                         <button 
                                             data-request-ids='${rejectIdsJson.replace(/'/g, "&#39;")}'
-                                            onclick="event.stopPropagation(); try { const ids = JSON.parse(this.getAttribute('data-request-ids')); rejectAllMissingDrugs(ids); } catch(e) { console.error('Error parsing request IDs:', e); alert('Error processing request. Please try again.'); }" 
+                                            onclick="event.stopPropagation(); try { const ids = JSON.parse(this.getAttribute('data-request-ids')); rejectAllMissingDrugs(ids); } catch(e) { console.error('Error parsing request IDs:', e); showToast('Error processing request. Please try again.', 'error'); }" 
                                             class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
                                         >
                                             Reject All
@@ -2789,7 +2950,15 @@
         }
 
         async function approveMissingDrug(requestId) {
-            if (!confirm('Are you sure you want to approve and add this drug to the database?')) {
+            const confirmed = await showConfirmModal({
+                title: 'Approve Missing Drug',
+                message: 'Are you sure you want to approve and add this drug to the database?',
+                confirmText: 'Approve',
+                cancelText: 'Cancel',
+                variant: 'primary'
+            });
+            if (!confirmed) {
+                showToast('Approval cancelled.', 'info');
                 return;
             }
             
@@ -2802,50 +2971,124 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    alert('Drug approved and added successfully!');
-                    loadMissingDrugs();
+                    if (data.already_exists) {
+                        const updatedFields = (data.updated_fields || []).join(', ');
+                        const approvedAt = data.approved_at ? formatLocalDateTime(data.approved_at) : 'Unknown time';
+                        const source = data.data_source || 'Unknown source';
+                        const details = [];
+                        if (updatedFields) {
+                            details.push({ label: 'Updated Fields', value: updatedFields });
+                        }
+                        
+                        const keepExisting = await showConfirmModal({
+                            title: 'Drug Already Approved',
+                            message: `This drug was previously approved on ${approvedAt} (source: ${source}). Keep the existing record or reject it if this looks incorrect.`,
+                            confirmText: 'Keep Existing',
+                            cancelText: 'Reject Instead',
+                            variant: 'primary',
+                            details
+                        });
+                        
+                        if (keepExisting) {
+                            showToast('Existing drug kept in the database.', 'info');
+                            loadMissingDrugs();
+                        } else {
+                            const rejectionSuccess = await rejectMissingDrug(requestId, { force: true, skipPrompt: true });
+                            if (rejectionSuccess) {
+                                showToast('Existing drug removed and request rejected.', 'warning');
+                            }
+                        }
+                    } else {
+                        showToast('Drug approved and added successfully!', 'success');
+                        loadMissingDrugs();
+                    }
                 } else {
-                    alert('Failed to approve drug: ' + (data.message || 'Unknown error'));
+                    showToast('Failed to approve drug: ' + (data.message || 'Unknown error'), 'error');
                 }
             } catch (error) {
                 console.error('Error approving missing drug:', error);
-                alert('Failed to approve drug. Please try again.');
+                showToast('Failed to approve drug. Please try again.', 'error');
             }
         }
 
-        async function rejectMissingDrug(requestId) {
-            if (!confirm('Are you sure you want to reject this request?')) {
-                return;
+        async function rejectMissingDrug(requestId, options = {}) {
+            const { force = false, skipPrompt = false } = options;
+            let promptConfirmed = true;
+
+            if (!skipPrompt) {
+                promptConfirmed = await showConfirmModal({
+                    title: 'Reject Missing Drug',
+                    message: 'Are you sure you want to reject this request?',
+                    confirmText: 'Reject',
+                    cancelText: 'Cancel',
+                    variant: 'danger'
+                });
+            }
+            
+            if (!promptConfirmed) {
+                if (!skipPrompt) showToast('Rejection cancelled.', 'info');
+                return false;
             }
             
             try {
                 const apiBaseUrl = getApiBaseUrl();
-                const response = await fetch(`${apiBaseUrl}/admin/missing-drugs/${requestId}/reject`, {
+                const url = `${apiBaseUrl}/admin/missing-drugs/${requestId}/reject${force ? '?force=true' : ''}`;
+                const response = await fetch(url, {
                     method: 'POST'
                 });
                 
                 const data = await response.json();
                 
                 if (data.success) {
-                    alert('Request rejected.');
+                    if (!skipPrompt) showToast('Request rejected.', 'success');
                     loadMissingDrugs();
+                    return true;
+                } else if (data.already_approved && !force) {
+                    const approvedAt = data.approved_at ? formatLocalDateTime(data.approved_at) : 'Unknown time';
+                    const dataSource = data.data_source || 'unknown source';
+                    
+                    const proceed = await showConfirmModal({
+                        title: 'Previously Approved',
+                        message: `This drug was previously approved on ${approvedAt} (source: ${dataSource}). Rejecting it will remove it from the database.`,
+                        confirmText: 'Reject & Remove',
+                        cancelText: 'Cancel',
+                        variant: 'danger'
+                    });
+                    
+                    if (proceed) {
+                        return await rejectMissingDrug(requestId, { force: true, skipPrompt: true });
+                    } else {
+                        showToast('Rejection cancelled.', 'info');
+                        return false;
+                    }
                 } else {
-                    alert('Failed to reject request: ' + (data.message || 'Unknown error'));
+                    showToast('Failed to reject request: ' + (data.message || 'Unknown error'), 'error');
+                    return false;
                 }
             } catch (error) {
                 console.error('Error rejecting missing drug:', error);
-                alert('Failed to reject request. Please try again.');
+                showToast('Failed to reject request. Please try again.', 'error');
+                return false;
             }
         }
         
         async function rejectAllMissingDrugs(requestIds) {
             if (!requestIds || !Array.isArray(requestIds) || requestIds.length === 0) {
-                alert('No eligible requests to reject.');
+                showToast('No eligible requests to reject.', 'info');
                 return;
             }
             
             const count = requestIds.length;
-            if (!confirm(`Are you sure you want to reject all ${count} request(s)?`)) {
+            const confirmed = await showConfirmModal({
+                title: 'Reject Missing Drugs',
+                message: `Are you sure you want to reject all ${count} request(s)?`,
+                confirmText: 'Reject All',
+                cancelText: 'Cancel',
+                variant: 'danger'
+            });
+            
+            if (!confirmed) {
+                showToast('Bulk rejection cancelled.', 'info');
                 return;
             }
             
@@ -2862,6 +3105,30 @@
                         const data = await response.json();
                         if (data.success) {
                             successCount++;
+                        } else if (data.already_approved) {
+                            const approvedAt = data.approved_at ? formatLocalDateTime(data.approved_at) : 'Unknown time';
+                            const dataSource = data.data_source || 'unknown source';
+                            const forceProceed = await showConfirmModal({
+                                title: 'Previously Approved',
+                                message: `${requestId} was previously approved on ${approvedAt} (source: ${dataSource}). Rejecting will remove it from the database.`,
+                                confirmText: 'Reject & Remove',
+                                cancelText: 'Skip',
+                                variant: 'danger'
+                            });
+                            if (forceProceed) {
+                                const forceResponse = await fetch(`${apiBaseUrl}/admin/missing-drugs/${requestId}/reject?force=true`, {
+                                    method: 'POST'
+                                });
+                                const forceData = await forceResponse.json();
+                                if (forceData.success) {
+                                    successCount++;
+                                } else {
+                                    failCount++;
+                                    console.error(`Failed to reject request ${requestId}:`, forceData.message);
+                                }
+                            } else {
+                                failCount++;
+                            }
                         } else {
                             failCount++;
                             console.error(`Failed to reject request ${requestId}:`, data.message);
@@ -2873,25 +3140,34 @@
                 }
                 
                 if (failCount === 0) {
-                    alert(`All ${successCount} request(s) rejected successfully.`);
+                    showToast(`All ${successCount} request(s) rejected successfully.`, 'success');
                 } else {
-                    alert(`Rejected ${successCount} request(s). ${failCount} failed.`);
+                    showToast(`Rejected ${successCount} request(s). ${failCount} failed.`, 'warning');
                 }
                 loadMissingDrugs();
             } catch (error) {
                 console.error('Error rejecting missing drugs:', error);
-                alert('Failed to reject requests. Please try again.');
+                showToast('Failed to reject requests. Please try again.', 'error');
             }
         }
         
         async function approveAllMissingDrugs(requestIds) {
             if (!requestIds || !Array.isArray(requestIds) || requestIds.length === 0) {
-                alert('No eligible requests to approve.');
+                showToast('No eligible requests to approve.', 'info');
                 return;
             }
             
             const count = requestIds.length;
-            if (!confirm(`Are you sure you want to approve and add all ${count} request(s) to the database?`)) {
+            const confirmed = await showConfirmModal({
+                title: 'Approve Missing Drugs',
+                message: `Are you sure you want to approve and add all ${count} request(s) to the database?`,
+                confirmText: 'Approve All',
+                cancelText: 'Cancel',
+                variant: 'primary'
+            });
+            
+            if (!confirmed) {
+                showToast('Bulk approval cancelled.', 'info');
                 return;
             }
             
@@ -2906,7 +3182,7 @@
                             method: 'POST'
                         });
                         const data = await response.json();
-                        if (data.success) {
+                        if (data.success || data.already_exists) {
                             successCount++;
                         } else {
                             failCount++;
@@ -2919,14 +3195,14 @@
                 }
                 
                 if (failCount === 0) {
-                    alert(`All ${successCount} request(s) approved and added successfully.`);
+                    showToast(`All ${successCount} request(s) approved successfully.`, 'success');
                 } else {
-                    alert(`Approved ${successCount} request(s). ${failCount} failed.`);
+                    showToast(`Approved ${successCount} request(s). ${failCount} failed.`, 'warning');
                 }
                 loadMissingDrugs();
             } catch (error) {
                 console.error('Error approving missing drugs:', error);
-                alert('Failed to approve requests. Please try again.');
+                showToast('Failed to approve requests. Please try again.', 'error');
             }
         }
         
@@ -3274,50 +3550,33 @@
     </footer>
 
     <!-- Modern Confirmation Modal -->
-    <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0" id="modalContent">
+    <div id="confirmationModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div id="modalContent" class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-200 scale-95 opacity-0">
             <div class="p-6">
-                <!-- Modal Header -->
                 <div class="flex items-center space-x-3 mb-4">
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
-                            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                            </svg>
-                        </div>
+                    <div id="modalIconWrapper" class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center">
+                        <svg id="modalIcon" class="w-6 h-6 text-indigo-600 dark:text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
                     </div>
                     <div class="flex-1">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Remove Feedback</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">This action cannot be undone</p>
+                        <h3 id="modalTitle" class="text-lg font-semibold text-gray-900 dark:text-white">Confirm Action</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400" id="modalSubtitle">Please review and confirm.</p>
                     </div>
                 </div>
 
-                <!-- Modal Body -->
-                <div class="mb-6">
-                    <p class="text-gray-700 dark:text-gray-300 mb-3">
-                        Are you sure you want to remove this feedback entry?
-                    </p>
-                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                        <div class="text-sm">
-                            <div class="flex justify-between mb-1">
-                                <span class="text-gray-500 dark:text-gray-400">Drug:</span>
-                                <span class="font-medium text-gray-900 dark:text-white" id="modalDrugName">-</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-500 dark:text-gray-400">Query:</span>
-                                <span class="font-medium text-gray-900 dark:text-white" id="modalQuery">-</span>
-                            </div>
-                        </div>
-                    </div>
+                <p id="modalMessage" class="text-gray-700 dark:text-gray-300"></p>
+
+                <div id="modalDetails" class="mt-4 hidden">
+                    <div id="modalDetailsBody" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3"></div>
                 </div>
 
-                <!-- Modal Actions -->
-                <div class="flex space-x-3">
+                <div class="flex space-x-3 mt-6">
                     <button type="button" id="modalCancel" class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200">
                         Cancel
                     </button>
-                    <button type="button" id="modalConfirm" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
-                        Remove Feedback
+                    <button type="button" id="modalConfirm" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                        Confirm
                     </button>
                 </div>
             </div>

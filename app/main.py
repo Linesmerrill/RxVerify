@@ -651,11 +651,13 @@ async def approve_missing_drug(request_id: str, approved_by: str = "admin"):
         return {"success": False, "message": str(e)}
 
 @app.post("/admin/missing-drugs/{request_id}/reject")
-async def reject_missing_drug(request_id: str, approved_by: str = "admin"):
+async def reject_missing_drug(request_id: str, approved_by: str = "admin", force: bool = False):
     """Reject a missing drug request."""
     try:
-        success = await missing_drug_manager.reject_request(request_id, approved_by)
-        return {"success": success, "message": "Request rejected" if success else "Failed to reject"}
+        result = await missing_drug_manager.reject_request(request_id, approved_by, force)
+        if result.get("success"):
+            return {"success": True, "message": "Request rejected"}
+        return result
     except Exception as e:
         logger.error(f"Failed to reject missing drug: {str(e)}")
         return {"success": False, "message": str(e)}
@@ -776,11 +778,33 @@ async def get_rxlist_stats():
         # Get drug count as RxList stats
         total_drugs = await drug_db_manager.drugs_collection.count_documents({})
         
+        rxlist_stats_doc = None
+        if analytics_db_manager:
+            if analytics_db_manager.db is None:
+                await analytics_db_manager.initialize()
+            rxlist_stats_doc = await analytics_db_manager.upsert_rxlist_stats(total_drugs)
+        
+        if not rxlist_stats_doc:
+            now = datetime.utcnow()
+            rxlist_stats_doc = {
+                "total_drugs": total_drugs,
+                "previous_total": total_drugs,
+                "delta": 0,
+                "updated_at": now,
+                "previous_updated_at": now,
+                "timezone": "UTC"
+            }
+        
+        updated_at_dt = rxlist_stats_doc.get("updated_at", datetime.utcnow())
+        updated_at_ts = updated_at_dt.timestamp()
+        
         return {
             "status": "success",
             "rxlist_stats": {
-                "total_drugs": total_drugs,
-                "last_updated": time.time()
+                "total_drugs": rxlist_stats_doc.get("total_drugs", total_drugs),
+                "last_updated": updated_at_ts,
+                "delta": rxlist_stats_doc.get("delta", 0),
+                "previous_total": rxlist_stats_doc.get("previous_total", total_drugs)
             },
             "timestamp": time.time()
         }

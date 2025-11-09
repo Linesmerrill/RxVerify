@@ -105,6 +105,11 @@ class AnalyticsDatabaseManager:
                 IndexModel([("date", ASCENDING)])
             ])
             
+            # System stats indexes
+            await self.system_stats_collection.create_indexes([
+                IndexModel([("type", ASCENDING)], unique=True)
+            ])
+            
             logger.info("Analytics database indexes created successfully")
             
         except Exception as e:
@@ -239,7 +244,10 @@ class AnalyticsDatabaseManager:
         """Get comprehensive metrics summary from the database."""
         try:
             end_time = datetime.utcnow()
-            start_time = end_time - timedelta(hours=time_period_hours)
+            if time_period_hours is None or time_period_hours <= 0:
+                start_time = datetime.utcfromtimestamp(0)
+            else:
+                start_time = end_time - timedelta(hours=time_period_hours)
             
             lifetime_total = await self.request_logs_collection.count_documents({})
             
@@ -280,12 +288,13 @@ class AnalyticsDatabaseManager:
                     "success_rate": round(success_rate, 2),
                     "error_rate": round(error_rate, 2),
                     "average_response_time_ms": round(avg_response_time, 2),
-                    "time_period_hours": time_period_hours,
+                    "time_period_hours": time_period_hours if time_period_hours > 0 else 0,
                     "lifetime_requests": lifetime_total
                 }
             else:
                 realtime_metrics = await self._calculate_realtime_metrics(start_time, end_time)
                 realtime_metrics["lifetime_requests"] = lifetime_total
+                realtime_metrics["time_period_hours"] = time_period_hours if time_period_hours > 0 else 0
                 return realtime_metrics
                 
         except Exception as e:
@@ -342,7 +351,7 @@ class AnalyticsDatabaseManager:
                     "success_rate": round(success_rate, 2),
                     "error_rate": round(error_rate, 2),
                     "average_response_time_ms": round(data["average_response_time_ms"] or 0, 2),
-                    "time_period_hours": 24
+                    "time_period_hours": int((end_time - start_time).total_seconds() / 3600)
                 }
             else:
                 return {
@@ -352,7 +361,7 @@ class AnalyticsDatabaseManager:
                     "success_rate": 0.0,
                     "error_rate": 0.0,
                     "average_response_time_ms": 0.0,
-                    "time_period_hours": 24
+                    "time_period_hours": int((end_time - start_time).total_seconds() / 3600)
                 }
                 
         except Exception as e:
@@ -364,7 +373,7 @@ class AnalyticsDatabaseManager:
                 "success_rate": 0.0,
                 "error_rate": 0.0,
                 "average_response_time_ms": 0.0,
-                "time_period_hours": 24
+                "time_period_hours": int((end_time - start_time).total_seconds() / 3600)
             }
     
     async def get_time_series_data(self, metric_type: str = "searches", 
@@ -372,6 +381,14 @@ class AnalyticsDatabaseManager:
                                  interval_hours: int = 1) -> List[Dict[str, Any]]:
         """Get time series data for charts."""
         try:
+            if self.request_logs_collection is None or self.hourly_metrics_collection is None:
+                await self.initialize()
+            
+            if time_period_hours is None or time_period_hours <= 0:
+                if metric_type == "searches":
+                    return await self._get_search_trends(days=7)
+                time_period_hours = 24 * 7
+            
             end_time = datetime.utcnow()
             start_time = end_time - timedelta(hours=time_period_hours)
             
@@ -395,6 +412,104 @@ class AnalyticsDatabaseManager:
         except Exception as e:
             logger.error(f"Failed to get time series data: {str(e)}")
             return []
+    
+    async def _get_search_trends(self, days: int = 7) -> List[Dict[str, Any]]:
+        """Aggregate total requests per day for the given window."""
+        try:
+            if self.request_logs_collection is None:
+                await self.initialize()
+            
+            end_time = datetime.utcnow()
+            end_date = end_time.date()
+            start_date = (end_time - timedelta(days=days - 1)).date()
+            start_time = datetime.combine(start_date, datetime.min.time())
+            pipeline = [
+                {
+                    "$match": {
+                        "timestamp": {
+                            "$gte": start_time
+                        }
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": {
+                            "$dateToString": {
+                                "format": "%Y-%m-%d",
+                                "date": "$timestamp"
+                            }
+                        },
+                        "count": {"$sum": 1}
+                    }
+                },
+                {"$sort": {"_id": 1}}
+            ]
+            
+            results = await self.request_logs_collection.aggregate(pipeline).to_list(None)
+            
+            counts_by_date: Dict[str, int] = {}
+            for doc in results:
+                counts_by_date[doc["_id"]] = doc["count"]
+            
+            data_points: List[Dict[str, Any]] = []
+            for i in range(days):
+                day = start_date + timedelta(days=i)
+                day_str = day.strftime("%Y-%m-%d")
+                count = counts_by_date.get(day_str, 0)
+                dt = datetime.combine(day, datetime.min.time())
+                data_points.append({
+                    "timestamp": dt.timestamp(),
+                    "count": count
+                })
+            
+            return data_points
+        except Exception as e:
+            logger.error(f"Failed to get search trends: {str(e)}")
+            return []
+    
+    async def upsert_rxlist_stats(self, total_drugs: int) -> Dict[str, Any]:
+        """Update and return RxList database statistics."""
+        try:
+            if self.system_stats_collection is None:
+                await self.initialize()
+            
+            now = datetime.utcnow()
+            existing = await self.system_stats_collection.find_one({"type": "rxlist_stats"})
+            
+            if existing and existing.get("total_drugs") == total_drugs:
+                return existing
+            
+            previous_total = existing.get("total_drugs") if existing else total_drugs
+            
+            update_doc = {
+                "type": "rxlist_stats",
+                "total_drugs": total_drugs,
+                "previous_total": previous_total,
+                "delta": total_drugs - previous_total,
+                "updated_at": now,
+                "previous_updated_at": existing.get("updated_at") if existing else now
+            }
+            update_doc["timezone"] = "UTC"
+            
+            await self.system_stats_collection.update_one(
+                {"type": "rxlist_stats"},
+                {"$set": update_doc},
+                upsert=True
+            )
+            
+            return update_doc
+        except Exception as e:
+            logger.error(f"Failed to upsert RxList stats: {str(e)}")
+            # Return a best-effort document
+            fallback_now = datetime.utcnow()
+            return existing or {
+                "type": "rxlist_stats",
+                "total_drugs": total_drugs,
+                "previous_total": total_drugs,
+                "delta": 0,
+                "updated_at": fallback_now,
+                "previous_updated_at": fallback_now
+            }
     
     async def cleanup_old_data(self, days_to_keep: int = 30):
         """Clean up old analytics data to prevent database bloat."""

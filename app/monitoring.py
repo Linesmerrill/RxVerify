@@ -158,6 +158,10 @@ class SimpleMonitor:
         with self._lock:
             data_points = []
             current_time = time.time()
+            if time_period_hours is None or time_period_hours <= 0:
+                time_period_hours = 24 * 7  # Default to last 7 days in fallback mode
+            if interval_hours <= 0:
+                interval_hours = 24
             start_time = current_time - (time_period_hours * 3600)
             
             # Generate time buckets

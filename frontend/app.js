@@ -65,6 +65,7 @@ class RxVerifyApp {
         document.getElementById('clearSearchBtn').addEventListener('click', () => {
             this.clearSearch();
         });
+
     }
 
     setupCharacterCounter() {

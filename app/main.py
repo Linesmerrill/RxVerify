@@ -628,11 +628,13 @@ async def list_missing_drugs(status: Optional[str] = None, limit: int = 50):
                 pass
         
         requests = await missing_drug_manager.list_requests(status=status_enum, limit=limit, sort_by_priority=True)
+        total_requests = await missing_drug_manager.get_total_requests()
         
         return {
             "success": True,
             "requests": [r.dict() for r in requests],
-            "total": len(requests)
+            "total": len(requests),
+            "total_requests": total_requests
         }
     except Exception as e:
         logger.error(f"Failed to list missing drugs: {str(e)}")
@@ -886,7 +888,8 @@ async def get_metrics_summary(time_period_hours: int = 24):
                 "average_response_time": metrics['average_response_time_ms'],
                 "error_rate": metrics['error_rate'],
                 "success_rate": metrics['success_rate'],
-                "time_period_hours": time_period_hours
+                "time_period_hours": time_period_hours,
+                "lifetime_requests": metrics.get('lifetime_requests', metrics['total_requests'])
             },
             "timestamp": time.time()
         }

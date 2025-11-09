@@ -241,6 +241,8 @@ class AnalyticsDatabaseManager:
             end_time = datetime.utcnow()
             start_time = end_time - timedelta(hours=time_period_hours)
             
+            lifetime_total = await self.request_logs_collection.count_documents({})
+            
             # Get aggregated metrics from hourly data
             pipeline = [
                 {
@@ -278,11 +280,13 @@ class AnalyticsDatabaseManager:
                     "success_rate": round(success_rate, 2),
                     "error_rate": round(error_rate, 2),
                     "average_response_time_ms": round(avg_response_time, 2),
-                    "time_period_hours": time_period_hours
+                    "time_period_hours": time_period_hours,
+                    "lifetime_requests": lifetime_total
                 }
             else:
-                # Fallback to real-time calculation if no hourly data
-                return await self._calculate_realtime_metrics(start_time, end_time)
+                realtime_metrics = await self._calculate_realtime_metrics(start_time, end_time)
+                realtime_metrics["lifetime_requests"] = lifetime_total
+                return realtime_metrics
                 
         except Exception as e:
             logger.error(f"Failed to get metrics summary: {str(e)}")
@@ -293,7 +297,8 @@ class AnalyticsDatabaseManager:
                 "success_rate": 0.0,
                 "error_rate": 0.0,
                 "average_response_time_ms": 0.0,
-                "time_period_hours": time_period_hours
+                "time_period_hours": time_period_hours,
+                "lifetime_requests": 0
             }
     
     async def _calculate_realtime_metrics(self, start_time: datetime, end_time: datetime) -> Dict[str, Any]:

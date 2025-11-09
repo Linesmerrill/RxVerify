@@ -435,6 +435,11 @@
                         <input 
                             type="text" 
                             id="searchInput" 
+                            autocomplete="off"
+                            autocorrect="off"
+                            autocapitalize="none"
+                            spellcheck="false"
+                            inputmode="latin"
                             placeholder="Type medication name (e.g., atorvastatin, metformin, lisinopril)"
                             class="w-full px-4 py-3 sm:py-4 pl-10 sm:pl-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 text-gray-700 placeholder-gray-400 text-sm sm:text-base"
                         />
@@ -1855,8 +1860,8 @@
             if (metricsSummary.success && metricsSummary.data) {
                 const metrics = metricsSummary.data;
                 
-                // Total Requests (from metrics)
-                totalRequests = metrics.total_searches || 0;
+                // Total Requests (prefer lifetime if available)
+                totalRequests = metrics.lifetime_requests ?? metrics.total_requests ?? metrics.total_searches ?? 0;
                 
                 // Success Rate (from metrics)
                 successRate = metrics.success_rate ? `${metrics.success_rate.toFixed(1)}%` : 'N/A';
@@ -1875,7 +1880,7 @@
             const successRateValue = document.getElementById('successRateValue');
             const avgResponseTimeValue = document.getElementById('avgResponseTimeValue');
             
-            if (totalRequestsValue) totalRequestsValue.textContent = totalRequests;
+            if (totalRequestsValue) totalRequestsValue.textContent = Number(totalRequests || 0).toLocaleString();
             if (successRateValue) successRateValue.textContent = successRate;
             if (avgResponseTimeValue) avgResponseTimeValue.textContent = avgResponseTime;
         }
@@ -2082,7 +2087,10 @@
                 const avgResponseTimeEl = document.getElementById('avgResponseTime');
                 
                 if (totalRequestsEl) {
-                    animateNumber(totalRequestsEl, metrics.total_requests);
+                    const lifetime = metrics.lifetime_requests ?? metrics.total_requests ?? metrics.total_searches ?? null;
+                    if (lifetime !== null && lifetime !== undefined) {
+                        animateNumber(totalRequestsEl, lifetime);
+                    }
                 }
                 
                 if (successRateEl) {
@@ -2334,7 +2342,6 @@
 
         async function loadMissingDrugs() {
             try {
-                updateMissingDrugsFilterButtons();
                 const missingDrugsLoading = document.getElementById('missingDrugsLoading');
                 const missingDrugsList = document.getElementById('missingDrugsList');
                 
@@ -2342,7 +2349,7 @@
                 if (missingDrugsLoading) missingDrugsLoading.classList.remove('hidden');
                 
                 const apiBaseUrl = getApiBaseUrl();
-                const url = `${apiBaseUrl}/admin/missing-drugs`;
+                const url = `${apiBaseUrl}/admin/missing-drugs?limit=0`;
                 
                 const response = await fetch(url);
                 const data = await response.json();
@@ -2354,6 +2361,7 @@
                     allMissingDrugs = data.requests || [];
                     missingDrugsCounts = computeMissingDrugsCounts(allMissingDrugs);
                     updateMissingDrugsFilterButtons();
+                    
                     applyMissingDrugsFilter();
                 } else {
                     console.error('Failed to load missing drugs:', data.message);
@@ -2531,7 +2539,7 @@
                 
                 // Create summary section
                 const summaryHtml = `
-                    <div class="flex items-start gap-2 ${count > 1 ? 'cursor-pointer' : ''}" ${count > 1 ? `onclick="toggleGroupDetails('${groupId}')"` : ''}>
+                    <div class="flex flex-col sm:flex-row sm:items-start gap-3 ${count > 1 ? 'cursor-pointer' : ''}" ${count > 1 ? `onclick="toggleGroupDetails('${groupId}')"` : ''}>
                         ${count > 1 ? `
                             <button 
                                 onclick="event.stopPropagation(); toggleGroupDetails('${groupId}')" 
@@ -2564,11 +2572,11 @@
                             ${approvedInfoHtml}
                         </div>
                         ${count === 1 ? `
-                            <div class="flex gap-2 ml-4 flex-shrink-0" onclick="event.stopPropagation()">
+                            <div class="flex flex-wrap gap-2 sm:ml-4 sm:mt-0 mt-1" onclick="event.stopPropagation()">
                                 ${primaryRequest.status === 'found' || primaryRequest.status === 'not_found' ? `
                                     <button 
                                         onclick="event.stopPropagation(); approveMissingDrug('${primaryRequest.request_id}')" 
-                                        class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                                        class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors w-full sm:w-auto text-center"
                                     >
                                         Approve
                                     </button>
@@ -2576,7 +2584,7 @@
                                 ${primaryRequest.status !== 'approved' && primaryRequest.status !== 'rejected' ? `
                                     <button 
                                         onclick="event.stopPropagation(); rejectMissingDrug('${primaryRequest.request_id}')" 
-                                        class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                                        class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors w-full sm:w-auto text-center"
                                     >
                                         Reject
                                     </button>
@@ -2677,11 +2685,11 @@
                                                         </div>
                                                     ` : ''}
                                                 </div>
-                                                <div class="flex gap-2 ml-4" onclick="event.stopPropagation()">
+                                                <div class="flex flex-wrap gap-2 sm:ml-4 sm:mt-0 mt-2" onclick="event.stopPropagation()">
                                                     ${request.status === 'found' || request.status === 'not_found' ? `
                                                         <button 
                                                             onclick="event.stopPropagation(); approveMissingDrug('${request.request_id}')" 
-                                                            class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                                                            class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors w-full sm:w-auto text-center"
                                                         >
                                                             Approve
                                                         </button>
@@ -2689,7 +2697,7 @@
                                                     ${request.status !== 'approved' && request.status !== 'rejected' ? `
                                                         <button 
                                                             onclick="event.stopPropagation(); rejectMissingDrug('${request.request_id}')" 
-                                                            class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                                                            class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors w-full sm:w-auto text-center"
                                                         >
                                                             Reject
                                                         </button>

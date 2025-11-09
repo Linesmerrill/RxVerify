@@ -381,11 +381,21 @@ class MissingDrugManager:
                 
                 requests.sort(key=get_priority)
             
-            # Limit results
-            return requests[:limit]
+            # Limit results if requested (limit <= 0 means return all)
+            if limit and limit > 0:
+                return requests[:limit]
+            return requests
         except Exception as e:
             logger.error(f"Failed to list requests: {str(e)}")
             return []
+    
+    async def get_total_requests(self) -> int:
+        """Get total count of missing drug requests."""
+        try:
+            return await self.collection.count_documents({})
+        except Exception as e:
+            logger.error(f"Failed to count missing drug requests: {str(e)}")
+            return 0
     
     async def approve_and_add(
         self, 

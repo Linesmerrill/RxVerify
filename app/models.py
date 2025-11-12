@@ -45,7 +45,8 @@ class SearchRequest(BaseModel):
     limit: int = 10
 
 class DrugSearchResult(BaseModel):
-    rxcui: str
+    drug_id: Optional[str] = None
+    rxcui: Optional[str] = None
     name: str
     generic_name: Optional[str] = None
     brand_names: List[str] = []

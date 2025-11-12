@@ -6,6 +6,7 @@ import os
 import time
 import json
 import asyncio
+import re
 from typing import List, Dict, Optional
 from datetime import datetime
 from app.crosscheck import unify_with_crosscheck
@@ -382,8 +383,28 @@ async def search_medications(request: SearchRequest):
         # Convert results to dict format for JSON response
         results_dict = []
         for result in results:
+            drug_id = getattr(result, 'drug_id', None)
+            
+            # Attempt to map to our internal drug ID if missing
+            if not drug_id and drug_db_manager:
+                try:
+                    candidate = await drug_db_manager.drugs_collection.find_one(
+                        {"primary_search_term": result.name.lower()}
+                    )
+                    
+                    if not candidate:
+                        candidate = await drug_db_manager.drugs_collection.find_one(
+                            {"name": {"$regex": f"^{re.escape(result.name)}$", "$options": "i"}}
+                        )
+                    
+                    if candidate:
+                        drug_id = candidate.get("drug_id")
+                except Exception as lookup_error:
+                    logger.warning(f"Failed to map drug '{result.name}' to internal ID: {lookup_error}")
+            
             results_dict.append({
-                "rxcui": result.rxcui,
+                "drug_id": drug_id,
+                "rxcui": getattr(result, 'rxcui', None),
                 "name": result.name,
                 "generic_name": result.generic_name,
                 "brand_names": result.brand_names,

@@ -254,14 +254,51 @@ class MedicalAPIClient:
                 if rxnorm_response.status_code == 200:
                     rxnorm_data = rxnorm_response.json()
                     
-                    # Extract RxCUIs from RxNorm response
+                    # Extract RxCUIs and drug info from RxNorm response
                     rxcuis = []
+                    rxnorm_concepts = {}  # Store concept info by RxCUI
                     if "drugGroup" in rxnorm_data and "conceptGroup" in rxnorm_data["drugGroup"]:
                         for concept_group in rxnorm_data["drugGroup"]["conceptGroup"]:
                             if "conceptProperties" in concept_group:
                                 for concept in concept_group["conceptProperties"]:
-                                    if "rxcui" in concept:
-                                        rxcuis.append(concept["rxcui"])
+                                    rxcui = concept.get("rxcui")
+                                    if rxcui:
+                                        rxcuis.append(rxcui)
+                                        rxnorm_concepts[rxcui] = {
+                                            "name": concept.get("name", ""),
+                                            "term_type": concept.get("termType", ""),
+                                            "synonym": concept.get("synonym", "")
+                                        }
+                    
+                    # Get brand/generic relationships from RxNorm
+                    brand_generic_map = {}
+                    for rxcui in rxcuis[:3]:
+                        try:
+                            # Get related concepts (brands/generics) for this RxCUI
+                            related_url = f"{RXNORM_BASE_URL}/rxcui/{rxcui}/related.json"
+                            related_params = {"tty": "IN+MIN+SCD+SBD"}  # Ingredients, Min concepts, Clinical drugs, Branded drugs
+                            related_response = await self.http_client.get(related_url, params=related_params)
+                            if related_response.status_code == 200:
+                                related_data = related_response.json()
+                                if "relatedGroup" in related_data and "conceptGroup" in related_data["relatedGroup"]:
+                                    brands = []
+                                    generics = []
+                                    for concept_group in related_data["relatedGroup"]["conceptGroup"]:
+                                        if "conceptProperties" in concept_group:
+                                            for concept in concept_group["conceptProperties"]:
+                                                term_type = concept.get("termType", "")
+                                                name = concept.get("name", "")
+                                                if term_type in ["SBD", "SBDC", "BN"]:  # Brand types
+                                                    brands.append(name)
+                                                elif term_type in ["SCD", "SCDC", "IN"]:  # Generic/Ingredient types
+                                                    generics.append(name)
+                                    if brands or generics:
+                                        brand_generic_map[rxcui] = {
+                                            "brands": brands,
+                                            "generics": generics
+                                        }
+                        except Exception as e:
+                            logger.debug(f"Could not get related concepts for RxCUI {rxcui}: {e}")
                     
                     # Search DailyMed by RxCUI
                     for rxcui in rxcuis[:3]:  # Limit to first 3 RxCUIs
@@ -294,14 +331,43 @@ class MedicalAPIClient:
                                                     extracted_info = self._extract_spl_content(xml_content, drug_name)
                                                     
                                                     if extracted_info:
-                                                        results.append({
+                                                        # Extract brand and generic names from RxNorm data
+                                                        concept_info = rxnorm_concepts.get(rxcui, {})
+                                                        brand_generic_info = brand_generic_map.get(rxcui, {})
+                                                        
+                                                        # Determine brand and generic names
+                                                        brand_names = brand_generic_info.get("brands", [])
+                                                        generic_names = brand_generic_info.get("generics", [])
+                                                        
+                                                        # If we have concept info, use it to determine type
+                                                        term_type = concept_info.get("term_type", "")
+                                                        concept_name = concept_info.get("name", "")
+                                                        
+                                                        # Build result with brand/generic info
+                                                        result_data = {
                                                             "rxcui": rxcui,
                                                             "source": "dailymed",
                                                             "id": f"dailymed_{spl_id}",
                                                             "url": f"https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid={spl_id}",
                                                             "title": title,
-                                                            "text": extracted_info
-                                                        })
+                                                            "text": extracted_info,
+                                                            "name": concept_name or title,
+                                                            "term_type": term_type
+                                                        }
+                                                        
+                                                        # Add brand/generic names based on term type
+                                                        if term_type in ["SBD", "SBDC", "BN"]:  # Brand type
+                                                            if brand_names:
+                                                                result_data["brand_names"] = brand_names
+                                                            if generic_names:
+                                                                result_data["generic_name"] = generic_names[0] if generic_names else None
+                                                        elif term_type in ["SCD", "SCDC", "IN"]:  # Generic type
+                                                            if generic_names:
+                                                                result_data["generic_name"] = generic_names[0] if generic_names else None
+                                                            if brand_names:
+                                                                result_data["brand_names"] = brand_names
+                                                        
+                                                        results.append(result_data)
                                             except Exception as xml_error:
                                                 logger.warning(f"Failed to get XML content for SPL {spl_id}: {xml_error}")
                                                 # Fallback to basic info

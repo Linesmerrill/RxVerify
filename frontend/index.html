@@ -1592,6 +1592,7 @@
             const modalDetailsBody = document.getElementById('modalDetailsBody');
             const modalConfirm = document.getElementById('modalConfirm');
             const modalCancel = document.getElementById('modalCancel');
+            const modalClose = document.getElementById('modalClose');
             const modalIconWrapper = document.getElementById('modalIconWrapper');
             const modalIcon = document.getElementById('modalIcon');
 
@@ -1651,23 +1652,29 @@
                     modal.removeEventListener('click', backdropHandler);
                     modalConfirm.onclick = null;
                     modalCancel.onclick = null;
+                    if (modalClose) {
+                        modalClose.onclick = null;
+                    }
                     resolve(result);
                 };
 
                 const keyHandler = (event) => {
                     if (event.key === 'Escape') {
-                        closeModal(false);
+                        closeModal(null); // Close without action
                     }
                 };
 
                 const backdropHandler = (event) => {
                     if (event.target === modal) {
-                        closeModal(false);
+                        closeModal(null); // Close without action
                     }
                 };
 
                 modalConfirm.onclick = () => closeModal(true);
                 modalCancel.onclick = () => closeModal(false);
+                if (modalClose) {
+                    modalClose.onclick = () => closeModal(null); // Close without action
+                }
 
                 document.addEventListener('keydown', keyHandler);
                 modal.addEventListener('click', backdropHandler);
@@ -1693,6 +1700,10 @@
                 ]
             });
             
+            if (confirmed === null) {
+                // User closed modal with X - do nothing
+                return;
+            }
             if (!confirmed) {
                 showToast('Unignore cancelled.', 'info');
                 return;
@@ -1738,6 +1749,10 @@
                 ]
             });
             
+            if (confirmed === null) {
+                // User closed modal with X - do nothing
+                return;
+            }
             if (!confirmed) {
                 showToast('Removal cancelled.', 'info');
                 return;
@@ -2959,8 +2974,8 @@
                 cancelText: 'Cancel',
                 variant: 'primary'
             });
-            if (!confirmed) {
-                showToast('Approval cancelled.', 'info');
+            if (confirmed === null || !confirmed) {
+                // User closed modal or cancelled - do nothing
                 return;
             }
             
@@ -2991,15 +3006,16 @@
                             details
                         });
                         
-                        if (keepExisting) {
+                        if (keepExisting === true) {
                             showToast('Existing drug kept in the database.', 'info');
                             loadMissingDrugs();
-                        } else {
+                        } else if (keepExisting === false) {
                             const rejectionSuccess = await rejectMissingDrug(requestId, { force: true, skipPrompt: true });
                             if (rejectionSuccess) {
                                 showToast('Existing drug removed and request rejected.', 'warning');
                             }
                         }
+                        // If keepExisting is null, user closed the modal - do nothing
                     } else {
                         showToast('Drug approved and added successfully!', 'success');
                         loadMissingDrugs();
@@ -3027,8 +3043,8 @@
                 });
             }
             
-            if (!promptConfirmed) {
-                if (!skipPrompt) showToast('Rejection cancelled.', 'info');
+            if (promptConfirmed === null || !promptConfirmed) {
+                // User closed modal or cancelled - do nothing
                 return false;
             }
             
@@ -3057,12 +3073,11 @@
                         variant: 'danger'
                     });
                     
-                    if (proceed) {
-                        return await rejectMissingDrug(requestId, { force: true, skipPrompt: true });
-                    } else {
-                        showToast('Rejection cancelled.', 'info');
+                    if (proceed === null || !proceed) {
+                        // User closed modal or cancelled - do nothing
                         return false;
                     }
+                    return await rejectMissingDrug(requestId, { force: true, skipPrompt: true });
                 } else {
                     showToast('Failed to reject request: ' + (data.message || 'Unknown error'), 'error');
                     return false;
@@ -3089,8 +3104,8 @@
                 variant: 'danger'
             });
             
-            if (!confirmed) {
-                showToast('Bulk rejection cancelled.', 'info');
+            if (confirmed === null || !confirmed) {
+                // User closed modal or cancelled - do nothing
                 return;
             }
             
@@ -3117,6 +3132,10 @@
                                 cancelText: 'Skip',
                                 variant: 'danger'
                             });
+                            if (forceProceed === null) {
+                                // User closed modal with X - skip this request
+                                continue;
+                            }
                             if (forceProceed) {
                                 const forceResponse = await fetch(`${apiBaseUrl}/admin/missing-drugs/${requestId}/reject?force=true`, {
                                     method: 'POST'
@@ -3168,8 +3187,8 @@
                 variant: 'primary'
             });
             
-            if (!confirmed) {
-                showToast('Bulk approval cancelled.', 'info');
+            if (confirmed === null || !confirmed) {
+                // User closed modal or cancelled - do nothing
                 return;
             }
             
@@ -3569,6 +3588,11 @@
                         <h3 id="modalTitle" class="text-lg font-semibold text-gray-900 dark:text-white">Confirm Action</h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400" id="modalSubtitle">Please review and confirm.</p>
                     </div>
+                    <button type="button" id="modalClose" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-lg p-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                 </div>
 
                 <p id="modalMessage" class="text-gray-700 dark:text-gray-300"></p>

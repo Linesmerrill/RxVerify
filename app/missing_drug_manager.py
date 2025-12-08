@@ -13,7 +13,7 @@ from app.mongodb_config import mongodb_config
 from pymongo import ASCENDING
 from app.drug_database_schema import MissingDrugRequest, MissingDrugStatus
 from app.medical_apis import MedicalAPIClient
-from app.drug_database_manager import drug_db_manager
+from app.drug_database_manager import drug_db_manager as default_drug_db_manager
 from app.drug_database_schema import DrugEntry, DrugType, DrugStatus
 
 logger = logging.getLogger(__name__)
@@ -36,6 +36,7 @@ class MissingDrugManager:
     def __init__(self):
         self.collection = None
         self.api_client = None
+        self.drug_db_manager = default_drug_db_manager
     
     @staticmethod
     def _normalize_whitespace(value: Optional[str]) -> str:
@@ -150,7 +151,7 @@ class MissingDrugManager:
         
         return sorted(term for term in terms if term)
     
-    async def initialize(self):
+    async def initialize(self, drug_db_manager_instance=None):
         """Initialize the missing drug manager."""
         try:
             db = await mongodb_config.connect()
@@ -161,6 +162,10 @@ class MissingDrugManager:
             await self.collection.create_index("status")
             await self.collection.create_index("created_at")
             await self.collection.create_index("drug_name")
+            
+            # Use provided drug_db_manager instance if available, otherwise use default
+            if drug_db_manager_instance is not None:
+                self.drug_db_manager = drug_db_manager_instance
             
             # Initialize API client
             self.api_client = MedicalAPIClient()
@@ -179,6 +184,8 @@ class MissingDrugManager:
     ) -> MissingDrugRequest:
         """Create a new missing drug request."""
         try:
+            if self.collection is None:
+                raise RuntimeError("Missing drug manager not initialized. Please ensure MongoDB is configured and the manager is initialized.")
             request_id = str(uuid.uuid4())
             
             request = MissingDrugRequest(
@@ -201,6 +208,8 @@ class MissingDrugManager:
     async def search_apis(self, request_id: str) -> Dict[str, Any]:
         """Search external APIs for the missing drug."""
         try:
+            if self.collection is None:
+                raise RuntimeError("Missing drug manager not initialized. Please ensure MongoDB is configured and the manager is initialized.")
             request_doc = await self.collection.find_one({"request_id": request_id})
             if not request_doc:
                 raise ValueError(f"Request {request_id} not found")
@@ -272,6 +281,9 @@ class MissingDrugManager:
     async def get_request(self, request_id: str) -> Optional[MissingDrugRequest]:
         """Get a missing drug request by ID."""
         try:
+            if self.collection is None:
+                logger.error("Missing drug manager collection not initialized")
+                return None
             doc = await self.collection.find_one({"request_id": request_id})
             if doc:
                 return MissingDrugRequest(**doc)
@@ -287,6 +299,8 @@ class MissingDrugManager:
     ) -> bool:
         """Submit a suggestion with selected drug data."""
         try:
+            if self.collection is None:
+                raise RuntimeError("Missing drug manager not initialized. Please ensure MongoDB is configured and the manager is initialized.")
             # Update request with selected drug data
             update_data = {
                 "selected_drug_data": selected_drug_data,
@@ -352,6 +366,9 @@ class MissingDrugManager:
     ) -> List[MissingDrugRequest]:
         """List missing drug requests, optionally sorted by priority (suggestion count)."""
         try:
+            if self.collection is None:
+                logger.error("Missing drug manager collection not initialized")
+                return []
             query = {}
             if status:
                 query["status"] = status
@@ -393,6 +410,9 @@ class MissingDrugManager:
     async def get_total_requests(self) -> int:
         """Get total count of missing drug requests."""
         try:
+            if self.collection is None:
+                logger.error("Missing drug manager collection not initialized")
+                return 0
             return await self.collection.count_documents({})
         except Exception as e:
             logger.error(f"Failed to count missing drug requests: {str(e)}")
@@ -441,6 +461,12 @@ class MissingDrugManager:
     ) -> Dict[str, Any]:
         """Approve a missing drug request and add it to the database."""
         try:
+            if self.collection is None:
+                raise RuntimeError("Missing drug manager not initialized. Please ensure MongoDB is configured and the manager is initialized.")
+            
+            if self.drug_db_manager is None or self.drug_db_manager.drugs_collection is None:
+                raise RuntimeError("Drug database manager not initialized. Please ensure MongoDB is configured and the manager is initialized.")
+            
             request = await self.get_request(request_id)
             if not request:
                 raise ValueError(f"Request {request_id} not found")
@@ -455,12 +481,12 @@ class MissingDrugManager:
             
             existing_entry: Optional[DrugEntry] = None
             if request.added_drug_id:
-                existing_entry = await drug_db_manager.get_drug_by_id(request.added_drug_id)
+                existing_entry = await self.drug_db_manager.get_drug_by_id(request.added_drug_id)
             
             if not existing_entry:
-                existing_doc = await drug_db_manager.drugs_collection.find_one({"primary_search_term": drug_entry.primary_search_term})
+                existing_doc = await self.drug_db_manager.drugs_collection.find_one({"primary_search_term": drug_entry.primary_search_term})
                 if not existing_doc:
-                    existing_doc = await drug_db_manager.drugs_collection.find_one({"name": drug_entry.name})
+                    existing_doc = await self.drug_db_manager.drugs_collection.find_one({"name": drug_entry.name})
                 if existing_doc:
                     existing_entry = DrugEntry(**existing_doc)
             
@@ -469,7 +495,7 @@ class MissingDrugManager:
                 target_drug_id = entry.drug_id
                 differences = self._calculate_entry_diff(entry, drug_entry)
                 if differences:
-                    await drug_db_manager.update_drug(target_drug_id, differences)
+                    await self.drug_db_manager.update_drug(target_drug_id, differences)
                 
                 update_data = {
                     "status": MissingDrugStatus.APPROVED,
@@ -518,11 +544,11 @@ class MissingDrugManager:
                 return await finalize_existing(existing_entry, "Drug already approved" if request.status == MissingDrugStatus.APPROVED else "Drug already approved; attributes refreshed")
             
             # Insert drug into database
-            success = await drug_db_manager.insert_drug(drug_entry)
+            success = await self.drug_db_manager.insert_drug(drug_entry)
             
             if not success:
-                fallback_doc = await drug_db_manager.drugs_collection.find_one({"drug_id": target_drug_id}) or \
-                               await drug_db_manager.drugs_collection.find_one({"primary_search_term": drug_entry.primary_search_term})
+                fallback_doc = await self.drug_db_manager.drugs_collection.find_one({"drug_id": target_drug_id}) or \
+                               await self.drug_db_manager.drugs_collection.find_one({"primary_search_term": drug_entry.primary_search_term})
                 if fallback_doc:
                     existing_entry = DrugEntry(**fallback_doc)
                     return await finalize_existing(existing_entry, "Drug already approved")
@@ -570,11 +596,16 @@ class MissingDrugManager:
         cleaned_generic_candidate = self._strip_strength_and_forms(api_name or request_name)
         formatted_generic_candidate = self._format_name(cleaned_generic_candidate) or request_name_formatted
         
-        brand_names = self._extract_brand_names(data, api_name, request_name)
-        brand_names = [
-            bn for bn in brand_names
-            if self._normalize_term(bn) != self._normalize_term(formatted_generic_candidate)
-        ]
+        # Use brand_names directly from API data if available (from RxNorm/DailyMed)
+        if data.get("brand_names") and isinstance(data.get("brand_names"), list):
+            brand_names = [self._format_name(bn) for bn in data.get("brand_names") if bn]
+        else:
+            # Fallback to extraction method
+            brand_names = self._extract_brand_names(data, api_name, request_name)
+            brand_names = [
+                bn for bn in brand_names
+                if self._normalize_term(bn) != self._normalize_term(formatted_generic_candidate)
+            ]
         brand_normalized = {self._normalize_term(name) for name in brand_names}
         
         primary_search_term = (
@@ -602,9 +633,15 @@ class MissingDrugManager:
         if primary_search_term and primary_search_term not in search_terms:
             search_terms.append(primary_search_term)
         
+        # Use generic_name directly from API data if available (from RxNorm/DailyMed)
+        api_generic_name = data.get("generic_name")
+        if api_generic_name:
+            generic_name = self._format_name(api_generic_name)
+        else:
+            generic_name = None
+        
         drug_type = DrugType.GENERIC
         name = formatted_generic_candidate or request_name_formatted
-        generic_name = None
         
         api_term_type = (data.get("term_type") or "").upper()
         normalized_primary = self._normalize_term(name) or primary_search_term
@@ -620,13 +657,17 @@ class MissingDrugManager:
         ):
             drug_type = DrugType.BRAND
             name = self._format_name(api_name) or request_name_formatted
-            generic_name_candidate = formatted_generic_candidate
-            if generic_name_candidate and self._normalize_term(generic_name_candidate) != self._normalize_term(name):
-                generic_name = generic_name_candidate
+            # If we don't have generic_name from API, try to infer it
+            if not generic_name:
+                generic_name_candidate = formatted_generic_candidate
+                if generic_name_candidate and self._normalize_term(generic_name_candidate) != self._normalize_term(name):
+                    generic_name = generic_name_candidate
         else:
             drug_type = DrugType.GENERIC
             name = formatted_generic_candidate or request_name_formatted
-            generic_name = None
+            # For generic drugs, don't set generic_name (it's the same as name)
+            if generic_name and self._normalize_term(generic_name) == self._normalize_term(name):
+                generic_name = None
         
         rxnorm_id = str(data.get("rxcui")) if data.get("rxcui") else None
         drug_class = data.get("drug_class")
@@ -672,6 +713,8 @@ class MissingDrugManager:
     async def reject_request(self, request_id: str, approved_by: str = "admin", force: bool = False) -> Dict[str, Any]:
         """Reject a missing drug request."""
         try:
+            if self.collection is None:
+                raise RuntimeError("Missing drug manager not initialized. Please ensure MongoDB is configured and the manager is initialized.")
             request = await self.get_request(request_id)
             if not request:
                 return {"success": False, "message": "Request not found"}
@@ -679,7 +722,7 @@ class MissingDrugManager:
             if request.status == MissingDrugStatus.APPROVED and not force:
                 data_source = None
                 if request.added_drug_id:
-                    existing_drug = await drug_db_manager.get_drug_by_id(request.added_drug_id)
+                    existing_drug = await self.drug_db_manager.get_drug_by_id(request.added_drug_id)
                     if existing_drug:
                         data_source = existing_drug.data_source
                 return {
@@ -692,7 +735,7 @@ class MissingDrugManager:
                 }
             
             if request.status == MissingDrugStatus.APPROVED and force and request.added_drug_id:
-                await drug_db_manager.delete_drug(request.added_drug_id)
+                await self.drug_db_manager.delete_drug(request.added_drug_id)
             
             update_data = {
                 "status": MissingDrugStatus.REJECTED,

@@ -118,10 +118,11 @@ async def startup_event():
             
             # Initialize missing drug manager
             try:
-                await missing_drug_manager.initialize()
+                await missing_drug_manager.initialize(drug_db_manager_instance=drug_db_manager)
                 logger.info("✅ Missing drug manager initialized")
             except Exception as e:
-                logger.warning(f"Failed to initialize missing drug manager: {str(e)}")
+                logger.error(f"Failed to initialize missing drug manager: {str(e)}")
+                logger.error("Missing drug requests will not be available until MongoDB is properly configured.")
             
             # Initialize analytics database manager
             await analytics_db_manager.initialize()

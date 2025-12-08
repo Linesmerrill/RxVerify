@@ -896,16 +896,7 @@ class RxVerifyApp {
         drugName.className = 'drug-name font-semibold text-gray-900 text-lg';
         drugName.textContent = result.name;
         
-        const genericName = document.createElement('p');
-        genericName.className = 'text-sm text-gray-600 mt-1';
-        if (result.generic_name && result.generic_name !== result.name) {
-            genericName.textContent = `Generic: ${result.generic_name}`;
-        }
-        
         nameInfo.appendChild(drugName);
-        if (result.generic_name && result.generic_name !== result.name) {
-            nameInfo.appendChild(genericName);
-        }
         
         const drugClass = document.createElement('div');
         drugClass.className = 'text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full';
@@ -914,7 +905,7 @@ class RxVerifyApp {
         nameDiv.appendChild(nameInfo);
         nameDiv.appendChild(drugClass);
         
-        // Create brand names
+        // Create brand names section (old format)
         let brandNamesDiv = '';
         if (result.brand_names && result.brand_names.length > 0) {
             brandNamesDiv = `

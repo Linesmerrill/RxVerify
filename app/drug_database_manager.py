@@ -232,7 +232,7 @@ class DrugDatabaseManager:
                     }
                 }
             },
-            {"$sort": {"relevance_score": -1, "search_count": -1}},
+            {"$sort": {"relevance_score": -1, "upvotes": -1, "rating_score": -1, "search_count": -1}},
             {"$limit": limit}
         ]
         
@@ -287,7 +287,7 @@ class DrugDatabaseManager:
                     }
                 }
             },
-            {"$sort": {"relevance_score": -1, "search_count": -1}},
+            {"$sort": {"relevance_score": -1, "upvotes": -1, "rating_score": -1, "search_count": -1}},
             {"$limit": limit}
         ]
         
@@ -340,7 +340,7 @@ class DrugDatabaseManager:
                     }
                 }
             },
-            {"$sort": {"relevance_score": -1, "search_count": -1}},
+            {"$sort": {"relevance_score": -1, "upvotes": -1, "rating_score": -1, "search_count": -1}},
             {"$limit": limit}
         ]
         
@@ -483,7 +483,7 @@ class DrugDatabaseManager:
                     }
                 }
             },
-            {"$sort": {"relevance_score": -1, "search_count": -1}},
+            {"$sort": {"relevance_score": -1, "upvotes": -1, "rating_score": -1, "search_count": -1}},
             {"$limit": limit}
         ]
         

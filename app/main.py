@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -7,7 +7,7 @@ import time
 import json
 import asyncio
 import re
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from datetime import datetime
 from app.crosscheck import unify_with_crosscheck
 from app.llm import generate_drug_response
@@ -479,6 +479,40 @@ async def search_drugs(query: str = "", limit: int = 10):
             status_code=500,
             detail=f"Local drug search failed: {str(e)}"
         )
+
+@app.put("/drugs/{drug_id}")
+async def update_drug_info(drug_id: str, updates: Dict[str, Any] = Body(...)):
+    """Update drug information."""
+    try:
+        if drug_db_manager is None or drug_db_manager.drugs_collection is None:
+            raise HTTPException(status_code=503, detail="Database not available")
+        
+        # Validate updates - only allow certain fields to be updated
+        allowed_fields = {
+            "drug_class", "common_uses", "brand_names", "generic_name",
+            "manufacturer", "rxnorm_id", "search_terms"
+        }
+        
+        filtered_updates = {
+            k: v for k, v in updates.items() 
+            if k in allowed_fields
+        }
+        
+        if not filtered_updates:
+            raise HTTPException(status_code=400, detail="No valid fields to update")
+        
+        success = await drug_db_manager.update_drug(drug_id, filtered_updates)
+        
+        if success:
+            return {"success": True, "drug_id": drug_id, "updated_fields": list(filtered_updates.keys())}
+        else:
+            raise HTTPException(status_code=404, detail="Drug not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to update drug {drug_id}: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/drugs/vote-status")
 async def get_vote_status(drug_id: str, request: Request):

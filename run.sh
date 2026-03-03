@@ -56,6 +56,11 @@ BACKEND_PID=$!
 # Wait a moment for backend to start
 sleep 3
 
+# Fix any incorrect drug class assignments in the database
+echo "Fixing drug class assignments..."
+python scripts/fix_drug_classes.py --api-url http://localhost:8000 || echo "Warning: Drug class fix script failed (non-fatal)"
+echo ""
+
 # Start frontend in background
 echo "Starting frontend..."
 cd frontend

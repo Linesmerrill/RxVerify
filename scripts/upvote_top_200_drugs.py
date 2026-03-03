@@ -16,6 +16,8 @@ import json
 import random
 import re
 import sys
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.error import URLError, HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -26,30 +28,81 @@ PTCB_URL = "https://ptcbtestprep.com/top-200-brand-and-generic-drugs/"
 # Default API URL (can be overridden with --api-url flag)
 DEFAULT_API_URL = "http://localhost:8000"
 
+# Authoritative reference map for individual drug component classifications.
+# Used to correctly classify individual components of combination drugs
+# (e.g., Hyzaar = Hydrochlorothiazide + Losartan should NOT both be "Thiazide diuretic").
+# Keys must be lowercase for case-insensitive lookup.
+DRUG_CLASS_REFERENCE = {
+    # Suboxone components
+    "buprenorphine": "Partial opioid agonist",
+    "naloxone": "Opioid antagonist",
+    # Robitussin components
+    "dextromethorphan": "Antitussive",
+    "guaifenesin": "Expectorant",
+    # Advair components
+    "salmeterol": "Long-acting beta-2 agonist (LABA)",
+    "fluticasone": "Corticosteroid",
+    "fluticasone propionate": "Corticosteroid",
+    # Fioricet / Percocet / Night Time Cold and Flu components
+    "acetaminophen": "Analgesic / antipyretic",
+    "butalbital": "Barbiturate",
+    "caffeine": "CNS stimulant",
+    "doxylamine": "Antihistamine",
+    "oxycodone": "Opioid analgesic",
+    # Avalide / Hyzaar components
+    "hydrochlorothiazide": "Thiazide diuretic",
+    "irbesartan": "Angiotensin II receptor blocker (ARB)",
+    "losartan": "Angiotensin II receptor blocker (ARB)",
+    # Combivent components
+    "albuterol": "Beta-2 agonist",
+    "ipratropium": "Anticholinergic bronchodilator",
+    # Augmentin components
+    "amoxicillin": "Penicillin antibiotic",
+    "clavulanic acid": "Beta-lactamase inhibitor",
+    # Atripla components
+    "emtricitabine": "NRTI",
+    "tenofovir": "NtRTI",
+    "efavirenz": "NNRTI",
+    # Stalevo 50 components
+    "levodopa": "Dopamine precursor",
+    "carbidopa": "Decarboxylase inhibitor",
+    "entacapone": "COMT inhibitor",
+    # Yaz components
+    "ethinyl estradiol": "Estrogen",
+    "drospirenone": "Progestin",
+}
+
 
 def get_hardcoded_drug_list():
-    """Get the top 200 drugs list (hardcoded from PTCB Test Prep page)."""
-    # Format: (brand, generic, drug_class)
+    """Get the top 200 drugs list (hardcoded from PTCB Test Prep page).
+    
+    Returns a list where each entry is a dict with:
+    - 'brand': single brand name (one entry per brand-generic pair)
+    - 'generic': generic name
+    - 'drug_class': drug class
+    """
+    # Format: (brand_names (can be multiple separated by |), generic, drug_class)
+    # Each brand name will be split and create separate entries
     drugs_data = [
         ("Lexapro", "Escitalopram", "SSRI"),
         ("Oxycodone Hydrochloride Immediate Release", "Oxycodone", "Opioid analgesic"),
-        ("Prinivil", "Lisinopril", "ACE inhibitor"), ("Qbrelis", "Lisinopril", "ACE inhibitor"), ("Zestril", "Lisinopril", "ACE inhibitor"),
+        ("Prinivil|Qbrelis|Zestril", "Lisinopril", "ACE inhibitor"),
         ("Zocor", "Simvastatin", "Statin"),
         ("Synthroid", "Levothyroxine", "Thyroid hormone"),
-        ("Amoxil", "Amoxicillin", "Antibacterial drug"), ("Trimox", "Amoxicillin", "Antibacterial drug"),
+        ("Amoxil|Trimox", "Amoxicillin", "Antibacterial drug"),
         ("Zithromax", "Azithromycin", "Macrolide antibacterial"),
-        ("Microzide", "Hydrochlorothiazide", "Thiazide diuretic"), ("Aquazide H", "Hydrochlorothiazide", "Thiazide diuretic"),
+        ("Microzide|Aquazide H", "Hydrochlorothiazide", "Thiazide diuretic"),
         ("Norvasc", "Amlodipine", "Calcium channel blocker"),
         ("Xanax", "Alprazolam", "Benzodiazepine"),
-        ("Glucophage", "Metformin", "Oral antidiabetic drug"), ("Fortamet", "Metformin", "Oral antidiabetic drug"),
+        ("Glucophage|Fortamet", "Metformin", "Oral antidiabetic drug"),
         ("Lipitor", "Atorvastatin", "Statin"),
         ("Prilosec", "Omeprazole", "Proton-pump inhibitor"),
-        ("Cipro", "Ciprofloxacin", "Fluoroquinolone"), ("Proquin", "Ciprofloxacin", "Fluoroquinolone"),
+        ("Cipro|Proquin", "Ciprofloxacin", "Fluoroquinolone"),
         ("Zofran", "Ondansetron", "Antiemetic drug"),
         ("Clozaril", "Clozapine", "Antipsychotic drug"),
         ("Lasix", "Furosemide", "Loop diuretic"),
         ("Levitra", "Vardenafil", "PDE5 inhibitor"),
-        ("Sumycin", "Tetracycline", "Antibacterial drug"), ("Ala-Tet", "Tetracycline", "Antibacterial drug"), ("Brodspec", "Tetracycline", "Antibacterial drug"),
+        ("Sumycin|Ala-Tet|Brodspec", "Tetracycline", "Antibacterial drug"),
         ("Heparin Sodium", "Heparin", "Anticoagulant drug"),
         ("Valcyte", "Valganciclovir", "Antiviral drug"),
         ("Lamictal", "Lamotrigine", "Anticonvulsant drug"),
@@ -61,7 +114,7 @@ def get_hardcoded_drug_list():
         ("Fosamax", "Alendronate", "Bisphosphonate"),
         ("Pepcid", "Famotidine", "H2 antagonist"),
         ("Omnicef", "Cefdinir", "Cephalosporin"),
-        ("Yaz", "Ethinyl estradiol", "Birth control medicine"), ("Yaz", "Drospirenone", "Birth control medicine"),
+        ("Yaz", "Ethinyl estradiol|Drospirenone", "Birth control medicine"),
         ("Apresoline", "Hydralazine", "Antihypertensive drug"),
         ("Cogentin", "Benztropine", "Antiparkinsonian drug"),
         ("Aller-Chlor", "Chlorpheniramine", "Antihistamine"),
@@ -70,14 +123,14 @@ def get_hardcoded_drug_list():
         ("Pyridium", "Phenazopyridine", "Analgesic"),
         ("Plaquenil", "Hydroxychloroquine", "Anti-malarial drug"),
         ("Lidoderm", "Lidocaine", "Local anesthetic"),
-        ("Cataflam", "Diclofenac", "NSAID"), ("Voltaren", "Diclofenac", "NSAID"),
-        ("Rayos", "Prednisone", "Corticosteroid"), ("Deltasone", "Prednisone", "Corticosteroid"),
+        ("Cataflam|Voltaren", "Diclofenac", "NSAID"),
+        ("Rayos|Deltasone", "Prednisone", "Corticosteroid"),
         ("Zetia", "Ezetimibe", "Antihyperlipidemic"),
         ("Evista", "Raloxifene", "Estrogen modulator"),
         ("Dilantin", "Phenytoin", "Anticonvulsant drug"),
         ("Lovaza", "Omega-3 fatty acids", "Anti-triglyceride drug"),
         ("Zanaflex", "Tizanidine", "Muscle relaxant"),
-        ("Tezruly", "Terazosin", "Alpha-1 blocker"), ("Hytrin", "Terazosin", "Alpha-1 blocker"),
+        ("Tezruly|Hytrin", "Terazosin", "Alpha-1 blocker"),
         ("Dyrenium", "Triamterene", "Potassium-sparing diuretic"),
         ("Altace", "Ramipril", "ACE inhibitor"),
         ("Pravachol", "Pravastatin", "Statin"),
@@ -85,24 +138,24 @@ def get_hardcoded_drug_list():
         ("Lunesta", "Eszopiclone", "Z-drug / hypnotic"),
         ("Celebrex", "Celecoxib", "COX-inhibitor / NSAID"),
         ("Premarin", "Conjugated estrogens", "Estrogen replacement"),
-        ("Avelox", "Moxifloxacin", "Fluoroquinolone"), ("Vigamox", "Moxifloxacin", "Fluoroquinolone"),
+        ("Avelox|Vigamox", "Moxifloxacin", "Fluoroquinolone"),
         ("Aricept", "Donepezil", "Acetylcholinesterase inhibitor"),
-        ("Macrobid", "Nitrofurantoin", "Antibacterial drug"), ("Macrodantin", "Nitrofurantoin", "Antibacterial drug"),
+        ("Macrobid|Macrodantin", "Nitrofurantoin", "Antibacterial drug"),
         ("Duragesic Skin Patch", "Fentanyl", "Opioid narcotic"),
         ("Imdur", "Isosorbide mononitrate", "Nitrate"),
-        ("Prozac", "Fluoxetine", "SSRI"), ("Sarafem", "Fluoxetine", "SSRI"),
+        ("Prozac|Sarafem", "Fluoxetine", "SSRI"),
         ("Aristocort", "Triamcinolone", "Corticosteroid"),
-        ("Suboxone", "Buprenorphine", "Narcotic"), ("Suboxone", "Naloxone", "Opioid blocker"),
+        ("Suboxone", "Buprenorphine|Naloxone", "Narcotic"),
         ("Vyvanse", "Lisdexamfetamine", "CNS Stimulant"),
         ("Pamelor", "Nortriptyline", "Tricyclic antidepressant"),
         ("HumaLOG", "Insulin lispro", "Rapid-acting insulin"),
-        ("Depacon", "Valproate sodium", "Anticonvulsant drug"), ("Depakote", "Valproate sodium", "Anticonvulsant drug"),
-        ("BetaSept", "Chlorhexidine", "Disinfectant/antiseptic"), ("ChloraPrep", "Chlorhexidine", "Disinfectant/antiseptic"),
-        ("Dibent", "Dicyclomine", "Anti-spasmodic drug"), ("Bentyl", "Dicyclomine", "Anti-spasmodic drug"),
+        ("Depacon|Depakote", "Valproate sodium", "Anticonvulsant drug"),
+        ("BetaSept|ChloraPrep", "Chlorhexidine", "Disinfectant/antiseptic"),
+        ("Dibent|Bentyl", "Dicyclomine", "Anti-spasmodic drug"),
         ("Imitrex", "Sumatriptan", "Anti-migraine drug"),
         ("Protonix", "Pantoprazole", "Proton-pump inhibitor"),
         ("Lopressor", "Metoprolol", "Beta-blocker"),
-        ("Robitussen", "Dextromethorphan", "Antitussive"), ("Robitussen", "Guaifenesin", "Expectorant"),
+        ("Robitussen", "Dextromethorphan|Guaifenesin", "Antitussive"),
         ("Valium", "Diazepam", "Benzodiazepine"),
         ("Viagra", "Sildenafil", "PDE5 inhibitor"),
         ("Bactroban", "Mupirocin", "Antibacterial drug"),
@@ -113,40 +166,40 @@ def get_hardcoded_drug_list():
         ("Effexor", "Venlafaxine", "SNRI"),
         ("Boniva", "Ibandronate", "Bisphosphonate"),
         ("Axid", "Nizatidine", "H2 antagonist"),
-        ("Ex-Lax", "Senna", "Laxative"), ("Senna Lax", "Senna", "Laxative"),
+        ("Ex-Lax|Senna Lax", "Senna", "Laxative"),
         ("NovoLog", "Insulin aspart", "Rapid-acting insulin"),
-        ("Bayer", "Aspirin", "Antipyretic"), ("Ecotrin", "Aspirin", "Antipyretic"), ("Bufferin", "Aspirin", "Antipyretic"),
-        ("Gablofen", "Baclofen", "Muscle relaxant"), ("Lioresal", "Baclofen", "Muscle relaxant"),
+        ("Bayer|Ecotrin|Bufferin", "Aspirin", "Antipyretic"),
+        ("Gablofen|Lioresal", "Baclofen", "Muscle relaxant"),
         ("Flagyl", "Metronidazole", "Antibacterial drug"),
         ("Keppra", "Levetiracetam", "Anticonvulsant drug"),
-        ("Colcrys", "Colchicine", "Anti-gout drug"), ("Mitigare", "Colchicine", "Anti-gout drug"),
+        ("Colcrys|Mitigare", "Colchicine", "Anti-gout drug"),
         ("Zyprexa", "Olanzapine", "Antipsychotic drug"),
         ("Avodart", "Dutasteride", "5-alpha reductase inhibitor"),
-        ("TriCor", "Fenofibrate", "Fibrate"), ("Antara", "Fenofibrate", "Fibrate"),
+        ("TriCor|Antara", "Fenofibrate", "Fibrate"),
         ("Cardura", "Doxazosin", "Alpha-1 blocker"),
         ("Aleve", "Naproxen", "NSAID"),
         ("Aldactone", "Spironolactone", "Potassium-sparing diuretic"),
         ("Namenda", "Memantine", "NMDA antagonist"),
         ("Methadose", "Methadone", "Opioid analgesic"),
-        ("Vasotec", "Enalapril", "ACE inhibitor"), ("Epaned", "Enalapril", "ACE inhibitor"),
+        ("Vasotec|Epaned", "Enalapril", "ACE inhibitor"),
         ("Tamiflu", "Oseltamivir", "Antiviral drug"),
         ("Requip", "Ropinirole", "Antiparkinsonian drug"),
         ("Penicillin V potassium", "Penicillin V potassium", "Beta-lactam antibacterial"),
         ("Strattera", "Atomoxetine", "Norepinephrine reuptake inhibitor"),
         ("Ambien", "Zolpidem", "Z-drug / hypnotic"),
-        ("Advair", "Salmeterol", "Bronchodilators"), ("Advair", "Fluticasone", "Bronchodilators"),
+        ("Advair", "Salmeterol|Fluticasone", "Bronchodilators"),
         ("Levaquin", "Levofloxacin", "Fluoroquinolone"),
         ("Tofranil", "Imipramine", "Tricyclic antidepressant"),
-        ("Reclast", "Zoledronic acid", "Bisphosphonate"), ("Zometa", "Zoledronic acid", "Bisphosphonate"),
+        ("Reclast|Zometa", "Zoledronic acid", "Bisphosphonate"),
         ("Glucotrol", "Glipizide", "Antidiabetic drug"),
-        ("Generlac", "Lactulose", "Laxative"), ("Constulose", "Lactulose", "Laxative"),
+        ("Generlac|Constulose", "Lactulose", "Laxative"),
         ("AcipHex", "Rabeprazole", "Proton-pump inhibitor"),
         ("Otrexup", "Methotrexate", "DMARD"),
         ("Cleocin", "Clindamycin", "Antibacterial drug"),
         ("Tylenol", "Acetaminophen", "Analgesic / antipyretic"),
         ("Feosol", "Ferrous sulfate", "Iron supplement"),
         ("Relpax", "Eletriptan", "Antimigraine drug"),
-        ("Carbacot", "Methocarbamol", "Muscle relaxant"), ("Robaxin", "Methocarbamol", "Muscle relaxant"),
+        ("Carbacot|Robaxin", "Methocarbamol", "Muscle relaxant"),
         ("DiaBeta", "Glyburide", "Antidiabetic drug"),
         ("Celexa", "Citalopram", "SSRI"),
         ("Benicar", "Olmesartan", "Angiotensin II blocker"),
@@ -158,15 +211,15 @@ def get_hardcoded_drug_list():
         ("Neurontin", "Gabapentin", "Anticonvulsant drug"),
         ("Enbrel", "Etanercept", "DMARD"),
         ("Herceptin", "Trastuzumab", "Monoclonal antibody"),
-        ("Atripla", "Emtricitabine", "Antiretroviral drugs"), ("Atripla", "Tenofovir", "Antiretroviral drugs"), ("Atripla", "Efavirenz", "Antiretroviral drugs"),
+        ("Atripla", "Emtricitabine|Tenofovir|Efavirenz", "Antiretroviral drugs"),
         ("Xarelto", "Rivaroxaban", "Anticoagulant drug"),
-        ("Stalevo 50", "Levodopa", "Antiparkinsonian medicine"), ("Stalevo 50", "Carbidopa", "Antiparkinsonian medicine"), ("Stalevo 50", "Entacapone", "Antiparkinsonian medicine"),
-        ("Fioricet", "Acetaminophen", "Analgesic / antipyretic"), ("Fioricet", "Butalbital", "Barbiturate"), ("Fioricet", "Caffeine", "Analgesic / antipyretic"),
+        ("Stalevo 50", "Levodopa|Carbidopa|Entacapone", "Antiparkinsonian medicine"),
+        ("Fioricet", "Acetaminophen|Butalbital|Caffeine", "Analgesic / antipyretic"),
         ("Levemir", "Insulin detemir", "Long-acting insulin"),
         ("Lovenox", "Enoxaparin", "Low-molecule weight heparin (LMWH)"),
-        ("Ritalin", "Methylphenidate", "CNS Stimulant"), ("Concerta", "Methylphenidate", "CNS Stimulant"),
+        ("Ritalin|Concerta", "Methylphenidate", "CNS Stimulant"),
         ("Crestor", "Rosuvastatin", "Statin"),
-        ("Xgeva", "Denosumab", "Monoclonal antibody"), ("Prolia", "Denosumab", "Monoclonal antibody"),
+        ("Xgeva|Prolia", "Denosumab", "Monoclonal antibody"),
         ("Pradaxa", "Dabigatran", "Anticoagulant drug"),
         ("Sensipar", "Cinacalcet", "Calcimimetic"),
         ("Vesicare", "Solifenacin", "Antimuscarinic drug"),
@@ -177,36 +230,36 @@ def get_hardcoded_drug_list():
         ("Stelara", "Ustekinumab", "Monoclonal antibody"),
         ("Mobic", "Meloxicam", "NSAID"),
         ("Remicade", "Infliximab", "Monoclonal antibody"),
-        ("Night Time Cold and Flu", "Acetaminophen", "Analgesic /antipyretic"), ("Night Time Cold and Flu", "Dextromethorphan", "Antitussive agent"), ("Night Time Cold and Flu", "Doxylamine", "Antihistamine"),
+        ("Night Time Cold and Flu", "Acetaminophen|Dextromethorphan|Doxylamine", "Analgesic /antipyretic"),
         ("Renvela", "Sevelamer", "Phosphate binder"),
         ("Fragmin", "Dalteparin", "Low-molecular weight Heparin (LMWH)"),
         ("Zoloft", "Sertraline", "SSRI"),
         ("Klonopin", "Clonazepam", "Benzodiazepine"),
-        ("Avalide", "Hydrochlorothiazide", "Thiazide diuretic"), ("Avalide", "Irbesartan", "Angiotensin II blocker"),
+        ("Avalide", "Hydrochlorothiazide|Irbesartan", "Thiazide diuretic"),
         ("Ceftin", "Cefuroxime", "Cephalosporin"),
         ("Nizoral Topical", "Ketoconazole", "Antifungal drug"),
         ("Lyrica", "Pregabalin", "Anticonvulsant drug"),
         ("Nexium", "Esomeprazole", "Proton-pump inhibitor"),
-        ("Combivent Respimat", "Albuterol", "Beta-2 agonist"), ("Combivent Respimat", "Ipratropium", "Anticholinergic drug"),
+        ("Combivent Respimat", "Albuterol|Ipratropium", "Beta-2 agonist"),
         ("Niaspan", "Niacin", "Form of vitamin B3"),
         ("Uroxatral", "Alfuzosin", "Alpha-1 blocker"),
         ("Biaxin", "Clarithromycin", "Macrolide antibacterial"),
         ("Zomig", "Zolmitriptan", "Anti-migraine drug"),
         ("Invokana", "Canagliflozin", "SGLT-2 inhibitor"),
-        ("Saxenda", "Liraglutide", "GLP-1 agonist"), ("Victoza", "Liraglutide", "GLP-1 agonist"),
+        ("Saxenda|Victoza", "Liraglutide", "GLP-1 agonist"),
         ("Alimta", "Pemetrexed", "Anticancer drug"),
-        ("Lotrimin", "Clotrimazole", "Antifungal drug"), ("FungiCURE Pump Spray", "Clotrimazole", "Antifungal drug"),
+        ("Lotrimin|FungiCURE Pump Spray", "Clotrimazole", "Antifungal drug"),
         ("Avastin", "Bevacizumab", "Anticancer drug"),
         ("Sovaldi", "Sofosbuvir", "Hepatitis C drug"),
         ("Gilenya", "Fingolimod", "Immunomodulator"),
         ("Epogen", "Epoetin alfa", "Human erythropoietin"),
         ("Seroquel", "Quetiapine", "Antipsychotic drug"),
         ("Amaryl", "Glimepiride", "Antidiabetic medicine"),
-        ("Percocet", "Acetaminophen", "Analgesic / antipyretic"), ("Percocet", "Oxycodone", "Opioid"),
-        ("SandIMMUNE", "Cyclosporin", "Immunosuppressant"), ("Neoral", "Cyclosporin", "Immunosuppressant"),
+        ("Percocet", "Acetaminophen|Oxycodone", "Analgesic / antipyretic"),
+        ("SandIMMUNE|Neoral", "Cyclosporin", "Immunosuppressant"),
         ("Lantus", "Insulin glargine", "Long-acting insulin"),
         ("Cialis", "Tadalafil", "PDE5 inhibitor"),
-        ("Endep", "Amitriptyline", "Tricyclic antidepressant"), ("Elavil", "Amitriptyline", "Tricyclic antidepressant"), ("Vanatrip", "Amitriptyline", "Tricyclic antidepressant"),
+        ("Endep|Elavil|Vanatrip", "Amitriptyline", "Tricyclic antidepressant"),
         ("Lopid", "Gemfibrozil", "Fibrate"),
         ("Orapred", "Prednisolone", "Corticosteroid"),
         ("Advil", "Ibuprofen", "NSAID"),
@@ -214,9 +267,9 @@ def get_hardcoded_drug_list():
         ("Desyrel", "Trazodone", "Antidepressant"),
         ("Actos", "Pioglitazone", "Thiazolidinedione"),
         ("Proscar", "Finasteride", "5-alpha reductase inhibitor"),
-        ("Inbrija", "Levodopa", "Antiparkinsonian drug"), ("Dopar", "Levodopa", "Antiparkinsonian drug"), ("Larodopa", "Levodopa", "Antiparkinsonian drug"),
+        ("Inbrija|Dopar|Larodopa", "Levodopa", "Antiparkinsonian drug"),
         ("Actonel", "Risedronate", "Bisphosphonate"),
-        ("Ventolin", "Albuterol", "Beta-2 agonist"), ("ProAir", "Albuterol", "Beta-2 agonist"), ("Proventil", "Albuterol", "Beta-2 agonist"),
+        ("Ventolin|ProAir|Proventil", "Albuterol", "Beta-2 agonist"),
         ("Ultram", "Tramadol", "Opiate narcotic"),
         ("Sonata", "Zaleplon", "Z-drug / hypnotic"),
         ("Zebeta", "Bisoprolol", "Beta-blocker"),
@@ -224,29 +277,62 @@ def get_hardcoded_drug_list():
         ("Coumadin", "Warfarin", "Anticoagulant drug"),
         ("Luvox", "Fluvoxamine", "SSRI"),
         ("Plavix", "Clopidogrel", "Antiplatelet drug"),
-        ("Vibramycin", "Doxycycline", "Tetracycline antibiotic"), ("Adoxa", "Doxycycline", "Tetracycline antibiotic"),
-        ("Hyzaar", "Hydrochlorothiazide", "Thiazide diuretic"), ("Hyzaar", "Losartan", "Angiotensin II blocker"),
-        ("Kytril", "Granisetron", "Antiemetic drug"), ("Sancuso", "Granisetron", "Antiemetic drug"),
+        ("Vibramycin|Adoxa", "Doxycycline", "Tetracycline antibiotic"),
+        ("Hyzaar", "Hydrochlorothiazide|Losartan", "Thiazide diuretic"),
+        ("Kytril|Sancuso", "Granisetron", "Antiemetic drug"),
         ("Restoril", "Temazepam", "Benzodiazepine"),
         ("Prevacid", "Lansoprazole", "Proton-pump inhibitor"),
-        ("Augmentin", "Amoxicillin", "Penicillin antibiotic"), ("Augmentin", "Clavulanic acid", "Beta-lactamase inhibitor"),
-        ("Mevacor", "Lovastatin", "Statin"), ("Altoprev", "Lovastatin", "Statin"),
+        ("Augmentin", "Amoxicillin|Clavulanic acid", "Penicillin antibiotic"),
+        ("Mevacor|Altoprev", "Lovastatin", "Statin"),
     ]
     
     drugs = []
     for entry in drugs_data:
         if len(entry) == 3:
-            brand, generic, drug_class = entry
+            brand_names_str, generic, drug_class = entry
         else:
-            brand, generic = entry
+            brand_names_str, generic = entry
             drug_class = None
         
-        if brand and generic:
-            drugs.append({
-                'brand': brand,
-                'generic': generic,
-                'drug_class': drug_class
-            })
+        if brand_names_str and generic:
+            # Split multiple brand names (separated by | or comma)
+            brand_names = []
+            for separator in ['|', ',']:
+                if separator in brand_names_str:
+                    brand_names = [b.strip() for b in brand_names_str.split(separator) if b.strip()]
+                    break
+            else:
+                # No separator found, treat as single brand name
+                brand_names = [brand_names_str.strip()]
+            
+            # Split multiple generic names (separated by | or comma)
+            generic_names = []
+            for separator in ['|', ',']:
+                if separator in generic:
+                    generic_names = [g.strip() for g in generic.split(separator) if g.strip()]
+                    break
+            else:
+                # No separator found, treat as single generic name
+                generic_names = [generic.strip()]
+            
+            # Create separate entry for each brand-generic pair
+            # For combination drugs, look up each component's correct class
+            # from DRUG_CLASS_REFERENCE instead of using the combo-level class
+            is_combo = len(generic_names) > 1
+            for brand in brand_names:
+                for generic_name in generic_names:
+                    if brand and generic_name:
+                        if is_combo:
+                            component_class = DRUG_CLASS_REFERENCE.get(
+                                generic_name.lower().strip(), drug_class
+                            )
+                        else:
+                            component_class = drug_class
+                        drugs.append({
+                            'brand': brand,
+                            'generic': generic_name,
+                            'drug_class': component_class
+                        })
     
     return drugs
 
@@ -512,9 +598,184 @@ def test_api_connection(api_url: str):
         return False
 
 
+def process_generic_drug(api_url, generic_name, drug_class, processed_drug_ids, stats_lock):
+    """Process a single generic drug - can be run in parallel."""
+    result = {
+        'generic_name': generic_name,
+        'drug_id': None,
+        'current_upvotes': 0,
+        'success': False,
+        'skipped_voting': False,
+        'not_found': False,
+        'upvotes_added': 0,
+        'upvotes_failed': 0,
+        'class_updated': False,
+        'error': None
+    }
+    
+    try:
+        results = search_drug(api_url, generic_name)
+        if results:
+            generic_lower = generic_name.lower().strip()
+            drug_id = None
+            current_upvotes = 0
+            
+            for res in results:
+                result_name = res.get('name', '').lower().strip()
+                result_generic = res.get('generic_name', '').lower().strip() if res.get('generic_name') else ''
+                
+                if (generic_lower == result_name or generic_lower == result_generic):
+                    drug_id = res.get('drug_id')
+                    current_upvotes = res.get('upvotes', 0)
+                    break
+            
+            if drug_id:
+                with stats_lock:
+                    if drug_id in processed_drug_ids:
+                        result['skipped_voting'] = True
+                        return result
+                    processed_drug_ids.add(drug_id)
+                
+                result['drug_id'] = drug_id
+                result['current_upvotes'] = current_upvotes
+                
+                # Always update drug class if available
+                if drug_class:
+                    if update_drug_info(api_url, drug_id, {'drug_class': drug_class}):
+                        result['class_updated'] = True
+                
+                # Only upvote if under 30 votes
+                if current_upvotes >= 30:
+                    result['skipped_voting'] = True
+                    result['success'] = True  # Still successful, just didn't vote
+                    return result
+                
+                # Upvote the drug
+                num_votes = random.randint(7, 12)
+                success_count = 0
+                failed_count = 0
+                
+                for i in range(num_votes):
+                    ip_address = generate_random_ip()
+                    user_agent = generate_random_user_agent()
+                    
+                    if upvote_drug(api_url, drug_id, ip_address, user_agent):
+                        success_count += 1
+                    else:
+                        failed_count += 1
+                    
+                    time.sleep(0.05)  # Reduced delay for parallel execution
+                
+                result['success'] = True
+                result['upvotes_added'] = success_count
+                result['upvotes_failed'] = failed_count
+            else:
+                result['not_found'] = True
+        else:
+            result['not_found'] = True
+    except Exception as e:
+        result['error'] = str(e)
+    
+    return result
+
+
+def process_brand_drug(api_url, drug, processed_drug_ids, stats_lock):
+    """Process a single brand-generic pair - can be run in parallel."""
+    brand_name = drug.get('brand')
+    generic_name = drug.get('generic')
+    drug_class = drug.get('drug_class')
+    
+    result = {
+        'brand_name': brand_name,
+        'generic_name': generic_name,
+        'drug_id': None,
+        'current_upvotes': 0,
+        'success': False,
+        'skipped_voting': False,
+        'not_found': False,
+        'upvotes_added': 0,
+        'upvotes_failed': 0,
+        'class_updated': False,
+        'error': None
+    }
+    
+    try:
+        if brand_name:
+            results = search_drug(api_url, brand_name)
+            if results:
+                brand_lower = brand_name.lower().strip()
+                generic_lower = generic_name.lower().strip() if generic_name else ''
+                drug_id = None
+                current_upvotes = 0
+                
+                for res in results:
+                    result_name = res.get('name', '').lower().strip()
+                    result_generic = res.get('generic_name', '').lower().strip() if res.get('generic_name') else ''
+                    result_brands = [b.lower().strip() for b in res.get('brand_names', [])]
+                    
+                    if (brand_lower == result_name or 
+                        brand_lower in result_brands or
+                        (generic_lower and generic_lower == result_generic and brand_lower in result_brands)):
+                        drug_id = res.get('drug_id')
+                        current_upvotes = res.get('upvotes', 0)
+                        break
+                
+                if drug_id:
+                    with stats_lock:
+                        if drug_id in processed_drug_ids:
+                            result['skipped_voting'] = True
+                            return result
+                        processed_drug_ids.add(drug_id)
+                    
+                    result['drug_id'] = drug_id
+                    result['current_upvotes'] = current_upvotes
+                    
+                    # Always update drug class if available (regardless of vote count)
+                    if drug_class:
+                        if update_drug_info(api_url, drug_id, {'drug_class': drug_class}):
+                            result['class_updated'] = True
+                    
+                    # Only upvote if under 30 votes
+                    if current_upvotes >= 30:
+                        result['skipped_voting'] = True
+                        result['success'] = True  # Still successful, just didn't vote
+                        return result
+                    
+                    # Upvote the drug
+                    num_votes = random.randint(7, 12)
+                    success_count = 0
+                    failed_count = 0
+                    
+                    for i in range(num_votes):
+                        ip_address = generate_random_ip()
+                        user_agent = generate_random_user_agent()
+                        
+                        if upvote_drug(api_url, drug_id, ip_address, user_agent):
+                            success_count += 1
+                        else:
+                            failed_count += 1
+                        
+                        time.sleep(0.05)  # Reduced delay for parallel execution
+                    
+                    result['success'] = True
+                    result['upvotes_added'] = success_count
+                    result['upvotes_failed'] = failed_count
+                else:
+                    result['not_found'] = True
+            else:
+                result['not_found'] = True
+        else:
+            result['not_found'] = True
+    except Exception as e:
+        result['error'] = str(e)
+    
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description='Upvote top 200 drugs from PTCB Test Prep')
     parser.add_argument('--api-url', default=DEFAULT_API_URL, help=f'API base URL (default: {DEFAULT_API_URL})')
+    parser.add_argument('--max-workers', type=int, default=10, help='Maximum number of parallel workers (default: 10)')
     args = parser.parse_args()
     
     api_url = args.api_url.rstrip('/')
@@ -561,113 +822,129 @@ def main():
         
         print(f"\nFound {len(drugs)} drug entries to process\n")
         
+        # Track statistics (thread-safe)
+        import threading
+        stats_lock = threading.Lock()
+        processed_drug_ids = set()  # Track which drugs we've already processed
+        
+        # First, collect all unique generic names with their drug classes
+        generic_to_class = {}
+        for drug in drugs:
+            generic_name = drug.get('generic')
+            drug_class = drug.get('drug_class')
+            if generic_name and drug_class:
+                # Use first drug_class found for each generic (they should be the same)
+                if generic_name not in generic_to_class:
+                    generic_to_class[generic_name] = drug_class
+        
+        unique_generics = sorted(generic_to_class.keys())
+        
+        print(f"Found {len(unique_generics)} unique generic names to process")
+        print(f"Found {len(drugs)} brand-generic pairs to process")
+        print(f"Using {args.max_workers} parallel workers")
+        print()
+        
         # Track statistics
         found_count = 0
         not_found_count = 0
+        skipped_count = 0
         total_upvotes = 0
         total_failed_upvotes = 0
-        processed_drug_ids = set()  # Track which drugs we've already processed
         
-        # Process each drug
-        for idx, drug in enumerate(drugs, 1):
-            brand_name = drug.get('brand')
-            generic_name = drug.get('generic')
+        # Process generic drugs in parallel
+        print("="*60)
+        print("PROCESSING GENERIC DRUGS (PARALLEL)")
+        print("="*60)
+        
+        with ThreadPoolExecutor(max_workers=args.max_workers) as executor:
+            future_to_generic = {
+                executor.submit(process_generic_drug, api_url, generic_name, generic_to_class.get(generic_name), processed_drug_ids, stats_lock): generic_name
+                for generic_name in unique_generics
+            }
             
-            print(f"[{idx}/{len(drugs)}] Searching for: Brand={brand_name}, Generic={generic_name}")
-            
-            # Try exact match searches - brand name first, then generic
-            search_queries = []
-            if brand_name:
-                search_queries.append(brand_name)
-            if generic_name:
-                search_queries.append(generic_name)
-            
-            drug_id = None
-            for query in search_queries:
-                if not query or len(query.strip()) < 2:
-                    continue
+            completed = 0
+            for future in as_completed(future_to_generic):
+                completed += 1
+                generic_name = future_to_generic[future]
                 try:
-                    results = search_drug(api_url, query)
-                    if results:
-                        # Look for exact match in the results
-                        query_lower = query.lower().strip()
-                        brand_lower = brand_name.lower().strip() if brand_name else ''
-                        generic_lower = generic_name.lower().strip() if generic_name else ''
-                        
-                        for result in results:
-                            result_name = result.get('name', '').lower().strip()
-                            result_generic = result.get('generic_name', '').lower().strip() if result.get('generic_name') else ''
-                            result_brands = [b.lower().strip() for b in result.get('brand_names', [])]
-                            
-                            # Exact match only
-                            if (query_lower == result_name or 
-                                query_lower == result_generic or
-                                query_lower in result_brands or
-                                (brand_lower and brand_lower == result_name) or
-                                (brand_lower and brand_lower in result_brands) or
-                                (generic_lower and generic_lower == result_name) or
-                                (generic_lower and generic_lower == result_generic)):
-                                drug_id = result.get('drug_id')
-                                if drug_id:
-                                    break
-                        if drug_id:
-                            break
+                    result = future.result()
+                    
+                    if result['skipped_voting']:
+                        class_msg = " (class updated)" if result['class_updated'] else ""
+                        print(f"[{completed}/{len(unique_generics)}] {generic_name}: ⊙ Skipped voting ({result['current_upvotes']} upvotes >= 30){class_msg}")
+                        skipped_count += 1
+                        if result['class_updated']:
+                            found_count += 1
+                    elif result['not_found']:
+                        print(f"[{completed}/{len(unique_generics)}] {generic_name}: ✗ Not found")
+                        not_found_count += 1
+                    elif result['success']:
+                        class_msg = " (class updated)" if result['class_updated'] else ""
+                        print(f"[{completed}/{len(unique_generics)}] {generic_name}: ✓ Upvoted {result['upvotes_added']} times (had {result['current_upvotes']} upvotes){class_msg}")
+                        found_count += 1
+                        total_upvotes += result['upvotes_added']
+                        total_failed_upvotes += result['upvotes_failed']
+                    elif result['error']:
+                        print(f"[{completed}/{len(unique_generics)}] {generic_name}: ✗ Error: {result['error']}")
+                        not_found_count += 1
                 except Exception as e:
-                    # Continue to next query if this one fails
-                    continue
+                    print(f"[{completed}/{len(unique_generics)}] {generic_name}: ✗ Exception: {str(e)}")
+                    not_found_count += 1
+        
+        print()
+        
+        # Process brand-generic pairs in parallel
+        print("="*60)
+        print("PROCESSING BRAND-GENERIC PAIRS (PARALLEL)")
+        print("="*60)
+        
+        with ThreadPoolExecutor(max_workers=args.max_workers) as executor:
+            future_to_drug = {
+                executor.submit(process_brand_drug, api_url, drug, processed_drug_ids, stats_lock): drug
+                for drug in drugs
+            }
             
-            if drug_id and drug_id not in processed_drug_ids:
-                processed_drug_ids.add(drug_id)
-                found_count += 1
-                print(f"  ✓ Found drug_id: {drug_id}")
+            completed = 0
+            for future in as_completed(future_to_drug):
+                completed += 1
+                drug = future_to_drug[future]
+                brand_name = drug.get('brand', 'Unknown')
                 
-                # Update drug class if available
-                drug_class = drug.get('drug_class')
-                if drug_class:
-                    print(f"  Updating drug_class: {drug_class}")
-                    if update_drug_info(api_url, drug_id, {'drug_class': drug_class}):
-                        print(f"  ✓ Successfully updated drug_class")
-                    else:
-                        print(f"  ✗ Failed to update drug_class")
-                
-                # Generate random number of votes (7-12)
-                num_votes = random.randint(7, 12)
-                print(f"  Upvoting {num_votes} times...")
-                
-                # Upvote the drug multiple times
-                success_count = 0
-                failed_count = 0
-                
-                for i in range(num_votes):
-                    ip_address = generate_random_ip()
-                    user_agent = generate_random_user_agent()
+                try:
+                    result = future.result()
                     
-                    if upvote_drug(api_url, drug_id, ip_address, user_agent):
-                        success_count += 1
-                    else:
-                        failed_count += 1
-                    
-                    # Small delay
-                    import time
-                    time.sleep(0.1)
-                
-                total_upvotes += success_count
-                total_failed_upvotes += failed_count
-                print(f"  ✓ Upvoted {success_count} times (failed: {failed_count})")
-            elif drug_id in processed_drug_ids:
-                print(f"  ⊙ Already processed this drug")
-            else:
-                not_found_count += 1
-                print(f"  ✗ Not found in database")
-            
-            print()
+                    if result['skipped_voting']:
+                        class_msg = " (class updated)" if result['class_updated'] else ""
+                        print(f"[{completed}/{len(drugs)}] {brand_name}: ⊙ Skipped voting ({result['current_upvotes']} upvotes >= 30){class_msg}")
+                        skipped_count += 1
+                        if result['class_updated']:
+                            found_count += 1
+                    elif result['not_found']:
+                        print(f"[{completed}/{len(drugs)}] {brand_name}: ✗ Not found")
+                        not_found_count += 1
+                    elif result['success']:
+                        class_msg = " (class updated)" if result['class_updated'] else ""
+                        vote_msg = f"Upvoted {result['upvotes_added']} times" if result['upvotes_added'] > 0 else "Class updated only"
+                        print(f"[{completed}/{len(drugs)}] {brand_name}: ✓ {vote_msg} (had {result['current_upvotes']} upvotes){class_msg}")
+                        found_count += 1
+                        total_upvotes += result['upvotes_added']
+                        total_failed_upvotes += result['upvotes_failed']
+                    elif result['error']:
+                        print(f"[{completed}/{len(drugs)}] {brand_name}: ✗ Error: {result['error']}")
+                        not_found_count += 1
+                except Exception as e:
+                    print(f"[{completed}/{len(drugs)}] {brand_name}: ✗ Exception: {str(e)}")
+                    not_found_count += 1
         
         # Print summary
+        print()
         print("="*60)
         print("SUMMARY")
         print("="*60)
-        print(f"Total drugs processed: {len(drugs)}")
+        print(f"Total generic drugs processed: {len(unique_generics)}")
+        print(f"Total brand-generic pairs processed: {len(drugs)}")
         print(f"Found in database: {found_count}")
+        print(f"Skipped (already 30+ upvotes): {skipped_count}")
         print(f"Not found in database: {not_found_count}")
         print(f"Total successful upvotes: {total_upvotes}")
         print(f"Total failed upvotes: {total_failed_upvotes}")

@@ -484,11 +484,39 @@ class MissingDrugManager:
                 existing_entry = await self.drug_db_manager.get_drug_by_id(request.added_drug_id)
             
             if not existing_entry:
-                existing_doc = await self.drug_db_manager.drugs_collection.find_one({"primary_search_term": drug_entry.primary_search_term})
-                if not existing_doc:
-                    existing_doc = await self.drug_db_manager.drugs_collection.find_one({"name": drug_entry.name})
-                if existing_doc:
-                    existing_entry = DrugEntry(**existing_doc)
+                # Only check for exact duplicates - same normalized name AND same normalized generic_name (if both exist)
+                # This prevents false positives where a similar drug name exists (e.g., "ethinyl estradiol" vs "ethinyl estradiol drospirenone")
+                normalized_new_name = self._normalize_term(drug_entry.name)
+                normalized_new_generic = self._normalize_term(drug_entry.generic_name) if drug_entry.generic_name else None
+                
+                # Check for exact match: same normalized name AND same normalized generic_name
+                if normalized_new_name:
+                    # Find all drugs with matching normalized name (case-insensitive)
+                    all_drugs_cursor = self.drug_db_manager.drugs_collection.find({
+                        "$or": [
+                            {"name": {"$regex": f"^{re.escape(drug_entry.name)}$", "$options": "i"}},
+                            {"primary_search_term": normalized_new_name}
+                        ]
+                    })
+                    all_drugs = await all_drugs_cursor.to_list(length=100)
+                    
+                    # Then check each one for exact match on normalized name + generic_name
+                    for doc in all_drugs:
+                        existing_normalized_name = self._normalize_term(doc.get("name"))
+                        existing_normalized_generic = self._normalize_term(doc.get("generic_name")) if doc.get("generic_name") else None
+                        
+                        # Exact match: same normalized name AND same normalized generic_name
+                        if existing_normalized_name == normalized_new_name:
+                            if normalized_new_generic:
+                                # Both have generic names - must match exactly
+                                if existing_normalized_generic == normalized_new_generic:
+                                    existing_entry = DrugEntry(**doc)
+                                    break
+                            else:
+                                # New drug has no generic name - existing should also have none
+                                if not existing_normalized_generic:
+                                    existing_entry = DrugEntry(**doc)
+                                    break
             
             async def finalize_existing(entry: DrugEntry, message_prefix: str) -> Dict[str, Any]:
                 nonlocal target_drug_id

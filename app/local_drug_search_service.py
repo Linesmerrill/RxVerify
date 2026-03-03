@@ -59,6 +59,7 @@ class LocalDrugSearchService:
                     "generic_name": result.generic_name,
                     "brand_names": result.brand_names,
                     "common_uses": result.common_uses,
+                    "dosages": result.dosages,
                     "drug_class": result.drug_class,
                     "source": "local_database",
                     "rxcui": result.rxnorm_id,

@@ -57,6 +57,20 @@
             `;
         }
         
+        // Create dosages section
+        const dosagesDiv = document.createElement('div');
+        dosagesDiv.className = 'dosages-section mb-2';
+        if (result.dosages && result.dosages.length > 0) {
+            dosagesDiv.innerHTML = `
+                <span class="text-xs font-medium text-gray-500">Available dosages:</span>
+                <div class="flex flex-wrap gap-1 mt-1">
+                    ${result.dosages.map(dosage =>
+                        `<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">${dosage}</span>`
+                    ).join('')}
+                </div>
+            `;
+        }
+
         // Create voting section
         const votingDiv = document.createElement('div');
         votingDiv.className = 'flex items-center justify-between mt-3 pt-2 border-t border-gray-100';
@@ -118,6 +132,7 @@
             div.appendChild(brandDiv);
         }
         div.appendChild(usesDiv);
+        div.appendChild(dosagesDiv);
         div.appendChild(votingDiv);
         
         // No click handler - these are just search results for feedback

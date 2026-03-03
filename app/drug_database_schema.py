@@ -93,6 +93,7 @@ class DrugEntry(BaseModel):
     # Medical information
     drug_class: Optional[str] = Field(None, description="Drug class/therapeutic category")
     common_uses: List[str] = Field(default_factory=list, description="Common medical uses")
+    dosages: List[str] = Field(default_factory=list, description="Available dosage strengths (e.g., '500 mg', '10 mg/5 mL')")
     rxnorm_id: Optional[str] = Field(None, description="RxNorm identifier")
     ndc_codes: List[str] = Field(default_factory=list, description="National Drug Codes")
     
@@ -126,9 +127,10 @@ class DrugSearchResult(BaseModel):
     brand_names: List[str] = []
     drug_class: Optional[str] = None
     common_uses: List[str] = []
+    dosages: List[str] = []
     manufacturer: Optional[str] = None
     rxnorm_id: Optional[str] = None
-    
+
     # Search relevance
     relevance_score: float = Field(default=0.0, description="Search relevance score")
     match_type: str = Field(..., description="Type of match (exact, partial, brand, etc.)")

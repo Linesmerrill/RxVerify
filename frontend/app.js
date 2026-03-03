@@ -930,6 +930,45 @@ class RxVerifyApp {
             `;
         }
         
+        // Create dosages section
+        const dosagesDiv = document.createElement('div');
+        dosagesDiv.className = 'dosages-section mb-2';
+        if (result.dosages && typeof result.dosages === 'object' && Object.keys(result.dosages).length > 0) {
+            const formEntries = Object.entries(result.dosages);
+            const totalStrengths = formEntries.reduce((sum, [, strengths]) => sum + strengths.length, 0);
+            const isCollapsible = totalStrengths > 6;
+
+            let dosagesHTML = `<div class="flex items-center gap-2 mb-1.5">
+                <svg class="w-3.5 h-3.5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                </svg>
+                <span class="text-xs font-medium text-gray-500">Available dosages</span>
+            </div>`;
+
+            dosagesHTML += `<div class="dosage-forms-container space-y-1.5${isCollapsible ? ' dosage-collapsed' : ''}">`;
+            formEntries.forEach(([form, strengths]) => {
+                const formLabel = form.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                dosagesHTML += `<div class="flex items-start gap-2">
+                    <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded mt-0.5 flex-shrink-0 min-w-fit">${formLabel}</span>
+                    <div class="flex flex-wrap gap-1">
+                        ${strengths.map(s =>
+                            `<span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">${s}</span>`
+                        ).join('')}
+                    </div>
+                </div>`;
+            });
+            dosagesHTML += `</div>`;
+
+            if (isCollapsible) {
+                dosagesHTML += `<button class="dosage-toggle-btn text-xs text-blue-500 hover:text-blue-700 mt-1 flex items-center gap-1 transition-colors" onclick="this.previousElementSibling.classList.toggle('dosage-collapsed'); this.querySelector('.toggle-text').textContent = this.previousElementSibling.classList.contains('dosage-collapsed') ? 'Show all ${totalStrengths} dosages' : 'Show less'; this.querySelector('.toggle-icon').style.transform = this.previousElementSibling.classList.contains('dosage-collapsed') ? '' : 'rotate(180deg)'">
+                    <span class="toggle-text">Show all ${totalStrengths} dosages</span>
+                    <svg class="toggle-icon w-3 h-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>`;
+            }
+
+            dosagesDiv.innerHTML = dosagesHTML;
+        }
+
         // Create feedback section
         const feedbackDiv = document.createElement('div');
         feedbackDiv.className = 'flex items-center justify-between mt-3 pt-2 border-t border-gray-100';
@@ -992,10 +1031,11 @@ class RxVerifyApp {
             div.appendChild(brandDiv);
         }
         div.appendChild(usesDiv);
+        div.appendChild(dosagesDiv);
         div.appendChild(feedbackDiv);
-        
+
         // No click handler - these are just search results for feedback
-        
+
         return div;
     }
 

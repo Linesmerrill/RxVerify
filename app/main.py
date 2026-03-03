@@ -815,11 +815,11 @@ async def get_rating_stats():
 
 @app.post("/admin/populate-dosages")
 async def populate_dosages():
-    """Populate dosage information for all drugs from OpenFDA.
+    """Populate dosage information for all drugs using clean NDC bulk data.
 
-    This iterates over every drug missing dosages, queries OpenFDA for
-    dosage_and_administration data, parses out strength values, and
-    stores them on the drug record.
+    This replaces ALL existing dosage data (including bad regex-scraped data)
+    with structured data from the OpenFDA NDC dataset.
+    Requires data/drug_dosages.json to exist (run scripts/fetch_dosages.py first).
     """
     try:
         if drug_db_manager is None or drug_db_manager.drugs_collection is None:
@@ -849,8 +849,8 @@ async def populate_dosages():
 async def get_drug_dosages(drug_id: str):
     """Get dosage information for a specific drug.
 
-    If the drug doesn't have dosages yet, fetches them from OpenFDA on the fly
-    and persists the result.
+    If the drug doesn't have dosages stored, looks them up from
+    the local NDC data and persists the result.
     """
     try:
         if drug_db_manager is None or drug_db_manager.drugs_collection is None:
@@ -864,14 +864,14 @@ async def get_drug_dosages(drug_id: str):
         if not doc:
             raise HTTPException(status_code=404, detail="Drug not found")
 
-        dosages = doc.get("dosages", [])
+        dosages = doc.get("dosages", {})
 
-        # If no dosages stored, try fetching from OpenFDA now
+        # If no dosages stored, look up from local NDC data
         if not dosages:
-            from app.dosage_service import fetch_dosages_from_openfda
+            from app.dosage_service import lookup_dosages
 
             drug_name = doc.get("generic_name") or doc.get("name", "")
-            dosages = await fetch_dosages_from_openfda(drug_name)
+            dosages = lookup_dosages(drug_name)
 
             if dosages:
                 await drug_db_manager.drugs_collection.update_one(

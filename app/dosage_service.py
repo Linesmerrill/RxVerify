@@ -1,194 +1,177 @@
 """
 Dosage Service for RxVerify
 
-Fetches and parses drug dosage information from OpenFDA drug labels.
-Populates the `dosages` field on drug records in MongoDB.
+Provides clean, structured dosage information from the pre-processed
+OpenFDA NDC bulk dataset (data/drug_dosages.json).
+
+The NDC dataset contains structured active_ingredients with exact strengths
+and dosage forms, unlike the old label-scraping approach which extracted
+random numbers from free-text paragraphs.
 """
 
-import re
+import json
 import logging
-import asyncio
-import httpx
-from typing import List, Optional
+import re
+from pathlib import Path
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
-OPENFDA_LABEL_URL = "https://api.fda.gov/drug/label.json"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DOSAGES_FILE = PROJECT_ROOT / "data" / "drug_dosages.json"
 
-# Pattern to extract dosage strengths like "500 mg", "10 mg/5 mL", "0.25 mg", "100 mcg"
-DOSAGE_PATTERN = re.compile(
-    r"\b(\d+(?:\.\d+)?)\s*(mg|mcg|g|ml|meq|units?|iu|%)"
-    r"(?:\s*/\s*(\d+(?:\.\d+)?)\s*(ml|g|mg|tablet|capsule|dose))?",
-    re.IGNORECASE,
-)
+# Module-level cache so we only load the file once per process
+_dosage_cache: Optional[Dict] = None
 
 
-def parse_dosages_from_text(text: str) -> List[str]:
-    """Extract unique dosage strengths from free-text dosage information.
+def _load_dosage_data() -> Dict:
+    """Load the pre-processed dosage data from disk (cached)."""
+    global _dosage_cache
+    if _dosage_cache is not None:
+        return _dosage_cache
 
-    Parses strings like:
-        "500 mg tablets", "10 mg/5 mL oral suspension", "0.25 mg"
-    into a deduplicated, sorted list of dosage strings.
+    if not DOSAGES_FILE.exists():
+        logger.warning(
+            f"Dosage data file not found at {DOSAGES_FILE}. "
+            "Run scripts/fetch_dosages.py to generate it."
+        )
+        _dosage_cache = {}
+        return _dosage_cache
+
+    with open(DOSAGES_FILE) as f:
+        data = json.load(f)
+
+    _dosage_cache = data.get("drugs", {})
+    logger.info(f"Loaded dosage data for {len(_dosage_cache)} drugs")
+    return _dosage_cache
+
+
+def _normalize(name: str) -> str:
+    """Lowercase and strip a name for comparison."""
+    if not name:
+        return ""
+    return name.lower().strip()
+
+
+def _sort_strength(s: str) -> float:
+    """Extract numeric value from strength string for sorting."""
+    match = re.match(r"([\d.]+)", s)
+    if match:
+        try:
+            return float(match.group(1))
+        except ValueError:
+            pass
+    return 0.0
+
+
+def lookup_dosages(drug_name: str) -> Dict[str, List[str]]:
+    """Look up dosages for a drug by name.
+
+    Returns a dict keyed by lowercase dosage form, e.g.:
+        {"tablet": ["10 mg", "20 mg"], "solution": ["5 mg/5mL"]}
     """
-    if not text:
-        return []
+    cache = _load_dosage_data()
+    if not cache:
+        return {}
 
-    matches = DOSAGE_PATTERN.findall(text)
-    seen = set()
-    dosages: List[str] = []
+    name_lower = _normalize(drug_name)
 
-    for match in matches:
-        amount, unit, denom_amount, denom_unit = match
-        unit = unit.lower()
-        # Normalise common unit names
-        if unit == "iu":
-            unit = "IU"
-        elif unit in ("unit", "units"):
-            unit = "units"
+    # Try exact key match first
+    for key, data in cache.items():
+        if _normalize(key) == name_lower:
+            return _format_dosages(data)
 
-        if denom_amount and denom_unit:
-            dosage_str = f"{amount} {unit}/{denom_amount} {denom_unit.lower()}"
-        else:
-            dosage_str = f"{amount} {unit}"
+    # Try matching on generic_name or brand_names
+    for key, data in cache.items():
+        if _normalize(data.get("generic_name", "")) == name_lower:
+            return _format_dosages(data)
+        for bn in data.get("brand_names", []):
+            if _normalize(bn) == name_lower:
+                return _format_dosages(data)
 
-        key = dosage_str.lower()
-        if key not in seen:
-            seen.add(key)
-            dosages.append(dosage_str)
+    # Try partial/contains match
+    for key, data in cache.items():
+        if name_lower in _normalize(key):
+            return _format_dosages(data)
 
-    return dosages
+    return {}
 
 
-async def fetch_dosages_from_openfda(drug_name: str) -> List[str]:
-    """Query OpenFDA drug/label endpoint and return parsed dosage strengths."""
-    try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            params = {
-                "search": f'openfda.generic_name:"{drug_name}"',
-                "limit": 3,
-            }
-            response = await client.get(OPENFDA_LABEL_URL, params=params)
+def _format_dosages(drug_data: dict) -> Dict[str, List[str]]:
+    """Format the simplified dosage data into a dict keyed by form.
 
-            if response.status_code != 200:
-                # Retry with a broader search (brand name field)
-                params["search"] = f'openfda.brand_name:"{drug_name}"'
-                response = await client.get(OPENFDA_LABEL_URL, params=params)
-
-            if response.status_code != 200:
-                logger.debug(f"OpenFDA returned {response.status_code} for '{drug_name}'")
-                return []
-
-            data = response.json()
-            results = data.get("results", [])
-            if not results:
-                return []
-
-            all_dosages: List[str] = []
-            for result in results:
-                # Primary source: dosage_and_administration section
-                dosage_sections = result.get("dosage_and_administration", [])
-                for section_text in dosage_sections:
-                    all_dosages.extend(parse_dosages_from_text(section_text))
-
-                # Secondary source: description section (often contains strength info)
-                descriptions = result.get("description", [])
-                for desc in descriptions:
-                    all_dosages.extend(parse_dosages_from_text(desc))
-
-                # Tertiary: spl_product_data_elements (contains active ingredient strengths)
-                spl_data = result.get("spl_product_data_elements", [])
-                for spl in spl_data:
-                    all_dosages.extend(parse_dosages_from_text(spl))
-
-            # Deduplicate while preserving order
-            seen: set = set()
-            unique: List[str] = []
-            for d in all_dosages:
-                key = d.lower()
-                if key not in seen:
-                    seen.add(key)
-                    unique.append(d)
-
-            return unique
-
-    except Exception as e:
-        logger.warning(f"Failed to fetch dosages from OpenFDA for '{drug_name}': {e}")
-        return []
+    Returns e.g.: {"tablet": ["2.5 mg", "5 mg", "10 mg"], "solution": ["1 mg"]}
+    """
+    dosage_forms = drug_data.get("dosage_forms", {})
+    result = {}
+    for form, strengths in sorted(dosage_forms.items()):
+        sorted_strengths = sorted(strengths, key=_sort_strength)
+        result[form.lower()] = sorted_strengths
+    return result
 
 
 async def populate_dosages_for_all_drugs(
     drugs_collection,
-    batch_size: int = 50,
-    delay_between_batches: float = 1.0,
 ) -> dict:
-    """Iterate over all drugs in the database and populate dosages from OpenFDA.
+    """Replace dosages for ALL drugs in MongoDB using clean NDC data.
 
-    Returns a summary dict with counts of updated / skipped / failed drugs.
+    This wipes any existing (potentially bad) dosage data and replaces
+    it with structured data from the OpenFDA NDC bulk dataset.
     """
-    stats = {"total": 0, "updated": 0, "skipped": 0, "failed": 0, "already_has_dosages": 0}
+    cache = _load_dosage_data()
+    if not cache:
+        return {
+            "error": f"No dosage data found. Run scripts/fetch_dosages.py first.",
+            "total": 0,
+            "updated": 0,
+            "cleared": 0,
+        }
 
-    # Find drugs that don't already have dosages populated
+    stats = {"total": 0, "updated": 0, "cleared": 0, "skipped": 0}
+
+    # Iterate over every drug in the database
     cursor = drugs_collection.find(
-        {"$or": [{"dosages": {"$exists": False}}, {"dosages": {"$size": 0}}]},
-        {"drug_id": 1, "name": 1, "generic_name": 1},
+        {},
+        {"drug_id": 1, "name": 1, "generic_name": 1, "brand_names": 1},
     )
 
-    batch: list = []
     async for doc in cursor:
-        batch.append(doc)
-        if len(batch) >= batch_size:
-            await _process_batch(drugs_collection, batch, stats)
-            batch = []
-            await asyncio.sleep(delay_between_batches)
+        stats["total"] += 1
+        drug_id = doc.get("drug_id", "")
+        drug_name = doc.get("name", "")
+        generic_name = doc.get("generic_name", "")
 
-    # Process remaining
-    if batch:
-        await _process_batch(drugs_collection, batch, stats)
+        # Try multiple name variants to find a match
+        dosages: Dict[str, List[str]] = {}
+        for try_name in [drug_name, generic_name]:
+            if try_name:
+                dosages = lookup_dosages(try_name)
+                if dosages:
+                    break
 
-    # Count drugs that already had dosages
-    already_count = await drugs_collection.count_documents(
-        {"dosages": {"$exists": True, "$not": {"$size": 0}}}
-    )
-    stats["already_has_dosages"] = already_count
+        # Also try brand names
+        if not dosages:
+            for bn in doc.get("brand_names", []):
+                dosages = lookup_dosages(bn)
+                if dosages:
+                    break
 
-    logger.info(
-        f"Dosage population complete: {stats['updated']} updated, "
-        f"{stats['skipped']} skipped, {stats['failed']} failed, "
-        f"{stats['already_has_dosages']} already had dosages"
-    )
-    return stats
-
-
-async def _process_batch(drugs_collection, batch: list, stats: dict):
-    """Process a batch of drugs concurrently."""
-    tasks = []
-    for doc in batch:
-        tasks.append(_fetch_and_update_single(drugs_collection, doc, stats))
-    await asyncio.gather(*tasks, return_exceptions=True)
-
-
-async def _fetch_and_update_single(drugs_collection, doc: dict, stats: dict):
-    """Fetch dosages for a single drug and update the database."""
-    stats["total"] += 1
-    drug_id = doc.get("drug_id", "")
-    # Prefer generic_name for OpenFDA lookups since labels are indexed by generic name
-    drug_name = doc.get("generic_name") or doc.get("name", "")
-
-    if not drug_name:
-        stats["skipped"] += 1
-        return
-
-    try:
-        dosages = await fetch_dosages_from_openfda(drug_name)
         if dosages:
             await drugs_collection.update_one(
                 {"drug_id": drug_id},
                 {"$set": {"dosages": dosages}},
             )
             stats["updated"] += 1
-            logger.debug(f"Updated dosages for '{drug_name}': {dosages}")
         else:
-            stats["skipped"] += 1
-    except Exception as e:
-        stats["failed"] += 1
-        logger.warning(f"Failed to update dosages for '{drug_name}': {e}")
+            # Clear out any bad data that was there before
+            await drugs_collection.update_one(
+                {"drug_id": drug_id},
+                {"$set": {"dosages": {}}},
+            )
+            stats["cleared"] += 1
+
+    logger.info(
+        f"Dosage population complete: {stats['updated']} updated, "
+        f"{stats['cleared']} cleared, {stats['total']} total"
+    )
+    return stats

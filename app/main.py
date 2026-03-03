@@ -490,7 +490,7 @@ async def update_drug_info(drug_id: str, updates: Dict[str, Any] = Body(...)):
         # Validate updates - only allow certain fields to be updated
         allowed_fields = {
             "drug_class", "common_uses", "brand_names", "generic_name",
-            "manufacturer", "rxnorm_id", "search_terms"
+            "manufacturer", "rxnorm_id", "search_terms", "dosages"
         }
         
         filtered_updates = {
@@ -812,6 +812,88 @@ async def get_rating_stats():
             status_code=500,
             detail=f"Failed to get rating stats: {str(e)}"
         )
+
+@app.post("/admin/populate-dosages")
+async def populate_dosages():
+    """Populate dosage information for all drugs from OpenFDA.
+
+    This iterates over every drug missing dosages, queries OpenFDA for
+    dosage_and_administration data, parses out strength values, and
+    stores them on the drug record.
+    """
+    try:
+        if drug_db_manager is None or drug_db_manager.drugs_collection is None:
+            raise HTTPException(status_code=503, detail="Database not available")
+
+        from app.dosage_service import populate_dosages_for_all_drugs
+
+        stats = await populate_dosages_for_all_drugs(drug_db_manager.drugs_collection)
+
+        return {
+            "success": True,
+            "message": "Dosage population complete",
+            "stats": stats,
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to populate dosages: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to populate dosages: {str(e)}",
+        )
+
+
+@app.get("/drugs/{drug_id}/dosages")
+async def get_drug_dosages(drug_id: str):
+    """Get dosage information for a specific drug.
+
+    If the drug doesn't have dosages yet, fetches them from OpenFDA on the fly
+    and persists the result.
+    """
+    try:
+        if drug_db_manager is None or drug_db_manager.drugs_collection is None:
+            raise HTTPException(status_code=503, detail="Database not available")
+
+        doc = await drug_db_manager.drugs_collection.find_one(
+            {"drug_id": drug_id},
+            {"drug_id": 1, "name": 1, "generic_name": 1, "dosages": 1},
+        )
+
+        if not doc:
+            raise HTTPException(status_code=404, detail="Drug not found")
+
+        dosages = doc.get("dosages", [])
+
+        # If no dosages stored, try fetching from OpenFDA now
+        if not dosages:
+            from app.dosage_service import fetch_dosages_from_openfda
+
+            drug_name = doc.get("generic_name") or doc.get("name", "")
+            dosages = await fetch_dosages_from_openfda(drug_name)
+
+            if dosages:
+                await drug_db_manager.drugs_collection.update_one(
+                    {"drug_id": drug_id},
+                    {"$set": {"dosages": dosages}},
+                )
+
+        return {
+            "drug_id": drug_id,
+            "name": doc.get("name"),
+            "dosages": dosages,
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get dosages for {drug_id}: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get dosages: {str(e)}",
+        )
+
 
 @app.get("/rxlist/stats")
 async def get_rxlist_stats():

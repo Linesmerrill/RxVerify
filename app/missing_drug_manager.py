@@ -15,6 +15,7 @@ from app.drug_database_schema import MissingDrugRequest, MissingDrugStatus
 from app.medical_apis import MedicalAPIClient
 from app.drug_database_manager import drug_db_manager as default_drug_db_manager
 from app.drug_database_schema import DrugEntry, DrugType, DrugStatus
+from app.dosage_service import lookup_ndc_data
 
 logger = logging.getLogger(__name__)
 
@@ -421,7 +422,8 @@ class MissingDrugManager:
     def _calculate_entry_diff(self, existing: DrugEntry, new_entry: DrugEntry) -> Dict[str, Any]:
         """Calculate field differences between existing and new drug entries."""
         diff: Dict[str, Any] = {}
-        list_fields = {"brand_names", "common_uses", "search_terms"}
+        list_fields = {"brand_names", "common_uses", "search_terms", "ndc_codes", "active_ingredients"}
+        dict_fields = {"dosages"}
         fields_to_compare = {
             "name",
             "drug_type",
@@ -430,7 +432,10 @@ class MissingDrugManager:
             "manufacturer",
             "drug_class",
             "common_uses",
+            "dosages",
             "rxnorm_id",
+            "ndc_codes",
+            "active_ingredients",
             "primary_search_term",
             "search_terms",
             "data_source",
@@ -439,11 +444,18 @@ class MissingDrugManager:
         existing_dict = existing.dict()
         new_dict = new_entry.dict()
         
+        # Fields where we only fill if existing is empty (don't overwrite good data)
+        fill_only_fields = {"dosages", "ndc_codes", "active_ingredients", "manufacturer", "rxnorm_id"}
+
         for field in fields_to_compare:
             existing_value = existing_dict.get(field)
             new_value = new_dict.get(field)
-            
-            if field in list_fields:
+
+            if field in fill_only_fields:
+                # Only set if existing is empty/falsy and new has data
+                if not existing_value and new_value:
+                    diff[field] = new_value
+            elif field in list_fields:
                 existing_list = sorted(existing_value or [])
                 new_list = sorted(new_value or [])
                 if existing_list != new_list:
@@ -451,7 +463,7 @@ class MissingDrugManager:
             else:
                 if existing_value != new_value:
                     diff[field] = new_value
-        
+
         return diff
     
     async def approve_and_add(
@@ -720,6 +732,35 @@ class MissingDrugManager:
         else:
             search_terms = sorted(set(search_terms))
         
+        # Enrich with local NDC data (dosages, drug_class, manufacturer, etc.)
+        ndc_enrichment = None
+        for try_name in [name, request_name_formatted, generic_name, request.drug_name]:
+            if try_name:
+                ndc_enrichment = lookup_ndc_data(try_name)
+                if ndc_enrichment:
+                    break
+        # Also try brand names
+        if not ndc_enrichment and brand_names:
+            for bn in brand_names:
+                ndc_enrichment = lookup_ndc_data(bn)
+                if ndc_enrichment:
+                    break
+
+        dosages = {}
+        ndc_codes = []
+        active_ingredients = []
+        if ndc_enrichment:
+            dosages = ndc_enrichment["dosages"]
+            ndc_codes = ndc_enrichment.get("ndc_codes", [])[:20]
+            active_ingredients = ndc_enrichment.get("active_ingredients", [])
+            if not drug_class and ndc_enrichment.get("drug_class"):
+                drug_class = ndc_enrichment["drug_class"]
+            if not manufacturer and ndc_enrichment.get("manufacturers"):
+                manufacturer = ndc_enrichment["manufacturers"][0]
+            if not rxnorm_id and ndc_enrichment.get("rxcuis"):
+                rxnorm_id = ndc_enrichment["rxcuis"][0]
+            logger.info(f"Enriched '{name}' with NDC data: {len(dosages)} dosage forms, class={drug_class}")
+
         drug_entry = DrugEntry(
             drug_id=drug_id,
             name=name or request_name_formatted,
@@ -729,13 +770,16 @@ class MissingDrugManager:
             manufacturer=manufacturer,
             drug_class=drug_class,
             common_uses=common_uses,
+            dosages=dosages,
             rxnorm_id=rxnorm_id,
+            ndc_codes=ndc_codes,
+            active_ingredients=active_ingredients,
             primary_search_term=primary_search_term,
             search_terms=search_terms,
             status=DrugStatus.ACTIVE,
             data_source=data_source
         )
-        
+
         return drug_entry
     
     async def reject_request(self, request_id: str, approved_by: str = "admin", force: bool = False) -> Dict[str, Any]:

@@ -97,6 +97,58 @@ def lookup_dosages(drug_name: str) -> Dict[str, List[str]]:
     return {}
 
 
+def _find_drug_data(drug_name: str) -> Optional[Dict]:
+    """Find the raw drug data entry for a drug name. Returns the full dict from drug_dosages.json."""
+    cache = _load_dosage_data()
+    if not cache:
+        return None
+
+    name_lower = _normalize(drug_name)
+
+    for key, data in cache.items():
+        if _normalize(key) == name_lower:
+            return data
+
+    for key, data in cache.items():
+        if _normalize(data.get("generic_name", "")) == name_lower:
+            return data
+        for bn in data.get("brand_names", []):
+            if _normalize(bn) == name_lower:
+                return data
+
+    for key, data in cache.items():
+        if name_lower in _normalize(key):
+            return data
+
+    return None
+
+
+def lookup_ndc_data(drug_name: str) -> Optional[Dict]:
+    """Look up full NDC enrichment data for a drug by name.
+
+    Returns a dict with dosages, drug_class, manufacturers, ndc_codes,
+    rxcuis, active_ingredients, and routes — or None if not found.
+    """
+    data = _find_drug_data(drug_name)
+    if not data:
+        return None
+
+    dosages = _format_dosages(data)
+    if not dosages:
+        return None
+
+    return {
+        "dosages": dosages,
+        "drug_class": data.get("drug_class", ""),
+        "pharm_classes": data.get("pharm_classes", []),
+        "manufacturers": data.get("manufacturers", []),
+        "ndc_codes": data.get("ndc_codes", []),
+        "rxcuis": data.get("rxcuis", []),
+        "active_ingredients": data.get("active_ingredients", []),
+        "routes": data.get("routes", []),
+    }
+
+
 def _format_dosages(drug_data: dict) -> Dict[str, List[str]]:
     """Format the simplified dosage data into a dict keyed by form.
 

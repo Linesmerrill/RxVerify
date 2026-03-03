@@ -177,6 +177,71 @@ def build_ndc_index(ndc_records: list) -> dict:
     return index
 
 
+def extract_extra_info(ndc_records: list) -> dict:
+    """Extract drug class, manufacturer, NDC codes, RxCUI, and active ingredients from NDC records."""
+    pharm_classes = set()
+    manufacturers = set()
+    ndc_codes = set()
+    rxcuis = set()
+    ingredients = set()
+    product_types = set()
+    routes = set()
+
+    for record in ndc_records:
+        # Pharmacological class (drug class)
+        for pc in record.get("pharm_class", []):
+            if "[EPC]" in pc:
+                # Extract just the class name, e.g. "Azole Antifungal [EPC]" -> "Azole Antifungal"
+                pharm_classes.add(pc.replace(" [EPC]", "").strip())
+        openfda = record.get("openfda", {})
+        for epc in openfda.get("pharm_class_epc", []):
+            pharm_classes.add(epc.strip())
+
+        # Manufacturer
+        labeler = record.get("labeler_name", "")
+        if labeler:
+            manufacturers.add(labeler.strip())
+        for mfr in openfda.get("manufacturer_name", []):
+            if mfr:
+                manufacturers.add(mfr.strip())
+
+        # NDC codes
+        ndc = record.get("product_ndc", "")
+        if ndc:
+            ndc_codes.add(ndc)
+
+        # RxCUI
+        for rx in openfda.get("rxcui", []):
+            if rx:
+                rxcuis.add(rx)
+
+        # Active ingredients
+        for ai in record.get("active_ingredients", []):
+            name = ai.get("name", "").strip()
+            if name:
+                ingredients.add(name.title())
+
+        # Product type (Rx vs OTC)
+        pt = record.get("product_type", "")
+        if pt:
+            product_types.add(pt)
+
+        # Routes
+        for r in record.get("route", []):
+            if r:
+                routes.add(r)
+
+    return {
+        "pharm_classes": sorted(pharm_classes),
+        "manufacturers": sorted(manufacturers),
+        "ndc_codes": sorted(ndc_codes),
+        "rxcuis": sorted(rxcuis),
+        "active_ingredients": sorted(ingredients),
+        "product_types": sorted(product_types),
+        "routes": sorted(routes),
+    }
+
+
 def extract_dosages(ndc_records: list, drug_name_hint: str = "") -> list:
     """Extract unique dosage forms from matched NDC records.
 
@@ -305,12 +370,19 @@ def main():
             dosages = extract_dosages(matched_records, drug_name_hint=drug_name)
             if dosages:
                 matched += 1
+                extra = extract_extra_info(matched_records)
                 results[drug_name] = {
                     "generic_name": drug.get("generic_name", ""),
                     "brand_names": drug.get("brand_names", []),
                     "drug_class": drug.get("drug_class", ""),
                     "dosages": dosages,
                     "ndc_matches": len(matched_records),
+                    "pharm_classes": extra["pharm_classes"],
+                    "manufacturers": extra["manufacturers"],
+                    "ndc_codes": extra["ndc_codes"],
+                    "rxcuis": extra["rxcuis"],
+                    "active_ingredients": extra["active_ingredients"],
+                    "product_types": extra["product_types"],
                 }
             else:
                 unmatched.append(drug_name)
@@ -343,15 +415,26 @@ def main():
             if route:
                 routes.add(route)
 
+        # Use OpenFDA pharm_class for drug_class if our existing one is empty
+        existing_class = data["drug_class"]
+        fda_classes = data.get("pharm_classes", [])
+        drug_class = existing_class or (fda_classes[0] if fda_classes else "")
+
         simplified[drug_name] = {
             "generic_name": data["generic_name"],
             "brand_names": data["brand_names"],
-            "drug_class": data["drug_class"],
+            "drug_class": drug_class,
+            "pharm_classes": fda_classes,
             "routes": sorted(routes),
             "dosage_forms": {
                 form: sorted(strengths, key=lambda s: _sort_strength(s))
                 for form, strengths in sorted(form_strengths.items())
             },
+            "manufacturers": data.get("manufacturers", []),
+            "ndc_codes": data.get("ndc_codes", []),
+            "rxcuis": data.get("rxcuis", []),
+            "active_ingredients": data.get("active_ingredients", []),
+            "product_types": data.get("product_types", []),
         }
 
     # Save results
@@ -384,6 +467,13 @@ def main():
         for name, data in simplified.items():
             if sample in name.lower() and "(" not in name:
                 print(f"\n{name} ({', '.join(data['routes'])}):")
+                print(f"  Class: {data['drug_class']}")
+                if data.get("pharm_classes"):
+                    print(f"  FDA Classes: {', '.join(data['pharm_classes'])}")
+                if data.get("manufacturers"):
+                    print(f"  Manufacturers: {', '.join(data['manufacturers'][:3])}")
+                if data.get("rxcuis"):
+                    print(f"  RxCUI: {', '.join(data['rxcuis'][:3])}")
                 for form, strengths in data["dosage_forms"].items():
                     print(f"  {form}: {', '.join(strengths)}")
                 break

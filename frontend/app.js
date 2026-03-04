@@ -519,19 +519,30 @@ class RxVerifyApp {
 
     async showSystemStatus() {
         try {
-            const response = await this.callAPI('/status');
-            if (response.ok) {
-                const statusData = await response.json();
-                
-                // Create a comprehensive status message
-                const uptime = Math.floor(statusData.uptime_seconds / 60);
-                const chromaStatus = statusData.chromadb?.status || 'unknown';
-                const docCount = statusData.chromadb?.document_count || 0;
-                const successRate = statusData.success_rate_percent || 0;
-                
-                const statusMessage = `System Healthy | Uptime: ${uptime}m | ChromaDB: ${chromaStatus} (${docCount} docs) | Success Rate: ${successRate}%`;
-                
-                this.showToast(statusMessage, 'success');
+            const [statusRes, metricsRes] = await Promise.all([
+                this.callAPI('/status'),
+                this.callAPI('/metrics/summary?time_period_hours=0')
+            ]);
+            if (statusRes.ok) {
+                const statusData = await statusRes.json();
+                const parts = [];
+                const isOnline = statusData.status === 'online' || statusData.status === 'healthy';
+                parts.push(isOnline ? 'System Online' : 'System Degraded');
+                parts.push(`DB: ${statusData.database || 'unknown'}`);
+
+                if (metricsRes.ok) {
+                    const m = await metricsRes.json();
+                    if (m.success && m.data) {
+                        const total = m.data.lifetime_requests || m.data.total_searches || 0;
+                        const rate = m.data.success_rate || 0;
+                        const avgMs = m.data.average_response_time || 0;
+                        parts.push(`Requests: ${total}`);
+                        parts.push(`Success: ${rate}%`);
+                        parts.push(`Avg: ${Math.round(avgMs)}ms`);
+                    }
+                }
+
+                this.showToast(parts.join(' | '), isOnline ? 'success' : 'warning');
             } else {
                 this.showToast('Unable to get system status', 'error');
             }
@@ -764,26 +775,11 @@ class RxVerifyApp {
         }, 5000);
     }
 
-    // Tab switching functionality
+    // Tab switching - delegates to global switchTab in index.html
     switchTab(tabName) {
         this.currentTab = tabName;
-        
-        // Update tab buttons
-        const askTab = document.getElementById('askTab');
-        const searchTab = document.getElementById('searchTab');
-        const askContent = document.getElementById('askTabContent');
-        const searchContent = document.getElementById('searchTabContent');
-        
-        if (tabName === 'ask') {
-            askTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-primary-600 shadow-sm';
-            searchTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
-            askContent.classList.remove('hidden');
-            searchContent.classList.add('hidden');
-        } else {
-            searchTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 bg-white text-green-600 shadow-sm';
-            askTab.className = 'tab-button flex-1 py-3 px-6 text-center font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900';
-            searchContent.classList.remove('hidden');
-            askContent.classList.add('hidden');
+        if (typeof window.switchTab === 'function') {
+            window.switchTab(tabName);
         }
     }
 
@@ -870,10 +866,6 @@ class RxVerifyApp {
                 const resultElement = this.createSearchResultElement(result);
                 resultsDiv.appendChild(resultElement);
                 
-                // Load common uses asynchronously if not already present
-                if (!result.common_uses || result.common_uses.length === 0) {
-                    this.loadCommonUsesAsync(result.name, resultElement);
-                }
             } catch (error) {
                 console.error(`Error creating result element ${index}:`, error, result);
             }
@@ -882,7 +874,7 @@ class RxVerifyApp {
 
     createSearchResultElement(result) {
         const div = document.createElement('div');
-        div.className = 'search-result bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200';
+        div.className = 'search-result rx-drug-card rx-fade-up';
         div.setAttribute('data-drug-id', result.drug_id);
         
         // Create drug name and class
@@ -977,23 +969,23 @@ class RxVerifyApp {
         feedbackButtons.className = 'flex items-center space-x-2';
         
         const thumbsUpBtn = document.createElement('button');
-        thumbsUpBtn.className = 'thumbs-up-btn flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors border border-transparent';
+        thumbsUpBtn.className = 'thumbs-up-btn rx-vote-btn rx-vote-up';
         thumbsUpBtn.innerHTML = `
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
             </svg>
             <span>Helpful</span>
-            <span class="helpful-count ml-1 text-xs font-medium">${result.upvotes > 0 ? `(${result.upvotes})` : ''}</span>
+            <span class="helpful-count text-xs font-medium">${result.upvotes > 0 ? `(${result.upvotes})` : ''}</span>
         `;
-        
+
         const thumbsDownBtn = document.createElement('button');
-        thumbsDownBtn.className = 'thumbs-down-btn flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors border border-transparent';
+        thumbsDownBtn.className = 'thumbs-down-btn rx-vote-btn rx-vote-down';
         thumbsDownBtn.innerHTML = `
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.737 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.096c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path>
             </svg>
             <span>Not helpful</span>
-            <span class="not-helpful-count ml-1 text-xs font-medium">${result.downvotes > 0 ? `(${result.downvotes})` : ''}</span>
+            <span class="not-helpful-count text-xs font-medium">${result.downvotes > 0 ? `(${result.downvotes})` : ''}</span>
         `;
         
         // Add voting event listeners
@@ -1018,9 +1010,9 @@ class RxVerifyApp {
         // Always allow voting initially - we'll verify with backend on click
         // This implements "when in doubt, allow voting" policy
         if (currentVote === 'upvote') {
-            thumbsUpBtn.className += ' bg-green-100 border-green-300';
+            thumbsUpBtn.classList.add('active');
         } else if (currentVote === 'downvote') {
-            thumbsDownBtn.className += ' bg-red-100 border-red-300';
+            thumbsDownBtn.classList.add('active');
         }
         
         // Use appendChild instead of innerHTML to preserve event listeners
@@ -1255,15 +1247,15 @@ class RxVerifyApp {
                 
                 if (thumbsUpBtn && thumbsDownBtn) {
                     // Reset both buttons to default state
-                    thumbsUpBtn.className = 'thumbs-up-btn flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors border border-transparent';
-                    thumbsDownBtn.className = 'thumbs-down-btn flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors border border-transparent';
+                    thumbsUpBtn.className = 'thumbs-up-btn rx-vote-btn rx-vote-up';
+                    thumbsDownBtn.className = 'thumbs-down-btn rx-vote-btn rx-vote-down';
                     
                     // Apply active state based on current vote
                     const currentVote = this.voteStates.get(drugId);
                     if (currentVote === 'upvote') {
-                        thumbsUpBtn.className += ' bg-green-100 border-green-300';
+                        thumbsUpBtn.classList.add('active');
                     } else if (currentVote === 'downvote') {
-                        thumbsDownBtn.className += ' bg-red-100 border-red-300';
+                        thumbsDownBtn.classList.add('active');
                     }
                 }
                 break;
@@ -1282,14 +1274,14 @@ class RxVerifyApp {
                 
                 if (thumbsUpBtn && thumbsDownBtn) {
                     // Reset both buttons to default state
-                    thumbsUpBtn.className = 'thumbs-up-btn flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors border border-transparent';
-                    thumbsDownBtn.className = 'thumbs-down-btn flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors border border-transparent';
+                    thumbsUpBtn.className = 'thumbs-up-btn rx-vote-btn rx-vote-up';
+                    thumbsDownBtn.className = 'thumbs-down-btn rx-vote-btn rx-vote-down';
                     
                     // Apply active state based on new vote state
                     if (!isUnvote && voteType === 'upvote') {
-                        thumbsUpBtn.className += ' bg-green-100 border-green-300';
+                        thumbsUpBtn.classList.add('active');
                     } else if (!isUnvote && voteType === 'downvote') {
-                        thumbsDownBtn.className += ' bg-red-100 border-red-300';
+                        thumbsDownBtn.classList.add('active');
                     }
                     
                     // Add a subtle animation effect
@@ -1317,15 +1309,15 @@ class RxVerifyApp {
                 
                 if (thumbsUpBtn && thumbsDownBtn) {
                     // Reset both buttons to default state
-                    thumbsUpBtn.className = 'thumbs-up-btn flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors border border-transparent';
-                    thumbsDownBtn.className = 'thumbs-down-btn flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors border border-transparent';
+                    thumbsUpBtn.className = 'thumbs-up-btn rx-vote-btn rx-vote-up';
+                    thumbsDownBtn.className = 'thumbs-down-btn rx-vote-btn rx-vote-down';
                     
                     // Apply cached vote state
                     const currentVote = this.voteStates.get(drugId);
                     if (currentVote === 'upvote') {
-                        thumbsUpBtn.className += ' bg-green-100 border-green-300';
+                        thumbsUpBtn.classList.add('active');
                     } else if (currentVote === 'downvote') {
-                        thumbsDownBtn.className += ' bg-red-100 border-red-300';
+                        thumbsDownBtn.classList.add('active');
                     }
                 }
                 break;
@@ -1582,14 +1574,14 @@ class RxVerifyApp {
                 
                 if (thumbsUpBtn && thumbsDownBtn) {
                     // Reset both buttons to default state
-                    thumbsUpBtn.className = 'thumbs-up-btn flex items-center space-x-1 px-2 py-1 text-xs text-green-600 hover:bg-green-50 rounded transition-colors border border-transparent';
-                    thumbsDownBtn.className = 'thumbs-down-btn flex items-center space-x-1 px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded transition-colors border border-transparent';
+                    thumbsUpBtn.className = 'thumbs-up-btn rx-vote-btn rx-vote-up';
+                    thumbsDownBtn.className = 'thumbs-down-btn rx-vote-btn rx-vote-down';
                     
                     // Restore the previous vote state
                     if (previousVoteType === 'upvote') {
-                        thumbsUpBtn.className += ' bg-green-100 border-green-300';
+                        thumbsUpBtn.classList.add('active');
                     } else if (previousVoteType === 'downvote') {
-                        thumbsDownBtn.className += ' bg-red-100 border-red-300';
+                        thumbsDownBtn.classList.add('active');
                     }
                 }
                 break;

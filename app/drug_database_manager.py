@@ -10,7 +10,7 @@ import re
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase, AsyncIOMotorCollection
-from pymongo import IndexModel, ASCENDING, TEXT, DESCENDING
+from pymongo import IndexModel, ASCENDING, TEXT, DESCENDING, UpdateOne
 from app.drug_database_schema import DrugEntry, DrugSearchResult, DrugType, DrugStatus, DrugDatabaseStats
 from app.mongodb_config import MongoDBConfig
 
@@ -60,65 +60,118 @@ class DrugDatabaseManager:
             
             # Compound indexes for different search patterns
             compound_indexes = [
+                IndexModel([("drug_id", ASCENDING)]),
                 IndexModel([("drug_type", ASCENDING), ("status", ASCENDING)]),
+                IndexModel([("status", ASCENDING)]),
                 IndexModel([("generic_drug_id", ASCENDING)]),
                 IndexModel([("combination_drug_ids", ASCENDING)]),
                 IndexModel([("rxnorm_id", ASCENDING)]),
                 IndexModel([("primary_search_term", ASCENDING)]),
+                IndexModel([("name", ASCENDING)]),
+                IndexModel([("name_lower", ASCENDING)]),
                 IndexModel([("last_updated", DESCENDING)]),
-                IndexModel([("search_count", DESCENDING)])
+                IndexModel([("search_count", DESCENDING)]),
+                IndexModel([("rating_score", DESCENDING)]),
+                IndexModel([("upvotes", DESCENDING)]),
             ]
             
             await self.drugs_collection.create_indexes([text_index] + compound_indexes)
+
+            # Backfill name_lower/search_terms_lower for any docs missing them
+            backfill_count = await self.drugs_collection.count_documents({"name_lower": {"$exists": False}})
+            if backfill_count > 0:
+                logger.info(f"Backfilling {backfill_count} drugs with lowercase search fields...")
+                docs = await self.drugs_collection.find(
+                    {"name_lower": {"$exists": False}},
+                    {"_id": 1, "name": 1, "search_terms": 1}
+                ).to_list(length=None)
+                ops = [
+                    UpdateOne(
+                        {"_id": doc["_id"]},
+                        {"$set": {
+                            "name_lower": doc.get("name", "").lower(),
+                            "search_terms_lower": [t.lower() for t in doc.get("search_terms", [])]
+                        }}
+                    ) for doc in docs
+                ]
+                if ops:
+                    result = await self.drugs_collection.bulk_write(ops, ordered=False)
+                    logger.info(f"Backfill complete: {result.modified_count} docs updated")
+                else:
+                    logger.info("Backfill complete: no docs to update")
+
+            # Indexes for votes collection
+            votes_indexes = [
+                IndexModel([("vote_type", ASCENDING), ("created_at", DESCENDING)]),
+                IndexModel([("drug_id", ASCENDING), ("vote_type", ASCENDING)]),
+                IndexModel([("created_at", DESCENDING)]),
+            ]
+            await self.votes_collection.create_indexes(votes_indexes)
+
             logger.info("Drug database indexes created successfully")
             
         except Exception as e:
             logger.error(f"Failed to create drug database indexes: {str(e)}")
             raise
     
+    @staticmethod
+    def _populate_lower_fields(doc: dict) -> dict:
+        """Ensure name_lower and search_terms_lower are set."""
+        if "name" in doc:
+            doc["name_lower"] = doc["name"].lower()
+        if "search_terms" in doc:
+            doc["search_terms_lower"] = [t.lower() for t in doc["search_terms"]]
+        return doc
+
     async def insert_drug(self, drug: DrugEntry) -> bool:
         """Insert a single drug entry."""
         try:
-            result = await self.drugs_collection.insert_one(drug.dict())
+            doc = self._populate_lower_fields(drug.dict())
+            result = await self.drugs_collection.insert_one(doc)
             logger.debug(f"Inserted drug: {drug.name} ({drug.drug_id})")
             return result.inserted_id is not None
-            
+
         except Exception as e:
             logger.error(f"Failed to insert drug {drug.name}: {str(e)}")
             return False
-    
+
     async def insert_drugs_batch(self, drugs: List[DrugEntry]) -> int:
         """Insert multiple drug entries in batch."""
         try:
             if not drugs:
                 return 0
-            
-            drug_docs = [drug.dict() for drug in drugs]
+
+            drug_docs = [self._populate_lower_fields(drug.dict()) for drug in drugs]
             result = await self.drugs_collection.insert_many(drug_docs)
-            
+
             logger.info(f"Inserted {len(result.inserted_ids)} drugs in batch")
             return len(result.inserted_ids)
-            
+
         except Exception as e:
             logger.error(f"Failed to insert drugs batch: {str(e)}")
             return 0
-    
+
     async def update_drug(self, drug_id: str, updates: Dict[str, Any]) -> bool:
         """Update a drug entry."""
         try:
             updates["last_updated"] = datetime.utcnow()
+            # Keep lowercase fields in sync
+            if "name" in updates:
+                updates["name_lower"] = updates["name"].lower()
+            if "search_terms" in updates:
+                updates["search_terms_lower"] = [t.lower() for t in updates["search_terms"]]
             result = await self.drugs_collection.update_one(
                 {"drug_id": drug_id},
                 {"$set": updates}
             )
-            
+
             if result.modified_count > 0:
                 logger.debug(f"Updated drug: {drug_id}")
                 return True
             else:
                 logger.warning(f"No drug found to update: {drug_id}")
                 return False
-                
+
         except Exception as e:
             logger.error(f"Failed to update drug {drug_id}: {str(e)}")
             return False
@@ -211,10 +264,10 @@ class DrugDatabaseManager:
             {
                 "$match": {
                     "drug_type": DrugType.GENERIC,
-                    "status": {"$ne": DrugStatus.HIDDEN},  # Exclude hidden drugs
+                    "status": {"$ne": DrugStatus.HIDDEN},
                     "$or": [
-                        {"name": {"$regex": query, "$options": "i"}},
-                        {"search_terms": {"$regex": query, "$options": "i"}},
+                        {"name_lower": {"$regex": query}},
+                        {"search_terms_lower": {"$regex": query}},
                         {"primary_search_term": {"$regex": query, "$options": "i"}}
                     ]
                 }
@@ -267,11 +320,11 @@ class DrugDatabaseManager:
         pipeline = [
             {
                 "$match": {
-                    "status": {"$ne": DrugStatus.HIDDEN},  # Exclude hidden drugs
+                    "status": {"$ne": DrugStatus.HIDDEN},
                     "$or": [
                         {"brand_names": {"$regex": query, "$options": "i"}},
-                        {"name": {"$regex": query, "$options": "i"}},
-                        {"search_terms": {"$regex": query, "$options": "i"}}
+                        {"name_lower": {"$regex": query}},
+                        {"search_terms_lower": {"$regex": query}}
                     ]
                 }
             },
@@ -324,10 +377,10 @@ class DrugDatabaseManager:
             {
                 "$match": {
                     "drug_type": DrugType.COMBINATION,
-                    "status": {"$ne": DrugStatus.HIDDEN},  # Exclude hidden drugs
+                    "status": {"$ne": DrugStatus.HIDDEN},
                     "$or": [
-                        {"name": {"$regex": query, "$options": "i"}},
-                        {"search_terms": {"$regex": query, "$options": "i"}},
+                        {"name_lower": {"$regex": query}},
+                        {"search_terms_lower": {"$regex": query}},
                         {"active_ingredients": {"$regex": query, "$options": "i"}}
                     ]
                 }
@@ -378,13 +431,14 @@ class DrugDatabaseManager:
         2. Single word drugs that contain the query
         3. Combination drugs that contain the query
         """
+        query_l = query.lower()
         pipeline = [
             {
                 "$match": {
-                    "status": {"$ne": DrugStatus.HIDDEN},  # Exclude hidden drugs
+                    "status": {"$ne": DrugStatus.HIDDEN},
                     "$or": [
-                        {"name": {"$regex": query, "$options": "i"}},
-                        {"search_terms": {"$regex": query, "$options": "i"}},
+                        {"name_lower": {"$regex": query_l}},
+                        {"search_terms_lower": {"$regex": query_l}},
                         {"primary_search_term": {"$regex": query, "$options": "i"}},
                         {"drug_class": {"$regex": query, "$options": "i"}},
                         {"common_uses": {"$regex": query, "$options": "i"}}
@@ -397,27 +451,27 @@ class DrugDatabaseManager:
                         "$add": [
                             # Base score for any match
                             50,
-                            
+
                             # Tier 1: Exact prefix matches (highest priority)
                             {
                                 "$cond": [
                                     {"$regexMatch": {
-                                        "input": {"$toLower": "$name"},
-                                        "regex": f"^{query.lower()}"
+                                        "input": "$name_lower",
+                                        "regex": f"^{query_l}"
                                     }}, 50, 0
                                 ]
                             },
-                            
+
                             # Tier 2: Primary search term starts with query
                             {
                                 "$cond": [
                                     {"$regexMatch": {
                                         "input": {"$toLower": "$primary_search_term"},
-                                        "regex": f"^{query.lower()}"
+                                        "regex": f"^{query_l}"
                                     }}, 40, 0
                                 ]
                             },
-                            
+
                             # Tier 3: Single word drugs (generic names)
                             {
                                 "$cond": [
@@ -432,14 +486,14 @@ class DrugDatabaseManager:
                                     }, 30, 0
                                 ]
                             },
-                            
+
                             # Tier 4: Brand names
                             {
                                 "$cond": [
                                     {"$eq": ["$drug_type", DrugType.BRAND]}, 20, 0
                                 ]
                             },
-                            
+
                             # Tier 5: Combination drugs
                             {
                                 "$cond": [
@@ -454,32 +508,32 @@ class DrugDatabaseManager:
                                     }, 10, 0
                                 ]
                             },
-                            
+
                             # Bonus for exact matches
                             {
                                 "$cond": [
-                                    {"$eq": [{"$toLower": "$name"}, query.lower()]}, 20, 0
+                                    {"$eq": ["$name_lower", query_l]}, 20, 0
                                 ]
                             },
-                            
+
                             # Bonus for primary search term exact match
                             {
                                 "$cond": [
-                                    {"$eq": [{"$toLower": "$primary_search_term"}, query.lower()]}, 15, 0
+                                    {"$eq": [{"$toLower": "$primary_search_term"}, query_l]}, 15, 0
                                 ]
                             },
-                            
+
                             # Vote-based ranking boost
                             {
                                 "$multiply": [
-                                    "$rating_score", 25  # Multiply rating score by 25 for significant impact
+                                    "$rating_score", 25
                                 ]
                             },
-                            
+
                             # Additional boost for drugs with high vote counts (social proof)
                             {
                                 "$cond": [
-                                    {"$gte": ["$total_votes", 5]}, 10, 0  # Bonus for drugs with 5+ votes
+                                    {"$gte": ["$total_votes", 5]}, 10, 0
                                 ]
                             }
                         ]

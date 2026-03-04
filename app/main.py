@@ -1111,35 +1111,43 @@ async def get_feedback_stats(time_period_hours: int = 24):
         if drug_db_manager.db is None:
             await drug_db_manager.initialize()
         
-        # Get vote statistics
-        total_votes = await drug_db_manager.votes_collection.count_documents({})
-        upvotes = await drug_db_manager.votes_collection.count_documents({"vote_type": "upvote"})
-        downvotes = await drug_db_manager.votes_collection.count_documents({"vote_type": "downvote"})
-        
-        # Calculate helpful percentage
-        helpful_percentage = 0
-        if total_votes > 0:
-            helpful_percentage = (upvotes / total_votes) * 100
-        
-        # Get actual vote data for feedback entries
-        feedback_entries = []
-        votes_cursor = drug_db_manager.votes_collection.find({}).sort("created_at", -1).limit(100)
-        async for vote in votes_cursor:
-            # Get drug name for this vote
-            drug = await drug_db_manager.get_drug_by_id(vote["drug_id"])
-            drug_name = drug.name if drug else "Unknown Drug"
-            
-            feedback_entries.append({
-                "drug_name": drug_name,
-                "drug_id": vote["drug_id"],
-                "query": f"Vote on {drug_name}",  # Simplified query representation
-                "is_positive": vote["vote_type"] == "upvote",
-                "vote_type": vote["vote_type"],
-                "reason": vote.get("reason", ""),
-                "created_at": vote.get("created_at", datetime.utcnow()).isoformat(),
-                "ip_address": vote.get("ip_address", ""),
-                "user_agent": vote.get("user_agent", "")
-            })
+        # Get vote statistics and entries in parallel
+        vc = drug_db_manager.votes_collection
+
+        async def _fetch_votes(vote_type, limit):
+            entries = []
+            cursor = vc.find({"vote_type": vote_type}).sort("created_at", -1).limit(limit)
+            async for vote in cursor:
+                drug = await drug_db_manager.get_drug_by_id(vote["drug_id"])
+                drug_name = drug.name if drug else "Unknown Drug"
+                entries.append({
+                    "drug_name": drug_name,
+                    "drug_id": vote["drug_id"],
+                    "query": f"Vote on {drug_name}",
+                    "is_positive": vote_type == "upvote",
+                    "vote_type": vote_type,
+                    "reason": vote.get("reason", ""),
+                    "created_at": vote.get("created_at", datetime.utcnow()).isoformat(),
+                    "ip_address": vote.get("ip_address", ""),
+                    "user_agent": vote.get("user_agent", "")
+                })
+            return entries
+
+        # Run counts + entry fetches all in parallel
+        upvotes, downvotes, pos_entries, neg_entries = await asyncio.gather(
+            vc.count_documents({"vote_type": "upvote"}),
+            vc.count_documents({"vote_type": "downvote"}),
+            _fetch_votes("upvote", 50),
+            _fetch_votes("downvote", 50)
+        )
+        total_votes = upvotes + downvotes
+        helpful_percentage = (upvotes / total_votes * 100) if total_votes > 0 else 0
+
+        feedback_entries = sorted(
+            pos_entries + neg_entries,
+            key=lambda e: e["created_at"],
+            reverse=True
+        )
         
         # Get hidden drugs (ignored medications)
         ignored_medications = []

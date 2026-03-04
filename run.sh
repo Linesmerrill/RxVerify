@@ -8,18 +8,28 @@ set -e
 echo "🚀 RxVerify Development Server"
 echo "================================"
 
+# PIDs for cleanup
+BACKEND_PID=""
+FRONTEND_PID=""
+
 # Function to cleanup on exit
 cleanup() {
+    trap - SIGINT SIGTERM EXIT
     echo ""
     echo "🛑 Shutting down servers..."
-    pkill -f "uvicorn app.main:app" 2>/dev/null || true
-    pkill -f "python -m http.server 8080" 2>/dev/null || true
+    # Kill by PID
+    [ -n "$BACKEND_PID" ] && kill "$BACKEND_PID" 2>/dev/null
+    [ -n "$FRONTEND_PID" ] && kill "$FRONTEND_PID" 2>/dev/null
+    sleep 1
+    # Kill anything still on our ports
+    lsof -ti :8000 | xargs kill -9 2>/dev/null || true
+    lsof -ti :8080 | xargs kill -9 2>/dev/null || true
     echo "✅ Servers stopped"
     exit 0
 }
 
 # Set trap to cleanup on script exit
-trap cleanup SIGINT SIGTERM
+trap cleanup SIGINT SIGTERM EXIT
 
 # Check if virtual environment exists
 if [ -f "venv/bin/activate" ]; then
@@ -43,6 +53,10 @@ if ! python -c "import uvicorn, fastapi" 2>/dev/null; then
     pip install -r requirements.txt
 fi
 
+# Kill any stale processes on our ports before starting
+lsof -ti :8000 | xargs kill -9 2>/dev/null || true
+lsof -ti :8080 | xargs kill -9 2>/dev/null || true
+
 echo ""
 echo "🚀 Starting Backend Server (port 8000)..."
 echo "🌐 Starting Frontend Server (port 8080)..."
@@ -56,18 +70,11 @@ BACKEND_PID=$!
 # Wait a moment for backend to start
 sleep 3
 
-# Fix any incorrect drug class assignments in the database
-echo "Fixing drug class assignments..."
-python scripts/fix_drug_classes.py --api-url http://localhost:8000 || echo "Warning: Drug class fix script failed (non-fatal)"
-echo ""
-
 # Start frontend in background
 echo "Starting frontend..."
 cd frontend
-python -m http.server 8080 &
+python server.py &
 FRONTEND_PID=$!
-
-# Go back to root directory
 cd ..
 
 echo ""

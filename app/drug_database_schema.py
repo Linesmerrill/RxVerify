@@ -100,6 +100,10 @@ class DrugEntry(BaseModel):
     # Search optimization
     search_terms: List[str] = Field(default_factory=list, description="All searchable terms")
     primary_search_term: str = Field(..., description="Primary search term")
+
+    # Lowercase fields for indexed case-insensitive search
+    name_lower: str = Field(default="", description="Lowercase name for indexed search")
+    search_terms_lower: List[str] = Field(default_factory=list, description="Lowercase search terms for indexed search")
     
     # Status and metadata
     status: DrugStatus = Field(default=DrugStatus.ACTIVE, description="Current status")

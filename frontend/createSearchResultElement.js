@@ -1,7 +1,7 @@
     createSearchResultElement(result) {
         console.log('Creating search result element for:', result.name);
         const div = document.createElement('div');
-        div.className = 'search-result bg-white border border-gray-200 rounded-xl p-4 hover:border-green-300 hover:shadow-md transition-all duration-200';
+        div.className = 'search-result rx-drug-card rx-fade-up';
         
         // Create drug name and class
         const nameDiv = document.createElement('div');
@@ -93,7 +93,7 @@
         
         // Upvote button
         const upvoteBtn = document.createElement('button');
-        upvoteBtn.className = 'flex items-center space-x-1 px-3 py-1 bg-green-50 text-green-700 rounded-full hover:bg-green-100 transition-colors duration-200 text-sm';
+        upvoteBtn.className = 'rx-vote-btn rx-vote-up';
         upvoteBtn.innerHTML = `
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
@@ -101,10 +101,10 @@
             <span>${result.upvotes}</span>
         `;
         upvoteBtn.onclick = () => this.voteOnDrug(result.drug_id, 'upvote');
-        
+
         // Downvote button
         const downvoteBtn = document.createElement('button');
-        downvoteBtn.className = 'flex items-center space-x-1 px-3 py-1 bg-red-50 text-red-700 rounded-full hover:bg-red-100 transition-colors duration-200 text-sm';
+        downvoteBtn.className = 'rx-vote-btn rx-vote-down';
         downvoteBtn.innerHTML = `
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>

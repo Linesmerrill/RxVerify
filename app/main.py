@@ -19,9 +19,13 @@ from app.analytics_database import analytics_db_manager
 # Import database manager based on environment
 if 'MONGODB_URI' in os.environ or 'MONGODB_URL' in os.environ:
     from app.mongodb_config import MongoDBConfig
-    from app.drug_database_manager import DrugDatabaseManager
+    # Reuse the module-level singleton so other modules (ndc_lookup_service,
+    # missing_drug_manager, …) that import `drug_db_manager` from
+    # drug_database_manager see the same initialized collections after
+    # startup. Creating a fresh DrugDatabaseManager() here would leave the
+    # singleton unconnected and silently break those importers.
+    from app.drug_database_manager import drug_db_manager
     mongodb_config = MongoDBConfig()
-    drug_db_manager = DrugDatabaseManager()
 else:
     # Fallback to SQLite if no MongoDB
     mongodb_config = None

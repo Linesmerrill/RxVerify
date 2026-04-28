@@ -604,10 +604,9 @@ async def _match_existing_drug(item: Dict[str, Any]) -> Optional[Dict[str, Any]]
     so an rxcui-only match risks attaching plain-Omeprazole NDC data to an
     Omeclamox-Pak entry that happens to share rxcui 198051.
     """
-    coll = getattr(drug_db_manager, "drugs_collection", None) if drug_db_manager else None
-    if coll is None:
-        logger.warning("ndc_match: drugs_collection is None, skipping match")
+    if drug_db_manager is None or getattr(drug_db_manager, "drugs_collection", None) is None:
         return None
+    coll = drug_db_manager.drugs_collection
     openfda = item.get("openfda") or {}
     rxcuis = [r for r in (openfda.get("rxcui") or []) if r]
     generic = (item.get("generic_name") or "").strip()
@@ -631,12 +630,6 @@ async def _match_existing_drug(item: Dict[str, Any]) -> Optional[Dict[str, Any]]
             # plain Omeprazole doesn't get attached to Omeclamox-Pak.
             filt["drug_type"] = {"$ne": "combination"}
         doc = await coll.find_one(filt)
-        logger.info(
-            "ndc_match: generic=%r ingredient_count=%d filter_drug_type=%r → %s",
-            generic, ingredient_count,
-            filt.get("drug_type"),
-            f"matched drug_id={doc.get('drug_id')}" if doc else "no match",
-        )
         if doc:
             return doc
 

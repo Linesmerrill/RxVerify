@@ -8,18 +8,74 @@ product. Tries the local Mongo `drugs` collection first, then falls back to the
 live openFDA NDC directory.
 """
 
+import asyncio
 import logging
 import re
+import time
+from collections import deque
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Deque, Dict, List, Optional, Tuple
 
 import httpx
 
+from app.config import settings as app_settings
 from app.drug_database_manager import drug_db_manager
 
 logger = logging.getLogger(__name__)
 
 OPENFDA_NDC_URL = "https://api.fda.gov/drug/ndc.json"
+
+
+class _OpenFDARateLimiter:
+    """Sliding-window limiter that keeps us safely under openFDA's published
+    caps (240 requests/minute and 120,000/day per API key).
+
+    Tracks request timestamps in two deques. Before issuing a request, evicts
+    timestamps older than the window, then either lets the call through or
+    sleeps until the oldest in-window timestamp ages out. An asyncio.Lock
+    serializes the check so concurrent callers don't all squeak through on a
+    single available slot.
+    """
+
+    def __init__(self, max_per_minute: int, max_per_day: int) -> None:
+        self.max_per_minute = max_per_minute
+        self.max_per_day = max_per_day
+        self._minute: Deque[float] = deque()
+        self._day: Deque[float] = deque()
+        self._lock = asyncio.Lock()
+
+    async def acquire(self) -> None:
+        while True:
+            async with self._lock:
+                now = time.monotonic()
+                while self._minute and now - self._minute[0] >= 60:
+                    self._minute.popleft()
+                while self._day and now - self._day[0] >= 86_400:
+                    self._day.popleft()
+                if (
+                    len(self._minute) < self.max_per_minute
+                    and len(self._day) < self.max_per_day
+                ):
+                    self._minute.append(now)
+                    self._day.append(now)
+                    return
+                # Decide how long to wait for the most-binding window.
+                wait_minute = 60 - (now - self._minute[0]) if len(self._minute) >= self.max_per_minute else 0
+                wait_day = 86_400 - (now - self._day[0]) if len(self._day) >= self.max_per_day else 0
+                wait = max(wait_minute, wait_day, 0.05)
+            logger.warning(
+                "openFDA rate limit hit (minute=%d/%d, day=%d/%d); sleeping %.2fs",
+                len(self._minute), self.max_per_minute,
+                len(self._day), self.max_per_day,
+                wait,
+            )
+            await asyncio.sleep(wait)
+
+
+_rate_limiter = _OpenFDARateLimiter(
+    max_per_minute=app_settings.OPENFDA_MAX_PER_MINUTE,
+    max_per_day=app_settings.OPENFDA_MAX_PER_DAY,
+)
 
 # Recognizes common NDC shapes the user might type or paste.
 # Examples: "0093-1024-01", "00093-1024-01", "00093102401", "0093102401"
@@ -337,13 +393,20 @@ async def _lookup_local(ndc: str) -> Optional[Dict[str, Any]]:
 
 
 async def _query_openfda(search_expr: str) -> Optional[Dict[str, Any]]:
+    params: Dict[str, Any] = {"search": search_expr, "limit": 1}
+    if app_settings.OPENFDA_API_KEY:
+        params["api_key"] = app_settings.OPENFDA_API_KEY
     try:
+        await _rate_limiter.acquire()
         async with httpx.AsyncClient(timeout=8.0) as client:
-            resp = await client.get(
-                OPENFDA_NDC_URL,
-                params={"search": search_expr, "limit": 1},
-            )
+            resp = await client.get(OPENFDA_NDC_URL, params=params)
             if resp.status_code == 404:
+                return None
+            if resp.status_code == 429:
+                # openFDA itself rejected us — log loud and back off so the
+                # next call doesn't burn another quota slot immediately.
+                logger.error("openFDA returned 429; pausing to back off.")
+                await asyncio.sleep(2.0)
                 return None
             resp.raise_for_status()
             data = resp.json()

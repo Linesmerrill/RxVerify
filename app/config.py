@@ -37,6 +37,15 @@ class Settings:
     
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_PER_MINUTE", "60"))
+
+    # openFDA configuration
+    # API key (optional but bumps the per-IP cap from 240/min to 240/min/key
+    # and 120k/day). Stored only in env / .env / Heroku config; never committed.
+    OPENFDA_API_KEY: str = os.getenv("OPENFDA_API_KEY", "")
+    # Self-imposed ceilings — kept under the openFDA limits so we throttle
+    # ourselves before openFDA does. Tunable per-deploy via env.
+    OPENFDA_MAX_PER_MINUTE: int = int(os.getenv("OPENFDA_MAX_PER_MINUTE", "200"))
+    OPENFDA_MAX_PER_DAY: int = int(os.getenv("OPENFDA_MAX_PER_DAY", "100000"))
     
     # Embedding Configuration
     DISABLE_EMBEDDINGS: bool = os.getenv("DISABLE_EMBEDDINGS", "false").lower() == "true"

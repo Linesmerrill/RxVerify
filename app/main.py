@@ -278,6 +278,58 @@ async def openfda_usage():
     return await get_openfda_usage()
 
 
+@app.post("/admin/drugs/{drug_id}/strip-ndcs")
+async def strip_drug_ndcs(drug_id: str, body: Dict[str, Any] = Body(default={})):
+    """One-shot repair endpoint: clear all NDC-related fields and any
+    obviously wrong brand_names from a polluted drug doc.
+
+    Removes `ndc`, `ndc_codes`, `product_ndcs`, `package_ndcs`, `ndc_dosages`,
+    and any `brand_names` entries that match the case-insensitive list given
+    in body.brands_to_remove (or, when none provided, brand entries that
+    differ from the doc's own name/generic_name and look like a single
+    suspicious openFDA leakage like ['Omeprazole']).
+
+    Use case: undo earlier bad enrichments where a single-ingredient NDC was
+    misattached to a combination drug because both shared an rxcui.
+    """
+    if drug_db_manager is None or getattr(drug_db_manager, "drugs_collection", None) is None:
+        raise HTTPException(status_code=503, detail="drug database not initialized")
+    coll = drug_db_manager.drugs_collection
+    doc = await coll.find_one({"drug_id": drug_id})
+    if not doc:
+        raise HTTPException(status_code=404, detail=f"drug not found: {drug_id}")
+
+    explicit = [b.strip().lower() for b in (body.get("brands_to_remove") or []) if b]
+    update: Dict[str, Any] = {
+        "$unset": {
+            "ndc": "",
+            "ndc_codes": "",
+            "product_ndcs": "",
+            "package_ndcs": "",
+            "ndc_dosages": "",
+        },
+    }
+    if explicit:
+        update["$pull"] = {
+            "brand_names": {"$in": [b for b in (doc.get("brand_names") or []) if b.lower() in explicit]}
+        }
+    await coll.update_one({"_id": doc["_id"]}, update)
+    refreshed = await coll.find_one({"_id": doc["_id"]})
+    return {
+        "drug_id": drug_id,
+        "before": {
+            "ndc_codes": doc.get("ndc_codes"),
+            "brand_names": doc.get("brand_names"),
+            "ndc_dosages": doc.get("ndc_dosages"),
+        },
+        "after": {
+            "ndc_codes": refreshed.get("ndc_codes"),
+            "brand_names": refreshed.get("brand_names"),
+            "ndc_dosages": refreshed.get("ndc_dosages"),
+        },
+    }
+
+
 @app.get("/admin/ndc/stats")
 async def ndc_stats(days: int = 30):
     """NDC lookup analytics persisted to MongoDB.

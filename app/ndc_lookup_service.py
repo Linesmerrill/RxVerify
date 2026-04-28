@@ -71,6 +71,49 @@ class _OpenFDARateLimiter:
             )
             await asyncio.sleep(wait)
 
+    async def usage(self) -> Dict[str, Any]:
+        """Snapshot current usage. Evicts stale timestamps so the counts
+        reflect just what's still inside the rolling minute/day windows."""
+        async with self._lock:
+            now = time.monotonic()
+            while self._minute and now - self._minute[0] >= 60:
+                self._minute.popleft()
+            while self._day and now - self._day[0] >= 86_400:
+                self._day.popleft()
+            minute_used = len(self._minute)
+            day_used = len(self._day)
+            oldest_minute = self._minute[0] if self._minute else None
+            oldest_day = self._day[0] if self._day else None
+            return {
+                "minute": {
+                    "used": minute_used,
+                    "limit": self.max_per_minute,
+                    "remaining": max(self.max_per_minute - minute_used, 0),
+                    # Seconds until the oldest in-window request ages out and
+                    # frees a slot. None when the window is empty.
+                    "reset_in_seconds": (
+                        round(60 - (now - oldest_minute), 2)
+                        if oldest_minute is not None else None
+                    ),
+                },
+                "day": {
+                    "used": day_used,
+                    "limit": self.max_per_day,
+                    "remaining": max(self.max_per_day - day_used, 0),
+                    "reset_in_seconds": (
+                        round(86_400 - (now - oldest_day), 2)
+                        if oldest_day is not None else None
+                    ),
+                },
+            }
+
+
+async def get_openfda_usage() -> Dict[str, Any]:
+    """Public accessor so other modules don't need to reach into the limiter."""
+    snap = await _rate_limiter.usage()
+    snap["api_key_configured"] = bool(app_settings.OPENFDA_API_KEY)
+    return snap
+
 
 _rate_limiter = _OpenFDARateLimiter(
     max_per_minute=app_settings.OPENFDA_MAX_PER_MINUTE,

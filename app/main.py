@@ -261,6 +261,19 @@ async def status():
             "error": str(e)
         }
 
+@app.get("/admin/openfda/usage")
+async def openfda_usage():
+    """Live snapshot of openFDA rate-limiter consumption.
+
+    Returns minute and day windows with used/limit/remaining counts, plus the
+    seconds until the oldest in-window request ages out (i.e. when at least
+    one slot is freed back). Useful for at-a-glance monitoring against
+    openFDA's published 240/min and 120k/day caps.
+    """
+    from app.ndc_lookup_service import get_openfda_usage
+    return await get_openfda_usage()
+
+
 @app.get("/")
 async def root():
     """Root endpoint with API information."""

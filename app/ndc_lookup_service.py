@@ -10,7 +10,8 @@ live openFDA NDC directory.
 
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
 
@@ -203,12 +204,20 @@ async def _lookup_local(ndc: str) -> Optional[Dict[str, Any]]:
         doc = await drug_db_manager.drugs_collection.find_one(
             {"$or": [
                 {"ndc": {"$in": candidates}},
+                {"ndc_codes": {"$in": candidates}},
                 {"product_ndcs": {"$in": candidates}},
                 {"package_ndcs": {"$in": candidates}},
             ]}
         )
         if doc:
-            return _shape_local_result(doc, ndc)
+            matched_ndc = next(
+                (c for c in candidates if c in (doc.get("ndc_codes") or [])
+                 or c in (doc.get("product_ndcs") or [])
+                 or c in (doc.get("package_ndcs") or [])
+                 or c == doc.get("ndc")),
+                ndc,
+            )
+            return _shape_local_result(doc, matched_ndc)
     except Exception as e:
         logger.warning(f"Local NDC lookup failed for {ndc}: {e}")
     return None
@@ -235,8 +244,8 @@ async def _query_openfda(search_expr: str) -> Optional[Dict[str, Any]]:
     return results[0] if results else None
 
 
-async def _lookup_openfda(ndc: str) -> Optional[Dict[str, Any]]:
-    """Look up an NDC against the live openFDA NDC directory."""
+async def _lookup_openfda_raw(ndc: str) -> Optional[Dict[str, Any]]:
+    """Return the raw openFDA NDC record for a normalized NDC, or None."""
     pkg_candidates = _candidate_ndcs(ndc)
     # openFDA stores package_ndc in its original 10-digit grouping with the
     # package code appended — match that field directly.
@@ -250,37 +259,131 @@ async def _lookup_openfda(ndc: str) -> Optional[Dict[str, Any]]:
         if prod_candidates:
             prod_expr = " OR ".join(f'product_ndc:"{c}"' for c in prod_candidates)
             item = await _query_openfda(prod_expr)
+    return item
 
+
+async def _lookup_openfda(ndc: str) -> Optional[Dict[str, Any]]:
+    item = await _lookup_openfda_raw(ndc)
     if item is None:
         return None
     return _shape_openfda_result(item, ndc)
 
 
-async def _persist_openfda_to_local(result: Dict[str, Any]) -> None:
-    """Best-effort cache an openFDA hit into Mongo so future scans hit local first."""
+def _extract_dosage(item: Dict[str, Any]) -> Optional[Tuple[str, str]]:
+    """Pull (form_key, strength) from an openFDA NDC record.
+
+    `dosage_form` like "CAPSULE, DELAYED RELEASE" is reduced to its first token
+    ("capsule") to match the keys the local `dosages` dict already uses. Multi-
+    ingredient strengths (combination products) are joined with " / ".
+    """
+    form_raw = (item.get("dosage_form") or "").strip()
+    if not form_raw:
+        return None
+    form_key = form_raw.split(",")[0].strip().split()[0].lower()
+    if not form_key:
+        return None
+    strengths: List[str] = []
+    for ing in item.get("active_ingredients") or []:
+        s = (ing.get("strength") or "").strip()
+        if not s:
+            continue
+        # openFDA encodes per-unit denominators ("40 mg/1") that we don't display.
+        if s.endswith("/1"):
+            s = s[:-2].strip()
+        strengths.append(s)
+    if not strengths:
+        return None
+    return form_key, " / ".join(strengths)
+
+
+async def _match_existing_drug(item: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Find an existing drugs-collection doc that this openFDA record describes.
+
+    Priority: rxnorm_id (most reliable), then generic_name, then any brand name.
+    """
+    if drug_db_manager is None or getattr(drug_db_manager, "drugs_collection", None) is None:
+        return None
+    coll = drug_db_manager.drugs_collection
+    openfda = item.get("openfda") or {}
+    rxcuis = [r for r in (openfda.get("rxcui") or []) if r]
+    generic = (item.get("generic_name") or "").strip()
+    brands_raw = item.get("brand_name") or openfda.get("brand_name") or []
+    if isinstance(brands_raw, str):
+        brands_raw = [brands_raw]
+    brands = [b for b in brands_raw if b]
+
+    if rxcuis:
+        doc = await coll.find_one({"rxnorm_id": {"$in": rxcuis}})
+        if doc:
+            return doc
+    if generic:
+        pattern = re.compile(f"^{re.escape(generic)}$", re.IGNORECASE)
+        doc = await coll.find_one({"$or": [
+            {"name": pattern}, {"generic_name": pattern}
+        ]})
+        if doc:
+            return doc
+    for b in brands:
+        pattern = re.compile(f"^{re.escape(b)}$", re.IGNORECASE)
+        doc = await coll.find_one({"$or": [
+            {"brand_names": pattern}, {"name": pattern}
+        ]})
+        if doc:
+            return doc
+    return None
+
+
+async def _enrich_existing_drug(
+    doc: Dict[str, Any], item: Dict[str, Any], package_ndc: str
+) -> Dict[str, Any]:
+    """Merge openFDA data into an existing drugs-collection doc and return it."""
+    coll = drug_db_manager.drugs_collection
+    openfda = item.get("openfda") or {}
+    rxcuis = [r for r in (openfda.get("rxcui") or []) if r]
+    brands_raw = item.get("brand_name") or openfda.get("brand_name") or []
+    if isinstance(brands_raw, str):
+        brands_raw = [brands_raw]
+    brands = [b for b in brands_raw if b]
+    pharm_class = (
+        openfda.get("pharm_class_epc")
+        or openfda.get("pharm_class_moa")
+        or openfda.get("pharm_class_cs")
+        or []
+    )
+    drug_class = pharm_class[0] if pharm_class else ""
+    manufacturer = item.get("labeler_name", "")
+
+    update_set: Dict[str, Any] = {"last_updated": datetime.utcnow()}
+    if not doc.get("manufacturer") and manufacturer:
+        update_set["manufacturer"] = manufacturer
+    if not doc.get("drug_class") and drug_class:
+        update_set["drug_class"] = drug_class
+    if not doc.get("rxnorm_id") and rxcuis:
+        update_set["rxnorm_id"] = rxcuis[0]
+
+    add_to_set: Dict[str, Any] = {}
+    if package_ndc:
+        add_to_set["ndc_codes"] = package_ndc
+    name_l = (doc.get("name") or "").lower()
+    generic_l = (doc.get("generic_name") or "").lower()
+    new_brands = [b for b in brands if b.lower() not in (name_l, generic_l)]
+    if new_brands:
+        add_to_set["brand_names"] = {"$each": new_brands}
+    dosage_pair = _extract_dosage(item)
+    if dosage_pair:
+        form_key, strength = dosage_pair
+        add_to_set[f"dosages.{form_key}"] = strength
+
+    update_ops: Dict[str, Any] = {"$set": update_set}
+    if add_to_set:
+        update_ops["$addToSet"] = add_to_set
     try:
-        if drug_db_manager is None or getattr(drug_db_manager, "drugs_collection", None) is None:
-            return
-        ndc = result.get("ndc")
-        if not ndc:
-            return
-        await drug_db_manager.drugs_collection.update_one(
-            {"drug_id": result["drug_id"]},
-            {"$setOnInsert": {
-                "drug_id": result["drug_id"],
-                "name": result["name"],
-                "generic_name": result.get("generic_name", ""),
-                "brand_names": result.get("brand_names", []),
-                "drug_class": result.get("drug_class", ""),
-                "rxnorm_id": result.get("rxcui"),
-                "manufacturer": result.get("manufacturer", ""),
-                "source": "openfda",
-            },
-             "$addToSet": {"product_ndcs": ndc}},
-            upsert=True,
-        )
+        await coll.update_one({"_id": doc["_id"]}, update_ops)
+        refreshed = await coll.find_one({"_id": doc["_id"]})
+        return refreshed or doc
     except Exception as e:
-        logger.debug(f"Skip caching openFDA NDC result: {e}")
+        logger.warning(f"Failed to enrich drug {doc.get('drug_id')} from openFDA: {e}")
+        return doc
 
 
 async def lookup_by_ndc(raw: str) -> Optional[Dict[str, Any]]:
@@ -293,7 +396,19 @@ async def lookup_by_ndc(raw: str) -> Optional[Dict[str, Any]]:
     if local:
         return local
 
-    remote = await _lookup_openfda(normalized)
-    if remote:
-        await _persist_openfda_to_local(remote)
-    return remote
+    item = await _lookup_openfda_raw(normalized)
+    if item is None:
+        return None
+
+    package_ndc = next(
+        (c for c in _candidate_ndcs(normalized)
+         if any(c == p.get("package_ndc") for p in item.get("packaging") or [])),
+        normalized,
+    )
+
+    existing = await _match_existing_drug(item)
+    if existing is not None:
+        enriched = await _enrich_existing_drug(existing, item, package_ndc)
+        return _shape_local_result(enriched, package_ndc)
+
+    return _shape_openfda_result(item, package_ndc)

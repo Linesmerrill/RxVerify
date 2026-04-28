@@ -183,6 +183,13 @@ def _shape_openfda_result(
     brand_names = item.get("brand_name") or openfda.get("brand_name") or []
     if isinstance(brand_names, str):
         brand_names = [brand_names]
+    # Unbranded generics list brand_name == generic_name in openFDA — drop those
+    # so the UI doesn't show "Brands: Lisinopril" for plain Lisinopril.
+    generic_lower = (item.get("generic_name") or "").strip().lower()
+    brand_names = [
+        b for b in brand_names
+        if b and b.strip().lower() != generic_lower
+    ]
     rxcuis = openfda.get("rxcui") or []
     primary_rxcui = rxcuis[0] if rxcuis else None
 
@@ -190,6 +197,7 @@ def _shape_openfda_result(
         openfda.get("pharm_class_epc")
         or openfda.get("pharm_class_moa")
         or openfda.get("pharm_class_cs")
+        or openfda.get("pharm_class_pe")
         or []
     )
     drug_class = pharm_class[0] if pharm_class else ""

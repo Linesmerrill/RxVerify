@@ -446,6 +446,104 @@ async def _match_existing_drug(item: Dict[str, Any]) -> Optional[Dict[str, Any]]
     return None
 
 
+async def _create_drug_from_openfda(
+    item: Dict[str, Any], package_ndc: str
+) -> Optional[Dict[str, Any]]:
+    """Seed a new local drugs-collection entry from an openFDA NDC record.
+
+    Keyed on rxcui (or a slug of generic_name when rxcui is missing) so that
+    every future NDC scan for the same drug — different strengths, different
+    labelers — accretes onto the same doc instead of producing orphans.
+    Returns the inserted/refreshed doc, or None if the local store is unreachable.
+    """
+    if drug_db_manager is None or getattr(drug_db_manager, "drugs_collection", None) is None:
+        return None
+    coll = drug_db_manager.drugs_collection
+    openfda = item.get("openfda") or {}
+    rxcuis = [r for r in (openfda.get("rxcui") or []) if r]
+    primary_rxcui = rxcuis[0] if rxcuis else None
+    generic = (item.get("generic_name") or "").strip()
+    brands_raw = item.get("brand_name") or openfda.get("brand_name") or []
+    if isinstance(brands_raw, str):
+        brands_raw = [brands_raw]
+    generic_lower = generic.lower()
+    brands = [b for b in brands_raw if b and b.strip().lower() != generic_lower]
+    pharm_class = (
+        item.get("pharm_class")
+        or openfda.get("pharm_class_epc")
+        or openfda.get("pharm_class_moa")
+        or openfda.get("pharm_class_cs")
+        or openfda.get("pharm_class_pe")
+        or []
+    )
+    drug_class = pharm_class[0] if pharm_class else ""
+    manufacturer = item.get("labeler_name", "") or (openfda.get("manufacturer_name") or [""])[0]
+    name = generic or (brands[0] if brands else "")
+    if not name:
+        return None
+    name_lower = name.lower()
+
+    drug_id = (
+        f"openfda_rxcui_{primary_rxcui}" if primary_rxcui
+        else f"openfda_{re.sub(r'[^a-z0-9]+', '_', name_lower).strip('_')}"
+    )
+
+    set_on_insert: Dict[str, Any] = {
+        "drug_id": drug_id,
+        "name": name,
+        "name_lower": name_lower,
+        "drug_type": "generic",
+        "status": "active",
+        "data_source": "openFDA",
+        "primary_search_term": name_lower,
+        "search_terms": list({name_lower, generic_lower, *(b.lower() for b in brands)} - {""}),
+        "search_terms_lower": list({name_lower, generic_lower, *(b.lower() for b in brands)} - {""}),
+        "common_uses": [],
+        "active_ingredients": [],
+        "combination_drug_ids": [],
+    }
+
+    update_set: Dict[str, Any] = {"last_updated": datetime.utcnow()}
+    if generic:
+        update_set["generic_name"] = generic
+    if manufacturer:
+        update_set["manufacturer"] = manufacturer
+    if drug_class:
+        update_set["drug_class"] = drug_class
+    if primary_rxcui:
+        update_set["rxnorm_id"] = primary_rxcui
+
+    add_to_set: Dict[str, Any] = {}
+    if package_ndc:
+        add_to_set["ndc_codes"] = package_ndc
+    if brands:
+        add_to_set["brand_names"] = {"$each": brands}
+
+    dosage_pair = _extract_dosage(item)
+    if dosage_pair:
+        form_key, strength = dosage_pair
+        add_to_set[f"dosages.{form_key}"] = strength
+        if package_ndc:
+            update_set[f"ndc_dosages.{package_ndc}"] = {
+                "form": form_key,
+                "strength": strength,
+            }
+
+    update_ops: Dict[str, Any] = {
+        "$setOnInsert": set_on_insert,
+        "$set": update_set,
+    }
+    if add_to_set:
+        update_ops["$addToSet"] = add_to_set
+
+    try:
+        await coll.update_one({"drug_id": drug_id}, update_ops, upsert=True)
+        return await coll.find_one({"drug_id": drug_id})
+    except Exception as e:
+        logger.warning(f"Failed to seed local drug from openFDA NDC {package_ndc}: {e}")
+        return None
+
+
 async def _enrich_existing_drug(
     doc: Dict[str, Any], item: Dict[str, Any], package_ndc: str
 ) -> Dict[str, Any]:
@@ -458,9 +556,11 @@ async def _enrich_existing_drug(
         brands_raw = [brands_raw]
     brands = [b for b in brands_raw if b]
     pharm_class = (
-        openfda.get("pharm_class_epc")
+        item.get("pharm_class")
+        or openfda.get("pharm_class_epc")
         or openfda.get("pharm_class_moa")
         or openfda.get("pharm_class_cs")
+        or openfda.get("pharm_class_pe")
         or []
     )
     drug_class = pharm_class[0] if pharm_class else ""
@@ -525,6 +625,13 @@ async def _lookup_one(normalized: str) -> Optional[Dict[str, Any]]:
     if existing is not None:
         enriched = await _enrich_existing_drug(existing, item, package_ndc)
         return _shape_local_result(enriched, package_ndc, matched_dosage)
+
+    # No local match — seed a new entry so this NDC, its strength, and its
+    # form get cached. Future scans of any NDC mapped to the same rxcui or
+    # generic name will accrete onto the same doc.
+    seeded = await _create_drug_from_openfda(item, package_ndc)
+    if seeded is not None:
+        return _shape_local_result(seeded, package_ndc, matched_dosage)
 
     return _shape_openfda_result(item, package_ndc, matched_dosage)
 

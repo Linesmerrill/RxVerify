@@ -139,15 +139,29 @@ def _candidate_product_ndcs(normalized: str) -> List[str]:
     return list(candidates)
 
 
-def _shape_local_result(doc: Dict[str, Any], ndc: str) -> Dict[str, Any]:
-    """Convert a local Mongo drug doc into the same shape /drugs/search returns."""
+def _shape_local_result(
+    doc: Dict[str, Any],
+    ndc: str,
+    matched_dosage: Optional[Tuple[str, str]] = None,
+) -> Dict[str, Any]:
+    """Convert a local Mongo drug doc into the same shape /drugs/search returns.
+
+    When `matched_dosage` is provided, narrow `dosages` to just that form/strength
+    so an NDC-driven response surfaces the specific package dose instead of every
+    strength the drug ships in.
+    """
+    if matched_dosage:
+        form, strength = matched_dosage
+        dosages: Any = {form: [strength]}
+    else:
+        dosages = doc.get("dosages", {}) or {}
     return {
         "drug_id": doc.get("drug_id") or str(doc.get("_id", "")),
         "name": doc.get("name") or doc.get("generic_name") or "",
         "generic_name": doc.get("generic_name", ""),
         "brand_names": doc.get("brand_names", []) or [],
         "common_uses": doc.get("common_uses", []) or [],
-        "dosages": doc.get("dosages", []) or [],
+        "dosages": dosages,
         "drug_class": doc.get("drug_class", ""),
         "source": "local_database",
         "rxcui": doc.get("rxnorm_id") or doc.get("rxcui"),
@@ -159,7 +173,11 @@ def _shape_local_result(doc: Dict[str, Any], ndc: str) -> Dict[str, Any]:
     }
 
 
-def _shape_openfda_result(item: Dict[str, Any], ndc: str) -> Dict[str, Any]:
+def _shape_openfda_result(
+    item: Dict[str, Any],
+    ndc: str,
+    matched_dosage: Optional[Tuple[str, str]] = None,
+) -> Dict[str, Any]:
     """Convert an openFDA /drug/ndc.json record into our standard search-result shape."""
     openfda = item.get("openfda") or {}
     brand_names = item.get("brand_name") or openfda.get("brand_name") or []
@@ -176,20 +194,29 @@ def _shape_openfda_result(item: Dict[str, Any], ndc: str) -> Dict[str, Any]:
     )
     drug_class = pharm_class[0] if pharm_class else ""
 
+    if matched_dosage:
+        form, strength = matched_dosage
+        dosages: Any = {form: [strength]}
+    elif item.get("dosage_form"):
+        form_key = item["dosage_form"].split(",")[0].strip().split()[0].lower()
+        dosages = {form_key: []}
+    else:
+        dosages = {}
+
     return {
         "drug_id": f"openfda:{item.get('product_ndc', ndc)}",
         "name": (brand_names[0] if brand_names else None) or item.get("generic_name") or "",
         "generic_name": item.get("generic_name", ""),
         "brand_names": brand_names,
         "common_uses": [],
-        "dosages": [item.get("dosage_form")] if item.get("dosage_form") else [],
+        "dosages": dosages,
         "drug_class": drug_class,
         "source": "openfda",
         "rxcui": primary_rxcui,
         "all_rxcuis": rxcuis,
         "url": "",
         "manufacturer": item.get("labeler_name", ""),
-        "ndc": item.get("product_ndc") or ndc,
+        "ndc": ndc or item.get("product_ndc"),
         "match_type": "ndc_exact",
         "relevance_score": 1.0,
     }
@@ -217,7 +244,12 @@ async def _lookup_local(ndc: str) -> Optional[Dict[str, Any]]:
                  or c == doc.get("ndc")),
                 ndc,
             )
-            return _shape_local_result(doc, matched_ndc)
+            ndc_dosages = doc.get("ndc_dosages") or {}
+            entry = ndc_dosages.get(matched_ndc) or {}
+            matched_dosage = None
+            if entry.get("form") and entry.get("strength"):
+                matched_dosage = (entry["form"], entry["strength"])
+            return _shape_local_result(doc, matched_ndc, matched_dosage)
     except Exception as e:
         logger.warning(f"Local NDC lookup failed for {ndc}: {e}")
     return None
@@ -373,6 +405,11 @@ async def _enrich_existing_drug(
     if dosage_pair:
         form_key, strength = dosage_pair
         add_to_set[f"dosages.{form_key}"] = strength
+        if package_ndc:
+            update_set[f"ndc_dosages.{package_ndc}"] = {
+                "form": form_key,
+                "strength": strength,
+            }
 
     update_ops: Dict[str, Any] = {"$set": update_set}
     if add_to_set:
@@ -405,10 +442,11 @@ async def lookup_by_ndc(raw: str) -> Optional[Dict[str, Any]]:
          if any(c == p.get("package_ndc") for p in item.get("packaging") or [])),
         normalized,
     )
+    matched_dosage = _extract_dosage(item)
 
     existing = await _match_existing_drug(item)
     if existing is not None:
         enriched = await _enrich_existing_drug(existing, item, package_ndc)
-        return _shape_local_result(enriched, package_ndc)
+        return _shape_local_result(enriched, package_ndc, matched_dosage)
 
-    return _shape_openfda_result(item, package_ndc)
+    return _shape_openfda_result(item, package_ndc, matched_dosage)

@@ -98,14 +98,43 @@ def normalize_ndc(raw: str) -> Optional[str]:
 
 
 def _candidate_ndcs(normalized: str) -> List[str]:
-    """Return search candidates for openFDA — both 11-digit dashed and bare 10-digit forms."""
-    if not normalized:
+    """
+    Return all valid dashed NDC11 forms a `packaging.package_ndc` field might hold.
+
+    openFDA preserves whichever 10-digit grouping (4-4-2, 5-3-2, 5-4-1) the labeler
+    originally registered, so a 5-4-2 input must fan out to every form that could
+    have been zero-padded into it.
+    """
+    if not normalized or normalized.count("-") != 2:
+        return [normalized] if normalized else []
+    a, b, c = normalized.split("-")
+    if (len(a), len(b), len(c)) != (5, 4, 2):
+        return [normalized]
+    candidates = {f"{a}-{b}-{c}"}
+    a_strip = a[1:] if a.startswith("0") else None
+    b_strip = b[1:] if b.startswith("0") else None
+    c_strip = c[1:] if c.startswith("0") else None
+    if a_strip:
+        candidates.add(f"{a_strip}-{b}-{c}")
+    if b_strip:
+        candidates.add(f"{a}-{b_strip}-{c}")
+    if c_strip:
+        candidates.add(f"{a}-{b}-{c_strip}")
+    return list(candidates)
+
+
+def _candidate_product_ndcs(normalized: str) -> List[str]:
+    """Return labeler-product (NDC9/10) candidates for openFDA `product_ndc` searches."""
+    if not normalized or normalized.count("-") != 2:
         return []
-    parts = normalized.split("-")
-    candidates = {normalized}
-    if len(parts) == 3 and parts[0].startswith("0") and len(parts[0]) == 5:
-        # Also try the original 4-4-2 form
-        candidates.add(f"{parts[0][1:]}-{parts[1]}-{parts[2]}")
+    a, b, _ = normalized.split("-")
+    if (len(a), len(b)) != (5, 4):
+        return [f"{a}-{b}"]
+    candidates = {f"{a}-{b}"}
+    if a.startswith("0"):
+        candidates.add(f"{a[1:]}-{b}")
+    if b.startswith("0"):
+        candidates.add(f"{a}-{b[1:]}")
     return list(candidates)
 
 
@@ -185,14 +214,7 @@ async def _lookup_local(ndc: str) -> Optional[Dict[str, Any]]:
     return None
 
 
-async def _lookup_openfda(ndc: str) -> Optional[Dict[str, Any]]:
-    """Look up an NDC against the live openFDA NDC directory."""
-    candidates = _candidate_ndcs(ndc)
-    # openFDA accepts product_ndc with the dashed 5-4-2 or 4-4-2 form.
-    search_expr = " ".join(f'product_ndc:"{c}"' for c in candidates)
-    if len(candidates) > 1:
-        search_expr = "+OR+".join(f'product_ndc:"{c}"' for c in candidates)
-
+async def _query_openfda(search_expr: str) -> Optional[Dict[str, Any]]:
     try:
         async with httpx.AsyncClient(timeout=8.0) as client:
             resp = await client.get(
@@ -200,20 +222,38 @@ async def _lookup_openfda(ndc: str) -> Optional[Dict[str, Any]]:
                 params={"search": search_expr, "limit": 1},
             )
             if resp.status_code == 404:
-                return None  # No match, openFDA returns 404 for empty results
+                return None
             resp.raise_for_status()
             data = resp.json()
     except httpx.HTTPError as e:
-        logger.warning(f"openFDA NDC lookup HTTP error for {ndc}: {e}")
+        logger.warning(f"openFDA NDC lookup HTTP error: {e}")
         return None
     except Exception as e:
-        logger.warning(f"openFDA NDC lookup failed for {ndc}: {e}")
+        logger.warning(f"openFDA NDC lookup failed: {e}")
         return None
-
     results = data.get("results") or []
-    if not results:
+    return results[0] if results else None
+
+
+async def _lookup_openfda(ndc: str) -> Optional[Dict[str, Any]]:
+    """Look up an NDC against the live openFDA NDC directory."""
+    pkg_candidates = _candidate_ndcs(ndc)
+    # openFDA stores package_ndc in its original 10-digit grouping with the
+    # package code appended — match that field directly.
+    pkg_expr = " OR ".join(f'packaging.package_ndc:"{c}"' for c in pkg_candidates)
+    item = await _query_openfda(pkg_expr)
+
+    # Fall back to product_ndc (labeler-product only) for inputs that don't
+    # disambiguate to a package row.
+    if item is None:
+        prod_candidates = _candidate_product_ndcs(ndc)
+        if prod_candidates:
+            prod_expr = " OR ".join(f'product_ndc:"{c}"' for c in prod_candidates)
+            item = await _query_openfda(prod_expr)
+
+    if item is None:
         return None
-    return _shape_openfda_result(results[0], ndc)
+    return _shape_openfda_result(item, ndc)
 
 
 async def _persist_openfda_to_local(result: Dict[str, Any]) -> None:

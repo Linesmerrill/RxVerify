@@ -441,20 +441,44 @@ async def search_medications(request: SearchRequest):
 async def search_drugs(query: str = "", limit: int = 10):
     """Fast local drug search endpoint - uses curated MongoDB database."""
     start_time = time.time()
-    
+
+    from app.ndc_lookup_service import looks_like_ndc, lookup_by_ndc
+
+    # NDC-shaped queries bypass the name search and go straight to NDC lookup.
+    if query and looks_like_ndc(query):
+        try:
+            ndc_hit = await lookup_by_ndc(query)
+        except Exception as e:
+            logger.error(f"NDC lookup failed for {query}: {e}")
+            ndc_hit = None
+        processing_time = (time.time() - start_time) * 1000
+        monitor.record_request(
+            success=ndc_hit is not None,
+            response_time_ms=processing_time,
+            endpoint="/drugs/search",
+            query=query.strip(),
+        )
+        results = [ndc_hit] if ndc_hit else []
+        return {
+            "results": results,
+            "total": len(results),
+            "query": query,
+            "match_type": "ndc",
+        }
+
     if not query or len(query.strip()) < 2:
         # Record failed request for empty query
         monitor.record_request(success=False, response_time_ms=0, endpoint="/drugs/search", query=query.strip())
         return {"results": [], "total": 0, "search_stats": {"total_searches": 0}}
-    
+
     try:
         from app.local_drug_search_service import local_drug_search_service
-        
+
         # Initialize service if not already done
         if not hasattr(local_drug_search_service, '_initialized'):
             await local_drug_search_service.initialize()
             local_drug_search_service._initialized = True
-        
+
         results = await local_drug_search_service.search_drugs(query.strip(), limit)
         search_stats = await local_drug_search_service.get_search_stats()
         
@@ -479,6 +503,47 @@ async def search_drugs(query: str = "", limit: int = 10):
             status_code=500,
             detail=f"Local drug search failed: {str(e)}"
         )
+
+@app.get("/drugs/lookup/ndc")
+async def lookup_drug_by_ndc(ndc: str = ""):
+    """
+    Look up a drug by NDC code (typed or scanned from a barcode).
+
+    Accepts 10-digit dashed (4-4-2 / 5-3-2 / 5-4-1), 11-digit dashed (5-4-2),
+    undashed digits, or UPC-A/GTIN-14 barcodes that embed an NDC.
+    """
+    start_time = time.time()
+    from app.ndc_lookup_service import normalize_ndc, lookup_by_ndc
+
+    if not ndc or not ndc.strip():
+        raise HTTPException(status_code=400, detail="ndc query parameter is required")
+
+    normalized = normalize_ndc(ndc)
+    if not normalized:
+        monitor.record_request(success=False, response_time_ms=0, endpoint="/drugs/lookup/ndc", query=ndc.strip())
+        raise HTTPException(status_code=400, detail=f"Could not parse NDC from '{ndc}'")
+
+    try:
+        result = await lookup_by_ndc(ndc)
+    except Exception as e:
+        logger.error(f"NDC lookup failed for {ndc}: {e}")
+        result = None
+
+    processing_time = (time.time() - start_time) * 1000
+    monitor.record_request(
+        success=result is not None,
+        response_time_ms=processing_time,
+        endpoint="/drugs/lookup/ndc",
+        query=ndc.strip(),
+    )
+
+    return {
+        "ndc": normalized,
+        "raw": ndc,
+        "result": result,
+        "found": result is not None,
+    }
+
 
 @app.put("/drugs/{drug_id}")
 async def update_drug_info(drug_id: str, updates: Dict[str, Any] = Body(...)):

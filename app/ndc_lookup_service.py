@@ -598,7 +598,11 @@ def _extract_dosage_info(item: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 async def _match_existing_drug(item: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     """Find an existing drugs-collection doc that this openFDA record describes.
 
-    Priority: rxnorm_id (most reliable), then generic_name, then any brand name.
+    Priority: exact name/generic match first, then exact brand match. rxcui is
+    only used as a last resort because openFDA can return multiple rxcuis on a
+    single product (one per strength) and combo drugs share component rxcuis,
+    so an rxcui-only match risks attaching plain-Omeprazole NDC data to an
+    Omeclamox-Pak entry that happens to share rxcui 198051.
     """
     if drug_db_manager is None or getattr(drug_db_manager, "drugs_collection", None) is None:
         return None
@@ -610,23 +614,46 @@ async def _match_existing_drug(item: Dict[str, Any]) -> Optional[Dict[str, Any]]
     if isinstance(brands_raw, str):
         brands_raw = [brands_raw]
     brands = [b for b in brands_raw if b]
+    ingredient_count = len(item.get("active_ingredients") or [])
 
-    if rxcuis:
-        doc = await coll.find_one({"rxnorm_id": {"$in": rxcuis}})
-        if doc:
-            return doc
+    # 1. Exact generic-name match. For combos, only match against docs whose
+    #    drug_type is also "combination" — otherwise a combo's openFDA generic
+    #    string ("Lisinopril and Hydrochlorothiazide") could fuzzy-pull the
+    #    plain Lisinopril doc if name normalization ever drifts.
     if generic:
         pattern = re.compile(f"^{re.escape(generic)}$", re.IGNORECASE)
-        doc = await coll.find_one({"$or": [
-            {"name": pattern}, {"generic_name": pattern}
-        ]})
+        filt: Dict[str, Any] = {"$or": [{"name": pattern}, {"generic_name": pattern}]}
+        if ingredient_count > 1:
+            filt["drug_type"] = "combination"
+        else:
+            # For single-ingredient products, exclude combination docs so
+            # plain Omeprazole doesn't get attached to Omeclamox-Pak.
+            filt["drug_type"] = {"$ne": "combination"}
+        doc = await coll.find_one(filt)
         if doc:
             return doc
+
+    # 2. Exact brand-name match.
     for b in brands:
+        if not b or b.strip().lower() == generic.strip().lower():
+            continue
         pattern = re.compile(f"^{re.escape(b)}$", re.IGNORECASE)
         doc = await coll.find_one({"$or": [
             {"brand_names": pattern}, {"name": pattern}
         ]})
+        if doc:
+            return doc
+
+    # 3. rxcui as last resort. Restrict by drug_type so a single-ingredient
+    #    rxcui doesn't attach to a combination doc that lists it as a
+    #    component, and vice-versa.
+    if rxcuis:
+        rxcui_filt: Dict[str, Any] = {"rxnorm_id": {"$in": rxcuis}}
+        if ingredient_count > 1:
+            rxcui_filt["drug_type"] = "combination"
+        else:
+            rxcui_filt["drug_type"] = {"$ne": "combination"}
+        doc = await coll.find_one(rxcui_filt)
         if doc:
             return doc
     return None
@@ -772,7 +799,15 @@ async def _enrich_existing_drug(
     update_set: Dict[str, Any] = {"last_updated": datetime.utcnow()}
     if not doc.get("manufacturer") and manufacturer:
         update_set["manufacturer"] = manufacturer
-    if not doc.get("drug_class") and drug_class:
+    # Drug class: overwrite with openFDA pharm_class whenever it's present.
+    # Stale seed data has bogus values like "H" or "ACE inhibitor" while
+    # openFDA gives the canonical "Proton Pump Inhibitor [EPC]" / similar.
+    existing_class = (doc.get("drug_class") or "").strip()
+    if drug_class and (
+        not existing_class
+        or len(existing_class) < 5      # single letters / abbreviations
+        or existing_class.lower() != drug_class.lower()
+    ):
         update_set["drug_class"] = drug_class
     if not doc.get("rxnorm_id") and rxcuis:
         update_set["rxnorm_id"] = rxcuis[0]

@@ -72,10 +72,15 @@ class AnalyticsDatabaseManager:
             self.hourly_metrics_collection = self.db.analytics_hourly_metrics
             self.daily_metrics_collection = self.db.analytics_daily_metrics
             self.system_stats_collection = self.db.analytics_system_stats
-            
+            # NDC lookup metrics — separate from generic request logs because we
+            # care about *outcome* (cache hit vs API call vs not_found) and the
+            # data is tiny enough to keep as $inc'd counters rather than per-event.
+            self.ndc_metrics_aggregate_collection = self.db.ndc_lookup_aggregate
+            self.ndc_metrics_daily_collection = self.db.ndc_lookup_daily
+
             # Create indexes for fast querying
             await self._create_indexes()
-            
+
             logger.info("Analytics database manager initialized successfully")
             
         except Exception as e:
@@ -109,7 +114,15 @@ class AnalyticsDatabaseManager:
             await self.system_stats_collection.create_indexes([
                 IndexModel([("type", ASCENDING)], unique=True)
             ])
-            
+
+            # NDC lookup metrics indexes
+            await self.ndc_metrics_aggregate_collection.create_indexes([
+                IndexModel([("scope", ASCENDING)], unique=True)
+            ])
+            await self.ndc_metrics_daily_collection.create_indexes([
+                IndexModel([("date", DESCENDING)], unique=True)
+            ])
+
             logger.info("Analytics database indexes created successfully")
             
         except Exception as e:
@@ -511,6 +524,91 @@ class AnalyticsDatabaseManager:
                 "previous_updated_at": fallback_now
             }
     
+    # ------------------------------------------------------------------
+    # NDC lookup metrics
+    # ------------------------------------------------------------------
+    # We track six outcome buckets per lookup:
+    #   local_hit       - returned from the local drugs collection (cache hit)
+    #   openfda_enrich  - openFDA call that matched an existing local drug
+    #   openfda_seed    - openFDA call that seeded a new local drug
+    #   openfda_only    - openFDA call returned, but Mongo write failed
+    #   not_found       - openFDA returned nothing
+    #   parse_error     - input couldn't be parsed as an NDC
+    # Cache-hit-rate is computed as local_hit / (local_hit + api_calls)
+    # where api_calls = openfda_enrich + openfda_seed + openfda_only + not_found.
+    NDC_OUTCOMES = (
+        "local_hit", "openfda_enrich", "openfda_seed",
+        "openfda_only", "not_found", "parse_error",
+    )
+
+    async def record_ndc_lookup(self, outcome: str) -> None:
+        """Atomically increment the aggregate + per-day counters for an NDC
+        lookup outcome. Best-effort — silently no-ops if the analytics DB
+        isn't initialized so a Mongo outage never breaks an NDC lookup."""
+        if self.ndc_metrics_aggregate_collection is None:
+            return
+        if outcome not in self.NDC_OUTCOMES:
+            outcome = "not_found"
+        today = datetime.utcnow().strftime("%Y-%m-%d")
+        try:
+            await self.ndc_metrics_aggregate_collection.update_one(
+                {"scope": "all_time"},
+                {
+                    "$inc": {f"counts.{outcome}": 1, "counts.total": 1},
+                    "$set": {"last_event_at": datetime.utcnow()},
+                    "$setOnInsert": {"scope": "all_time"},
+                },
+                upsert=True,
+            )
+            await self.ndc_metrics_daily_collection.update_one(
+                {"date": today},
+                {
+                    "$inc": {f"counts.{outcome}": 1, "counts.total": 1},
+                    "$setOnInsert": {"date": today},
+                },
+                upsert=True,
+            )
+        except Exception as e:
+            logger.warning(f"Failed to record NDC lookup metric: {e}")
+
+    @staticmethod
+    def _ndc_metric_summary(counts: Dict[str, int]) -> Dict[str, Any]:
+        api_calls = sum(counts.get(k, 0) for k in (
+            "openfda_enrich", "openfda_seed", "openfda_only", "not_found",
+        ))
+        cached = counts.get("local_hit", 0)
+        denom = api_calls + cached
+        return {
+            "total": counts.get("total", 0),
+            "cached_returns": cached,
+            "api_calls": api_calls,
+            "cache_hit_rate": round(cached / denom, 4) if denom else None,
+            "breakdown": {k: counts.get(k, 0) for k in AnalyticsDatabaseManager.NDC_OUTCOMES},
+        }
+
+    async def get_ndc_metrics(self, days: int = 30) -> Dict[str, Any]:
+        """Return aggregate + per-day series suitable for charts."""
+        if self.ndc_metrics_aggregate_collection is None:
+            return {
+                "all_time": self._ndc_metric_summary({}),
+                "daily": [],
+                "ready": False,
+            }
+        agg = await self.ndc_metrics_aggregate_collection.find_one({"scope": "all_time"}) or {}
+        cursor = self.ndc_metrics_daily_collection.find().sort("date", DESCENDING).limit(days)
+        daily_docs = await cursor.to_list(length=days)
+        # Return chronologically (oldest → newest) for friendly chart consumption.
+        daily_docs.reverse()
+        return {
+            "all_time": self._ndc_metric_summary(agg.get("counts") or {}),
+            "last_event_at": agg.get("last_event_at"),
+            "daily": [
+                {"date": d.get("date"), **self._ndc_metric_summary(d.get("counts") or {})}
+                for d in daily_docs
+            ],
+            "ready": True,
+        }
+
     async def cleanup_old_data(self, days_to_keep: int = 30):
         """Clean up old analytics data to prevent database bloat."""
         try:

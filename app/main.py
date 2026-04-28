@@ -274,6 +274,22 @@ async def openfda_usage():
     return await get_openfda_usage()
 
 
+@app.get("/admin/ndc/stats")
+async def ndc_stats(days: int = 30):
+    """NDC lookup analytics persisted to MongoDB.
+
+    Returns:
+      - all_time: total / cached_returns / api_calls / cache_hit_rate /
+        outcome breakdown across the lifetime of the deployment.
+      - daily:    same shape, one entry per UTC day for the last `days`,
+        oldest → newest, suitable for time-series charts.
+      - last_event: in-memory mirror of the most recent lookup outcome
+        (resets on dyno restart).
+    """
+    from app.ndc_lookup_service import get_ndc_stats
+    return await get_ndc_stats(days=max(1, min(days, 365)))
+
+
 @app.get("/")
 async def root():
     """Root endpoint with API information."""

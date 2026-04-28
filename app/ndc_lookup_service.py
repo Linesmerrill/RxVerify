@@ -115,6 +115,55 @@ async def get_openfda_usage() -> Dict[str, Any]:
     return snap
 
 
+class _NdcStats:
+    """Thin shim that delegates outcome counters to the analytics DB so
+    metrics survive dyno restarts. Keeps a small in-memory mirror of the
+    most recent event for fast last-event display when the DB is slow."""
+
+    def __init__(self) -> None:
+        self._lock = asyncio.Lock()
+        self._last_event: Optional[Dict[str, Any]] = None
+
+    async def record(self, outcome: str, *, raw: Optional[str] = None,
+                     ndc: Optional[str] = None) -> None:
+        async with self._lock:
+            self._last_event = {
+                "outcome": outcome,
+                "raw": raw,
+                "ndc": ndc,
+                "at": datetime.utcnow().isoformat() + "Z",
+            }
+        try:
+            from app.analytics_database import analytics_db_manager
+            if analytics_db_manager is not None:
+                await analytics_db_manager.record_ndc_lookup(outcome)
+        except Exception as e:
+            logger.warning(f"Failed to persist NDC lookup metric: {e}")
+
+    async def last_event(self) -> Optional[Dict[str, Any]]:
+        async with self._lock:
+            return dict(self._last_event) if self._last_event else None
+
+
+_ndc_stats = _NdcStats()
+
+
+async def get_ndc_stats(days: int = 30) -> Dict[str, Any]:
+    """Return persisted NDC analytics + the most recent in-memory event."""
+    from app.analytics_database import analytics_db_manager
+    metrics: Dict[str, Any]
+    if analytics_db_manager is not None:
+        try:
+            metrics = await analytics_db_manager.get_ndc_metrics(days=days)
+        except Exception as e:
+            logger.warning(f"Failed to read NDC metrics: {e}")
+            metrics = {"all_time": {}, "daily": [], "ready": False}
+    else:
+        metrics = {"all_time": {}, "daily": [], "ready": False}
+    metrics["last_event"] = await _ndc_stats.last_event()
+    return metrics
+
+
 _rate_limiter = _OpenFDARateLimiter(
     max_per_minute=app_settings.OPENFDA_MAX_PER_MINUTE,
     max_per_day=app_settings.OPENFDA_MAX_PER_DAY,
@@ -767,15 +816,19 @@ async def _enrich_existing_drug(
         return doc
 
 
-async def _lookup_one(normalized: str) -> Optional[Dict[str, Any]]:
-    """Resolve a single normalized 5-4-2 NDC, hitting local first then openFDA."""
+async def _lookup_one(normalized: str) -> Tuple[Optional[Dict[str, Any]], str]:
+    """Resolve a single normalized 5-4-2 NDC, hitting local first then openFDA.
+
+    Returns (result_or_None, outcome) where outcome is one of:
+    `local_hit`, `openfda_enrich`, `openfda_seed`, `openfda_only`, `not_found`.
+    """
     local = await _lookup_local(normalized)
     if local:
-        return local
+        return local, "local_hit"
 
     item = await _lookup_openfda_raw(normalized)
     if item is None:
-        return None
+        return None, "not_found"
 
     package_ndc = next(
         (c for c in _candidate_ndcs(normalized)
@@ -787,16 +840,16 @@ async def _lookup_one(normalized: str) -> Optional[Dict[str, Any]]:
     existing = await _match_existing_drug(item)
     if existing is not None:
         enriched = await _enrich_existing_drug(existing, item, package_ndc)
-        return _shape_local_result(enriched, package_ndc, matched_dosage)
+        return _shape_local_result(enriched, package_ndc, matched_dosage), "openfda_enrich"
 
     # No local match — seed a new entry so this NDC, its strength, and its
     # form get cached. Future scans of any NDC mapped to the same rxcui or
     # generic name will accrete onto the same doc.
     seeded = await _create_drug_from_openfda(item, package_ndc)
     if seeded is not None:
-        return _shape_local_result(seeded, package_ndc, matched_dosage)
+        return _shape_local_result(seeded, package_ndc, matched_dosage), "openfda_seed"
 
-    return _shape_openfda_result(item, package_ndc, matched_dosage)
+    return _shape_openfda_result(item, package_ndc, matched_dosage), "openfda_only"
 
 
 async def lookup_by_ndc(raw: str) -> Optional[Dict[str, Any]]:
@@ -805,9 +858,24 @@ async def lookup_by_ndc(raw: str) -> Optional[Dict[str, Any]]:
     Iterates every plausible 5-4-2 normalization (dashed inputs are
     unambiguous; undashed inputs may map to several depending on which
     grouping the labeler originally registered) and returns the first hit.
+    Records the outcome of the first non-`not_found` candidate (or the last
+    candidate if every one missed) into the in-memory NDC stats counter.
     """
-    for normalized in normalize_ndc_candidates(raw):
-        result = await _lookup_one(normalized)
-        if result:
+    candidates = normalize_ndc_candidates(raw)
+    if not candidates:
+        await _ndc_stats.record("parse_error", raw=raw)
+        return None
+
+    last_outcome = "not_found"
+    last_normalized: Optional[str] = None
+    for normalized in candidates:
+        last_normalized = normalized
+        result, outcome = await _lookup_one(normalized)
+        # Stop on the first real resolution; "not_found" means try the next
+        # candidate grouping before giving up.
+        if outcome != "not_found":
+            await _ndc_stats.record(outcome, raw=raw, ndc=normalized)
             return result
+        last_outcome = outcome
+    await _ndc_stats.record(last_outcome, raw=raw, ndc=last_normalized)
     return None

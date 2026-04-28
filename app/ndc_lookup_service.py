@@ -382,12 +382,41 @@ async def _lookup_openfda(ndc: str) -> Optional[Dict[str, Any]]:
     return _shape_openfda_result(item, ndc)
 
 
-def _extract_dosage(item: Dict[str, Any]) -> Optional[Tuple[str, str]]:
-    """Pull (form_key, strength) from an openFDA NDC record.
+def _title_ingredient(name: str) -> str:
+    """Convert openFDA's UPPERCASE ingredient names to title case."""
+    return (name or "").strip().title()
 
-    `dosage_form` like "CAPSULE, DELAYED RELEASE" is reduced to its first token
-    ("capsule") to match the keys the local `dosages` dict already uses. Multi-
-    ingredient strengths (combination products) are joined with " / ".
+
+def _clean_strength(s: str) -> str:
+    s = (s or "").strip()
+    # openFDA encodes per-unit denominators ("40 mg/1") that we don't display.
+    if s.endswith("/1"):
+        s = s[:-2].strip()
+    return s
+
+
+def _extract_dosage(item: Dict[str, Any]) -> Optional[Tuple[str, str]]:
+    """Backwards-compatible (form, strength) pair. Combos return paired strengths
+    joined by " / " (positionally aligned with active_ingredients)."""
+    info = _extract_dosage_info(item)
+    if info is None:
+        return None
+    return info["form"], info["strength"]
+
+
+def _extract_dosage_info(item: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Pull form, paired strength, and per-ingredient breakdown from an openFDA
+    NDC record.
+
+    Returns:
+        {
+          "form":        "tablet",
+          "strength":    "25 mg / 20 mg",
+          "ingredients": [
+              {"name": "Hydrochlorothiazide", "strength": "25 mg"},
+              {"name": "Lisinopril",          "strength": "20 mg"},
+          ],
+        }
     """
     form_raw = (item.get("dosage_form") or "").strip()
     if not form_raw:
@@ -395,18 +424,20 @@ def _extract_dosage(item: Dict[str, Any]) -> Optional[Tuple[str, str]]:
     form_key = form_raw.split(",")[0].strip().split()[0].lower()
     if not form_key:
         return None
-    strengths: List[str] = []
+    ingredients: List[Dict[str, str]] = []
     for ing in item.get("active_ingredients") or []:
-        s = (ing.get("strength") or "").strip()
+        s = _clean_strength(ing.get("strength"))
+        n = _title_ingredient(ing.get("name"))
         if not s:
             continue
-        # openFDA encodes per-unit denominators ("40 mg/1") that we don't display.
-        if s.endswith("/1"):
-            s = s[:-2].strip()
-        strengths.append(s)
-    if not strengths:
+        ingredients.append({"name": n, "strength": s})
+    if not ingredients:
         return None
-    return form_key, " / ".join(strengths)
+    return {
+        "form": form_key,
+        "strength": " / ".join(i["strength"] for i in ingredients),
+        "ingredients": ingredients,
+    }
 
 
 async def _match_existing_drug(item: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -483,27 +514,41 @@ async def _create_drug_from_openfda(
         return None
     name_lower = name.lower()
 
+    raw_ingredients = item.get("active_ingredients") or []
+    ingredient_names = [_title_ingredient(i.get("name")) for i in raw_ingredients if i.get("name")]
+    is_combination = len(ingredient_names) > 1
+
     drug_id = (
         f"openfda_rxcui_{primary_rxcui}" if primary_rxcui
         else f"openfda_{re.sub(r'[^a-z0-9]+', '_', name_lower).strip('_')}"
     )
 
+    search_term_set = {name_lower, generic_lower, *(b.lower() for b in brands)}
+    search_term_set.update(n.lower() for n in ingredient_names)
+    search_term_set.discard("")
+
     set_on_insert: Dict[str, Any] = {
         "drug_id": drug_id,
         "name": name,
         "name_lower": name_lower,
-        "drug_type": "generic",
         "status": "active",
         "data_source": "openFDA",
         "primary_search_term": name_lower,
-        "search_terms": list({name_lower, generic_lower, *(b.lower() for b in brands)} - {""}),
-        "search_terms_lower": list({name_lower, generic_lower, *(b.lower() for b in brands)} - {""}),
+        "search_terms": list(search_term_set),
+        "search_terms_lower": list(search_term_set),
         "common_uses": [],
-        "active_ingredients": [],
         "combination_drug_ids": [],
     }
 
     update_set: Dict[str, Any] = {"last_updated": datetime.utcnow()}
+    # drug_type is split across operators to avoid a $set/$setOnInsert conflict:
+    # combos always promote to "combination" (even if the doc was first seeded as
+    # generic by a single-ingredient sibling NDC); non-combos only seed "generic"
+    # on insert so an existing combo isn't accidentally demoted.
+    if is_combination:
+        update_set["drug_type"] = "combination"
+    else:
+        set_on_insert["drug_type"] = "generic"
     if generic:
         update_set["generic_name"] = generic
     if manufacturer:
@@ -518,15 +563,18 @@ async def _create_drug_from_openfda(
         add_to_set["ndc_codes"] = package_ndc
     if brands:
         add_to_set["brand_names"] = {"$each": brands}
+    if ingredient_names:
+        add_to_set["active_ingredients"] = {"$each": ingredient_names}
 
-    dosage_pair = _extract_dosage(item)
-    if dosage_pair:
-        form_key, strength = dosage_pair
-        add_to_set[f"dosages.{form_key}"] = strength
+    dosage_info = _extract_dosage_info(item)
+    if dosage_info:
+        form_key = dosage_info["form"]
+        add_to_set[f"dosages.{form_key}"] = dosage_info["strength"]
         if package_ndc:
             update_set[f"ndc_dosages.{package_ndc}"] = {
                 "form": form_key,
-                "strength": strength,
+                "strength": dosage_info["strength"],
+                "ingredients": dosage_info["ingredients"],
             }
 
     update_ops: Dict[str, Any] = {
@@ -582,14 +630,23 @@ async def _enrich_existing_drug(
     new_brands = [b for b in brands if b.lower() not in (name_l, generic_l)]
     if new_brands:
         add_to_set["brand_names"] = {"$each": new_brands}
-    dosage_pair = _extract_dosage(item)
-    if dosage_pair:
-        form_key, strength = dosage_pair
-        add_to_set[f"dosages.{form_key}"] = strength
+
+    raw_ingredients = item.get("active_ingredients") or []
+    ingredient_names = [_title_ingredient(i.get("name")) for i in raw_ingredients if i.get("name")]
+    if len(ingredient_names) > 1 and doc.get("drug_type") != "combination":
+        update_set["drug_type"] = "combination"
+    if ingredient_names:
+        add_to_set["active_ingredients"] = {"$each": ingredient_names}
+
+    dosage_info = _extract_dosage_info(item)
+    if dosage_info:
+        form_key = dosage_info["form"]
+        add_to_set[f"dosages.{form_key}"] = dosage_info["strength"]
         if package_ndc:
             update_set[f"ndc_dosages.{package_ndc}"] = {
                 "form": form_key,
-                "strength": strength,
+                "strength": dosage_info["strength"],
+                "ingredients": dosage_info["ingredients"],
             }
 
     update_ops: Dict[str, Any] = {"$set": update_set}

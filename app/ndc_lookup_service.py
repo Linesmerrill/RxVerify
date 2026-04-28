@@ -37,6 +37,79 @@ def looks_like_ndc(query: str) -> bool:
     return bool(_NDC_TYPED_RE.match(q) or _BARCODE_RE.match(q))
 
 
+def _ten_digit_groupings(d: str) -> List[str]:
+    """Return every 5-4-2 normalization of a 10-digit undashed NDC.
+
+    A bare 10-digit NDC could have been registered in any of the three valid
+    groupings (4-4-2, 5-3-2, 5-4-1). Return one normalization per grouping so
+    a downstream openFDA query has a chance to hit the right one.
+    """
+    if len(d) != 10 or not d.isdigit():
+        return []
+    return [
+        f"0{d[0:4]}-{d[4:8]}-{d[8:10]}",     # 4-4-2 → pad labeler
+        f"{d[0:5]}-0{d[5:8]}-{d[8:10]}",     # 5-3-2 → pad product
+        f"{d[0:5]}-{d[5:9]}-0{d[9:10]}",     # 5-4-1 → pad package
+    ]
+
+
+def normalize_ndc_candidates(raw: str) -> List[str]:
+    """Return every plausible 5-4-2 normalization of `raw`.
+
+    Dashed input is unambiguous → one candidate. Undashed digits are
+    ambiguous because the labeler-product-package boundary depends on which
+    grouping the FDA labeler originally registered, so we expand:
+
+    - 10 digits → three candidates (one per valid grouping).
+    - 11 digits → the literal 5-4-2 split, plus, for any `0` sitting at
+      positions 0 / 5 / 9 (the three valid padding-insertion points), the
+      three groupings of the un-padded 10-digit body. This recovers inputs
+      where the padding zero is misaligned with the segment boundary the
+      literal 5-4-2 split implies (e.g. `76282418300` → `76282-0418-30`).
+    """
+    if not raw:
+        return []
+    s = raw.strip()
+
+    if "-" in s:
+        single = normalize_ndc(s)
+        return [single] if single else []
+
+    if not s.isdigit():
+        return []
+
+    digits = s
+
+    # Unwrap UPC-A / GTIN-14 / EAN-13 down to a 10-or-11-digit core.
+    if len(digits) == 12 and digits[0] == "3":
+        digits = digits[1:11]
+    elif len(digits) == 14 and digits[:3] == "003":
+        digits = digits[3:13]
+    elif len(digits) == 13 and digits[0] == "0" and digits[1] == "3":
+        digits = digits[2:12]
+
+    out: List[str] = []
+    if len(digits) == 10:
+        out.extend(_ten_digit_groupings(digits))
+    elif len(digits) == 11:
+        out.append(f"{digits[0:5]}-{digits[5:9]}-{digits[9:11]}")
+        if digits[0] == "0":
+            out.extend(_ten_digit_groupings(digits[1:]))
+        if digits[5] == "0":
+            out.extend(_ten_digit_groupings(digits[:5] + digits[6:]))
+        if digits[9] == "0":
+            out.extend(_ten_digit_groupings(digits[:9] + digits[10:]))
+
+    # Dedup, preserving order.
+    seen = set()
+    deduped: List[str] = []
+    for n in out:
+        if n and n not in seen:
+            seen.add(n)
+            deduped.append(n)
+    return deduped
+
+
 def normalize_ndc(raw: str) -> Optional[str]:
     """
     Normalize an NDC-ish string to the 11-digit dashed (5-4-2) form openFDA
@@ -431,12 +504,8 @@ async def _enrich_existing_drug(
         return doc
 
 
-async def lookup_by_ndc(raw: str) -> Optional[Dict[str, Any]]:
-    """Look up a single NDC. Returns one search-result-shaped dict, or None."""
-    normalized = normalize_ndc(raw)
-    if not normalized:
-        return None
-
+async def _lookup_one(normalized: str) -> Optional[Dict[str, Any]]:
+    """Resolve a single normalized 5-4-2 NDC, hitting local first then openFDA."""
     local = await _lookup_local(normalized)
     if local:
         return local
@@ -458,3 +527,17 @@ async def lookup_by_ndc(raw: str) -> Optional[Dict[str, Any]]:
         return _shape_local_result(enriched, package_ndc, matched_dosage)
 
     return _shape_openfda_result(item, package_ndc, matched_dosage)
+
+
+async def lookup_by_ndc(raw: str) -> Optional[Dict[str, Any]]:
+    """Look up a single NDC. Returns one search-result-shaped dict, or None.
+
+    Iterates every plausible 5-4-2 normalization (dashed inputs are
+    unambiguous; undashed inputs may map to several depending on which
+    grouping the labeler originally registered) and returns the first hit.
+    """
+    for normalized in normalize_ndc_candidates(raw):
+        result = await _lookup_one(normalized)
+        if result:
+            return result
+    return None

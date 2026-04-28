@@ -630,6 +630,12 @@ async def _match_existing_drug(item: Dict[str, Any]) -> Optional[Dict[str, Any]]
             # plain Omeprazole doesn't get attached to Omeclamox-Pak.
             filt["drug_type"] = {"$ne": "combination"}
         doc = await coll.find_one(filt)
+        logger.info(
+            "ndc_match: generic=%r ingredient_count=%d filter_drug_type=%r → %s",
+            generic, ingredient_count,
+            filt.get("drug_type"),
+            f"matched drug_id={doc.get('drug_id')}" if doc else "no match",
+        )
         if doc:
             return doc
 

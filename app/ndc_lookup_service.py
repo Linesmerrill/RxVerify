@@ -414,14 +414,7 @@ def _shape_openfda_result(
     rxcuis = openfda.get("rxcui") or []
     primary_rxcui = rxcuis[0] if rxcuis else None
 
-    pharm_class = (
-        openfda.get("pharm_class_epc")
-        or openfda.get("pharm_class_moa")
-        or openfda.get("pharm_class_cs")
-        or openfda.get("pharm_class_pe")
-        or []
-    )
-    drug_class = pharm_class[0] if pharm_class else ""
+    drug_class = _pick_pharm_class(item)
 
     if matched_dosage:
         form, strength = matched_dosage
@@ -535,6 +528,29 @@ async def _lookup_openfda(ndc: str) -> Optional[Dict[str, Any]]:
     if item is None:
         return None
     return _shape_openfda_result(item, ndc)
+
+
+def _pick_pharm_class(item: Dict[str, Any]) -> str:
+    """Pick the most informative pharm_class entry from an openFDA NDC record.
+
+    openFDA's `pharm_class` list interleaves multiple class taxonomies tagged
+    with [EPC] (Established Pharmacologic Class — the canonical "what is this
+    drug" answer), [MoA] (mechanism of action), [CS] (chemical structure),
+    [PE] (physiological effect). EPC is the human-readable label clinicians
+    use, so prefer it; fall back through MoA → CS → PE → first available.
+    """
+    openfda = item.get("openfda") or {}
+    candidates: List[str] = []
+    candidates.extend(item.get("pharm_class") or [])
+    for key in ("pharm_class_epc", "pharm_class_moa", "pharm_class_cs", "pharm_class_pe"):
+        candidates.extend(openfda.get(key) or [])
+    if not candidates:
+        return ""
+    for tag in ("[EPC]", "[MoA]", "[CS]", "[PE]"):
+        for c in candidates:
+            if c and tag in c:
+                return c
+    return candidates[0]
 
 
 def _title_ingredient(name: str) -> str:
@@ -681,15 +697,7 @@ async def _create_drug_from_openfda(
         brands_raw = [brands_raw]
     generic_lower = generic.lower()
     brands = [b for b in brands_raw if b and b.strip().lower() != generic_lower]
-    pharm_class = (
-        item.get("pharm_class")
-        or openfda.get("pharm_class_epc")
-        or openfda.get("pharm_class_moa")
-        or openfda.get("pharm_class_cs")
-        or openfda.get("pharm_class_pe")
-        or []
-    )
-    drug_class = pharm_class[0] if pharm_class else ""
+    drug_class = _pick_pharm_class(item)
     manufacturer = item.get("labeler_name", "") or (openfda.get("manufacturer_name") or [""])[0]
     name = generic or (brands[0] if brands else "")
     if not name:
@@ -785,15 +793,7 @@ async def _enrich_existing_drug(
     if isinstance(brands_raw, str):
         brands_raw = [brands_raw]
     brands = [b for b in brands_raw if b]
-    pharm_class = (
-        item.get("pharm_class")
-        or openfda.get("pharm_class_epc")
-        or openfda.get("pharm_class_moa")
-        or openfda.get("pharm_class_cs")
-        or openfda.get("pharm_class_pe")
-        or []
-    )
-    drug_class = pharm_class[0] if pharm_class else ""
+    drug_class = _pick_pharm_class(item)
     manufacturer = item.get("labeler_name", "")
 
     update_set: Dict[str, Any] = {"last_updated": datetime.utcnow()}

@@ -630,6 +630,36 @@ async def lookup_drug_by_ndc(ndc: str = ""):
     }
 
 
+@app.get("/drugs/patient-info")
+async def get_drug_patient_info(rxcui: Optional[str] = None, name: Optional[str] = None):
+    """Patient-friendly drug info pulled verbatim from the openFDA SPL label.
+
+    Provide `rxcui` (preferred — exact match) or `name` (generic, then brand).
+    Returns the standard label sections we surface — `what_it_does`,
+    `do_not_use`, `side_effects`, `drug_interactions`, `pregnancy` — each as
+    `{label, text}` or `null` when the FDA label doesn't carry that section.
+    Results are cached for ~30 days. Never summarized or rewritten.
+    """
+    if not rxcui and not name:
+        raise HTTPException(status_code=400, detail="rxcui or name is required")
+
+    from app.patient_info_service import get_patient_info
+
+    info = await get_patient_info(rxcui, name)
+    if not info:
+        return {
+            "available": False,
+            "rxcui": rxcui,
+            "drug_name": name,
+            "sections": None,
+            "source_url": None,
+            "source_name": None,
+            "last_verified_at": None,
+        }
+    info["available"] = True
+    return info
+
+
 @app.put("/drugs/{drug_id}")
 async def update_drug_info(drug_id: str, updates: Dict[str, Any] = Body(...)):
     """Update drug information."""

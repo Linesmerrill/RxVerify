@@ -86,21 +86,45 @@ def _resolve_source_url(label: Dict[str, Any]) -> tuple[str, str]:
     return FDA_LABEL_FALLBACK_URL, "FDA Drug Labels"
 
 
-def _shape_response(
+async def _shape_response(
     label: Dict[str, Any],
     rxcui: Optional[str],
     name: Optional[str],
 ) -> Dict[str, Any]:
+    # Extract verbatim sections first — the source of truth.
+    extracted: Dict[str, Optional[str]] = {}
+    for fda_field, ui_key, _ in SECTION_SPEC:
+        extracted[ui_key] = _extract_section(label, fda_field)
+
+    drug_name = _resolve_drug_name(label, name)
+
+    # One LLM call summarizes every populated section into plain-language
+    # bullets. The verbatim text remains the source of truth and is always
+    # included in the response so the UI can offer "Read FDA wording".
+    from app.patient_info_summarizer import summarize_sections
+
+    summary_input = {k: v for k, v in extracted.items() if v}
+    bullets_by_key = (
+        await summarize_sections(summary_input, drug_name) if summary_input else {}
+    )
+
     sections: Dict[str, Any] = {}
-    for fda_field, ui_key, ui_label in SECTION_SPEC:
-        text = _extract_section(label, fda_field)
-        sections[ui_key] = {"label": ui_label, "text": text} if text else None
+    for _, ui_key, ui_label in SECTION_SPEC:
+        text = extracted.get(ui_key)
+        if not text:
+            sections[ui_key] = None
+            continue
+        sections[ui_key] = {
+            "label": ui_label,
+            "text": text,
+            "bullets": bullets_by_key.get(ui_key, []),
+        }
 
     source_url, source_name = _resolve_source_url(label)
 
     return {
         "rxcui": rxcui,
-        "drug_name": _resolve_drug_name(label, name),
+        "drug_name": drug_name,
         "sections": sections,
         "source_url": source_url,
         "source_name": source_name,
@@ -198,7 +222,7 @@ async def get_patient_info(
     if not label:
         return None
 
-    payload = _shape_response(label, rxcui, name)
+    payload = await _shape_response(label, rxcui, name)
     payload["cache_hit"] = False
 
     if coll is not None and cache_filter is not None:

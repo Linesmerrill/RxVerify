@@ -87,7 +87,11 @@ async def summarize_sections(
             response_format={"type": "json_object"},
             temperature=0,
             max_tokens=1500,
-            timeout=20,
+            # Keep this tight: we sit behind Heroku's 30s H12 hard limit, and
+            # an unbounded LLM stall would burn the whole request budget. If
+            # the model can't summarize in 12s, the caller falls back to
+            # verbatim text — a degraded but still-correct response.
+            timeout=12,
         )
         raw = response.choices[0].message.content or "{}"
         parsed = json.loads(raw)

@@ -137,7 +137,10 @@ async def _query_openfda_label(query_expr: str) -> Optional[Dict[str, Any]]:
     if app_settings.OPENFDA_API_KEY:
         params["api_key"] = app_settings.OPENFDA_API_KEY
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
+        # Tight timeout: we may chain up to 3 of these (rxcui → generic_name →
+        # brand_name). Heroku's hard 30s ceiling means we can't afford an
+        # openFDA hang to eat the whole request budget.
+        async with httpx.AsyncClient(timeout=6.0) as client:
             resp = await client.get(OPENFDA_LABEL_URL, params=params)
             if resp.status_code in (404, 429):
                 return None
@@ -192,6 +195,68 @@ def _get_cache_collection():
     return drug_db_manager.db[COLLECTION_NAME]
 
 
+def _payload_missing_bullets(payload: Dict[str, Any]) -> bool:
+    """True when a cached payload has populated verbatim text but every
+    section's bullets list is empty — the signature of a cache entry written
+    before the summarizer was deployed (or while the LLM was unavailable).
+    """
+    sections = payload.get("sections") or {}
+    has_text = False
+    has_any_bullets = False
+    for v in sections.values():
+        if not v:
+            continue
+        if v.get("text"):
+            has_text = True
+        if v.get("bullets"):
+            has_any_bullets = True
+    return has_text and not has_any_bullets
+
+
+async def _backfill_bullets(
+    payload: Dict[str, Any],
+    coll,
+    cache_filter: Dict[str, Any],
+) -> Dict[str, Any]:
+    """Re-run the summarizer on the verbatim text already in the cached
+    payload, then write the bullets back. Avoids re-fetching openFDA.
+    """
+    from app.patient_info_summarizer import summarize_sections
+
+    sections = payload.get("sections") or {}
+    section_texts = {k: v["text"] for k, v in sections.items() if v and v.get("text")}
+    if not section_texts:
+        return payload
+
+    bullets_by_key = await summarize_sections(
+        section_texts, payload.get("drug_name") or ""
+    )
+
+    # If the LLM still produced nothing (no API key, model error), don't
+    # rewrite the cache — leave the existing entry alone so we'll try again
+    # on the next request rather than refreshing the TTL on an empty result.
+    if not any(bullets_by_key.values()):
+        return payload
+
+    new_sections: Dict[str, Any] = {}
+    for k, v in sections.items():
+        if v and v.get("text"):
+            new_sections[k] = {**v, "bullets": bullets_by_key.get(k, [])}
+        else:
+            new_sections[k] = v
+    payload = {**payload, "sections": new_sections}
+
+    if coll is not None and cache_filter is not None:
+        try:
+            await coll.update_one(
+                cache_filter,
+                {"$set": {"payload": payload, "cached_at": datetime.now(timezone.utc)}},
+            )
+        except Exception as e:
+            logger.warning(f"patient_info bullet-backfill write failed: {e}")
+    return payload
+
+
 async def get_patient_info(
     rxcui: Optional[str], name: Optional[str]
 ) -> Optional[Dict[str, Any]]:
@@ -213,6 +278,12 @@ async def get_patient_info(
                 payload = cached.get("payload")
                 if payload:
                     payload = dict(payload)
+                    # Cache entries written before the summarizer was deployed
+                    # (or while the LLM was unavailable) are missing bullets.
+                    # Backfill them in-place so we don't have to wait for the
+                    # 30-day TTL to recover.
+                    if _payload_missing_bullets(payload):
+                        payload = await _backfill_bullets(payload, coll, cache_filter)
                     payload["cache_hit"] = True
                     return payload
         except Exception as e:

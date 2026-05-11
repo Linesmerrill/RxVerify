@@ -1696,7 +1696,7 @@
                 trCtx.classList.remove('hidden');
                 document.getElementById('trendsChartLoading').classList.add('hidden');
                 if (trendsChart) trendsChart.destroy();
-                const labels = ts.data.map(d => { const date = new Date(d.timestamp * 1000); return date.toLocaleDateString('en-US',{month:'short',day:'numeric'}); });
+                const labels = ts.data.map(d => { const date = new Date(d.timestamp * 1000); return date.toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'}); });
                 trendsChart = new Chart(trCtx, {
                     type: 'line',
                     data: { labels, datasets: [{ label: 'Searches', data: ts.data.map(d => d.count || 0), borderColor: '#0f766e', backgroundColor: 'rgba(15,118,110,0.1)', fill: true, tension: 0.4, borderWidth: 2 }] },

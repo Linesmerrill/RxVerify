@@ -39,7 +39,7 @@ def _get_client() -> AsyncOpenAI | None:
 
 # Bump when the prompt structure or tier rules change so the service can
 # treat older cache rows as stale without a manual DB sweep.
-PROMPT_VERSION = "v2-literacy-2026-05"
+PROMPT_VERSION = "v3-section-prefix-2026-05"
 
 LITERACY_LEVELS = ("beginner", "intermediate", "advanced")
 DEFAULT_LITERACY_LEVEL = "intermediate"
@@ -107,11 +107,15 @@ READING-LEVEL TARGET: {tier['grade_level']}. Every bullet should be readable, in
 
 STRICT RULES (these never bend, regardless of tier):
 - Use ONLY the provided text. No outside medical knowledge. No additions. No fabrication of numbers, frequencies, or risk levels.
-- If a section's text is empty, missing, or under ~30 characters, return an empty list for that key.
+- If a section's text is empty, missing, or under ~30 characters, return an empty list for that key. Otherwise you MUST return at least one bullet — never return an empty list for a section that contains real content.
 - Preserve hedges and qualifiers from the source ("may", "rarely", "common", "in some patients", "generally"). Never tighten a hedged claim into a definite one.
 - Do NOT add medical advice the source does not contain. Do NOT say "talk to your doctor" unless the source says it.
-- Do NOT bullet headers, footers, dosage tables, NDC codes, manufacturer info, "Inactive Ingredients", or boilerplate.
 - Drug names: use Title Case once at the start of the section's first bullet ("Lansoprazole..."), not SHOUTING ALL CAPS.
+
+HANDLING THE INPUT (read carefully — FDA label text has structural quirks):
+- The text often STARTS with the FDA section number and heading inline (e.g. "6 ADVERSE REACTIONS The following important adverse reactions are...", "7 DRUG INTERACTIONS See full prescribing information...", "8.1 Pregnancy Risk Summary Discontinue..."). Skip that opening section-number prefix and bullet the body that follows. The prefix is NOT boilerplate; only the leading number+label is — the body is real content.
+- Cross-references like "[see Warnings and Precautions (5.1)]", "[see Use in Specific Populations (8.1)]", or "(2.5, 7.1)" are navigation pointers, NOT facts. Drop the bracket/paren reference and keep the surrounding fact. Do not skip a bullet just because it contains a cross-reference.
+- Things that ARE boilerplate and should be skipped: NDC codes, manufacturer addresses, "Inactive Ingredients" lists, dosage-form tables, "How Supplied" packaging info, footer text like "Distributed by...".
 
 PHRASING (tuned for this reader):
 - Each bullet: one sentence, no more than {tier['max_words']} words, plain English, active voice when natural.

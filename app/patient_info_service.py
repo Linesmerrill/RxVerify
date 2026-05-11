@@ -241,7 +241,11 @@ def _get_cache_collection():
 def _payload_missing_bullets(payload: Dict[str, Any]) -> bool:
     """True when a cached payload has populated verbatim text but every
     section's bullets list is empty — the signature of a cache entry written
-    while the LLM was unavailable.
+    while the LLM was unavailable. Deliberately does NOT fire on partial-
+    empty entries: if the LLM consistently can't bullet certain sections at
+    the current prompt version, retrying on every read would burn 12s of
+    LLM latency per request without changing the answer. Partial-empty rows
+    are accepted until the next PROMPT_VERSION bump invalidates them.
     """
     sections = payload.get("sections") or {}
     has_text = False

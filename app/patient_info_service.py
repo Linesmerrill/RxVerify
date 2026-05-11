@@ -36,7 +36,13 @@ FDA_LABEL_FALLBACK_URL = "https://labels.fda.gov/"
 
 CACHE_TTL_DAYS = 30
 COLLECTION_NAME = "drug_patient_info"
-MAX_SECTION_CHARS = 1500
+# Sized to fit the long-tail FDA adverse-reactions sections (lovastatin is
+# ~7100 chars; clozapine, atorvastatin similar). At 1500 we were trimming
+# off the actual list of named adverse reactions and only sending the
+# clinical-study methodology prose to the LLM — which has nothing to
+# bullet. The full payload across all 5 sections is still well under the
+# model's context limit.
+MAX_SECTION_CHARS = 8000
 
 # (openFDA field, ui key, display label). Order is the display order.
 SECTION_SPEC = [

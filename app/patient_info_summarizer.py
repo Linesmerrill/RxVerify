@@ -39,7 +39,7 @@ def _get_client() -> AsyncOpenAI | None:
 
 # Bump when the prompt structure or tier rules change so the service can
 # treat older cache rows as stale without a manual DB sweep.
-PROMPT_VERSION = "v4-translate-vs-fabricate-2026-05"
+PROMPT_VERSION = "v5-mandatory-bullets-2026-05"
 
 LITERACY_LEVELS = ("beginner", "intermediate", "advanced")
 DEFAULT_LITERACY_LEVEL = "intermediate"
@@ -78,8 +78,9 @@ _TIER_RULES = {
         "grade_level": "8th grade",
         "max_words": 25,
         "extra_rules": [
-            "Clinical terms are OK when defined once parenthetically (e.g., 'tubulointerstitial nephritis (kidney inflammation)'); after that first definition you may reuse the clinical term.",
-            "This reader is still a patient, not a clinician — assume no medical training even at this tier.",
+            "Clinical terms are OK to use directly — this reader can handle 'myopathy' or 'hepatic dysfunction' without translation. A parenthetical gloss is optional, not required.",
+            "Even at this tier, the reader is a patient, not a clinician — keep bullets actionable and concrete.",
+            "This permission to use clinical terms is NOT permission to refuse to bullet a section. You still MUST bullet every section that has real content — see CRITICAL OUTPUT REQUIREMENT above.",
         ],
     },
 }
@@ -103,7 +104,10 @@ def _build_system_prompt(
         )
     return f"""You convert FDA drug-label sections into plain-language bullet points for a patient.
 
-READING-LEVEL TARGET: {tier['grade_level']}. Every bullet should be readable, in one pass, by someone at this level. If a bullet would force them to re-read or look something up, simplify it.
+CRITICAL OUTPUT REQUIREMENT (this is the #1 rule — read it first):
+For EVERY input section whose `text` is 30+ characters of real content, you MUST produce at least one bullet. Returning an empty list for a section that has content is a FAILURE of this task. When in doubt, BULLET IT. The acceptable cases for returning `[]` are limited to: text under 30 chars, text that is purely NDC codes / manufacturer info / "Inactive Ingredients" / packaging boilerplate. Anything else — including lists of named risks with cross-references, narrative prose about clinical studies, drug-interaction tables, pregnancy directives — MUST be bulleted, even if you have to use clinical terms or be brief.
+
+READING-LEVEL TARGET: {tier['grade_level']}. Every bullet should be readable, in one pass, by someone at this level. If a bullet would force them to re-read or look something up, simplify it. But an imperfect bullet is ALWAYS better than no bullet.
 
 TRANSLATING VS FABRICATING (the most important distinction):
 - You MAY use general English vocabulary to translate medical jargon into plain language. That is a LINGUISTIC task, not a medical one. Examples that are FINE: "myopathy" -> "muscle damage", "rhabdomyolysis" -> "severe muscle breakdown", "hepatic dysfunction" -> "liver problems", "nasopharyngitis" -> "a cold", "arthralgia" -> "joint pain", "HbA1c" -> "long-term blood sugar", "concomitant use" -> "using at the same time".
@@ -112,10 +116,10 @@ TRANSLATING VS FABRICATING (the most important distinction):
 
 STRICT RULES (these never bend, regardless of tier):
 - Use ONLY the FACTS in the provided text. Linguistic translation (above) is allowed; new facts are not.
-- If a section's text is empty, missing, or under ~30 characters, return an empty list for that key. Otherwise you MUST return at least one bullet — never return an empty list for a section that contains real content. **If the section names specific risks, drugs, or events (even as a list with cross-references), EACH named item MUST become a bullet.**
 - Preserve hedges and qualifiers from the source ("may", "rarely", "common", "in some patients", "generally"). Never tighten a hedged claim into a definite one.
 - Do NOT add medical advice the source does not contain. Do NOT say "talk to your doctor" unless the source says it.
 - Drug names: use Title Case once at the start of the section's first bullet ("Lansoprazole..."), not SHOUTING ALL CAPS.
+- If a section text genuinely contains content but you find yourself wanting to return [], stop — that is the failure mode the CRITICAL OUTPUT REQUIREMENT exists to prevent. Bullet whatever named items, claims, or directives are present.
 
 HANDLING THE INPUT (FDA label text has structural quirks):
 - The text often STARTS with the FDA section number and heading inline (e.g. "6 ADVERSE REACTIONS The following important adverse reactions are...", "7 DRUG INTERACTIONS See full prescribing information...", "8.1 Pregnancy Risk Summary Discontinue..."). Skip that opening section-number prefix and bullet the body that follows. The body is real content even when the leading label is repetitive.

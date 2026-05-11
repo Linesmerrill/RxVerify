@@ -74,6 +74,8 @@ class LocalDrugSearchService:
                     "downvotes": result.downvotes,
                     "is_hidden": result.is_hidden,
                     "pill_image_url": result.pill_image_url,
+                    "pill_image_source": result.pill_image_source,
+                    "pill_image_source_ndc": result.pill_image_source_ndc,
                     "label_images": [img.dict() for img in result.label_images],
                 })
             
@@ -134,6 +136,8 @@ class LocalDrugSearchService:
                     "relevance_score": result.relevance_score,
                     "match_type": result.match_type,
                     "pill_image_url": result.pill_image_url,
+                    "pill_image_source": result.pill_image_source,
+                    "pill_image_source_ndc": result.pill_image_source_ndc,
                     "label_images": [img.dict() for img in result.label_images],
                 }
             

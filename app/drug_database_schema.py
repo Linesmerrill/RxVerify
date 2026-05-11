@@ -153,6 +153,8 @@ class DrugSearchResult(BaseModel):
     manufacturer: Optional[str] = None
     rxnorm_id: Optional[str] = None
     pill_image_url: Optional[str] = None
+    pill_image_source: Optional[str] = None
+    pill_image_source_ndc: Optional[str] = None
     label_images: List[LabelImage] = []
 
     # Search relevance

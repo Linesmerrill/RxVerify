@@ -60,6 +60,8 @@ class DrugSearchResult(BaseModel):
     not_helpful_count: int = 0
     original_name: Optional[str] = None  # Store original name for dosage extraction
     all_rxcuis: List[str] = []  # Store all RxCUIs for combined results
+    pill_image_url: Optional[str] = None
+    label_images: List[Dict] = []
 
 class SearchResponse(BaseModel):
     results: List[DrugSearchResult]

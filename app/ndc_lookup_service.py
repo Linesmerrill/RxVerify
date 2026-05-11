@@ -20,6 +20,7 @@ import httpx
 
 from app.config import settings as app_settings
 from app.drug_database_manager import drug_db_manager
+from app.pill_image_service import pill_image_service
 
 logger = logging.getLogger(__name__)
 
@@ -391,6 +392,9 @@ def _shape_local_result(
         "ndc": ndc,
         "match_type": "ndc_exact",
         "relevance_score": 1.0,
+        "pill_image_url": doc.get("pill_image_url"),
+        "pill_image_source": doc.get("pill_image_source"),
+        "pill_image_source_ndc": doc.get("pill_image_source_ndc"),
     }
 
 
@@ -444,8 +448,11 @@ def _shape_openfda_result(
     }
 
 
-async def _lookup_local(ndc: str) -> Optional[Dict[str, Any]]:
-    """Look up an NDC in the local Mongo drugs collection, if available."""
+async def _lookup_local_doc(
+    ndc: str,
+) -> Optional[Tuple[Dict[str, Any], str, Optional[Tuple[str, str]]]]:
+    """Look up an NDC in the local Mongo drugs collection. Returns
+    (raw_doc, matched_ndc, matched_dosage) or None on miss."""
     try:
         if drug_db_manager is None or getattr(drug_db_manager, "drugs_collection", None) is None:
             return None
@@ -458,23 +465,57 @@ async def _lookup_local(ndc: str) -> Optional[Dict[str, Any]]:
                 {"package_ndcs": {"$in": candidates}},
             ]}
         )
-        if doc:
-            matched_ndc = next(
-                (c for c in candidates if c in (doc.get("ndc_codes") or [])
-                 or c in (doc.get("product_ndcs") or [])
-                 or c in (doc.get("package_ndcs") or [])
-                 or c == doc.get("ndc")),
-                ndc,
-            )
-            ndc_dosages = doc.get("ndc_dosages") or {}
-            entry = ndc_dosages.get(matched_ndc) or {}
-            matched_dosage = None
-            if entry.get("form") and entry.get("strength"):
-                matched_dosage = (entry["form"], entry["strength"])
-            return _shape_local_result(doc, matched_ndc, matched_dosage)
+        if not doc:
+            return None
+        matched_ndc = next(
+            (c for c in candidates if c in (doc.get("ndc_codes") or [])
+             or c in (doc.get("product_ndcs") or [])
+             or c in (doc.get("package_ndcs") or [])
+             or c == doc.get("ndc")),
+            ndc,
+        )
+        ndc_dosages = doc.get("ndc_dosages") or {}
+        entry = ndc_dosages.get(matched_ndc) or {}
+        matched_dosage: Optional[Tuple[str, str]] = None
+        if entry.get("form") and entry.get("strength"):
+            matched_dosage = (entry["form"], entry["strength"])
+        return doc, matched_ndc, matched_dosage
     except Exception as e:
         logger.warning(f"Local NDC lookup failed for {ndc}: {e}")
-    return None
+        return None
+
+
+async def _ensure_pill_image_on_doc(doc: Dict[str, Any]) -> Dict[str, Any]:
+    """Lazily resolve and persist a pill image for a drug doc that doesn't
+    have one yet. Mutates `doc` in place so the caller sees the new fields."""
+    if doc.get("pill_image_url"):
+        return doc
+    drug_id = doc.get("drug_id")
+    ndcs = doc.get("ndc_codes") or []
+    if not drug_id or not ndcs:
+        return doc
+    try:
+        hit = await pill_image_service.resolve(ndcs)
+    except Exception as e:
+        logger.warning(f"Pill image resolve failed for {drug_id}: {e}")
+        return doc
+    if not hit:
+        return doc
+    update = {
+        "pill_image_url": hit["url"],
+        "pill_image_source": hit["source"],
+        "pill_image_source_ndc": hit["ndc"],
+        "label_images": hit["label_images"],
+        "label_images_source_setid": hit["setid"],
+        "label_images_last_fetched": datetime.utcnow(),
+    }
+    try:
+        await drug_db_manager.update_drug(drug_id, update)
+    except Exception as e:
+        logger.warning(f"Pill image persist failed for {drug_id}: {e}")
+        return doc
+    doc.update(update)
+    return doc
 
 
 async def _query_openfda(search_expr: str) -> Optional[Dict[str, Any]]:
@@ -854,12 +895,17 @@ async def _enrich_existing_drug(
 async def _lookup_one(normalized: str) -> Tuple[Optional[Dict[str, Any]], str]:
     """Resolve a single normalized 5-4-2 NDC, hitting local first then openFDA.
 
+    On local hit / openFDA enrich / openFDA seed, also lazily resolves and
+    persists a pill image if the matched doc doesn't have one yet.
+
     Returns (result_or_None, outcome) where outcome is one of:
     `local_hit`, `openfda_enrich`, `openfda_seed`, `openfda_only`, `not_found`.
     """
-    local = await _lookup_local(normalized)
+    local = await _lookup_local_doc(normalized)
     if local:
-        return local, "local_hit"
+        doc, matched_ndc, matched_dosage = local
+        doc = await _ensure_pill_image_on_doc(doc)
+        return _shape_local_result(doc, matched_ndc, matched_dosage), "local_hit"
 
     item = await _lookup_openfda_raw(normalized)
     if item is None:
@@ -875,6 +921,7 @@ async def _lookup_one(normalized: str) -> Tuple[Optional[Dict[str, Any]], str]:
     existing = await _match_existing_drug(item)
     if existing is not None:
         enriched = await _enrich_existing_drug(existing, item, package_ndc)
+        enriched = await _ensure_pill_image_on_doc(enriched)
         return _shape_local_result(enriched, package_ndc, matched_dosage), "openfda_enrich"
 
     # No local match — seed a new entry so this NDC, its strength, and its
@@ -882,6 +929,7 @@ async def _lookup_one(normalized: str) -> Tuple[Optional[Dict[str, Any]], str]:
     # generic name will accrete onto the same doc.
     seeded = await _create_drug_from_openfda(item, package_ndc)
     if seeded is not None:
+        seeded = await _ensure_pill_image_on_doc(seeded)
         return _shape_local_result(seeded, package_ndc, matched_dosage), "openfda_seed"
 
     return _shape_openfda_result(item, package_ndc, matched_dosage), "openfda_only"

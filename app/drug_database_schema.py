@@ -32,6 +32,16 @@ class VoteType(str, Enum):
     DOWNVOTE = "downvote"
 
 
+class LabelImage(BaseModel):
+    """A single image referenced from a DailyMed SPL document."""
+
+    name: str = Field(..., description="Filename of the image as stored in the SPL")
+    url: str = Field(..., description="Full DailyMed URL serving the image")
+    mime_type: Optional[str] = Field(None, description="MIME type, e.g. image/jpeg")
+    section_loinc: Optional[str] = Field(None, description="LOINC code of the SPL section the image appears in")
+    section_title: Optional[str] = Field(None, description="Human-readable section title")
+
+
 class DrugVote(BaseModel):
     """Individual vote on a drug."""
     
@@ -96,6 +106,14 @@ class DrugEntry(BaseModel):
     dosages: Dict[str, List[str]] = Field(default_factory=dict, description="Dosage strengths keyed by form, e.g. {'tablet': ['10 mg', '20 mg'], 'solution': ['5 mg/5mL']}")
     rxnorm_id: Optional[str] = Field(None, description="RxNorm identifier")
     ndc_codes: List[str] = Field(default_factory=list, description="National Drug Codes")
+
+    # Imagery (sourced from DailyMed SPL media)
+    pill_image_url: Optional[str] = Field(None, description="Pill image URL; from NLM Pillbox where available, else DailyMed Principal Display Panel")
+    pill_image_source: Optional[str] = Field(None, description="'pillbox' or 'dailymed_pdp'")
+    pill_image_source_ndc: Optional[str] = Field(None, description="The NDC that resolved to the image (traceability)")
+    label_images: List[LabelImage] = Field(default_factory=list, description="DailyMed SPL images, populated only when source is 'dailymed_pdp'")
+    label_images_source_setid: Optional[str] = Field(None, description="DailyMed SPL setid the label_images were fetched from")
+    label_images_last_fetched: Optional[datetime] = Field(None, description="When pill_image_url / label_images were last refreshed")
     
     # Search optimization
     search_terms: List[str] = Field(default_factory=list, description="All searchable terms")
@@ -134,6 +152,8 @@ class DrugSearchResult(BaseModel):
     dosages: Dict[str, List[str]] = {}
     manufacturer: Optional[str] = None
     rxnorm_id: Optional[str] = None
+    pill_image_url: Optional[str] = None
+    label_images: List[LabelImage] = []
 
     # Search relevance
     relevance_score: float = Field(default=0.0, description="Search relevance score")

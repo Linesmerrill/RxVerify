@@ -72,7 +72,9 @@ class LocalDrugSearchService:
                     "total_votes": result.total_votes,
                     "upvotes": result.upvotes,
                     "downvotes": result.downvotes,
-                    "is_hidden": result.is_hidden
+                    "is_hidden": result.is_hidden,
+                    "pill_image_url": result.pill_image_url,
+                    "label_images": [img.dict() for img in result.label_images],
                 })
             
             logger.info(f"Found {len(api_results)} drugs for '{query}'")
@@ -130,7 +132,9 @@ class LocalDrugSearchService:
                     "rxnorm_id": result.rxnorm_id,
                     "drug_type": result.drug_type,
                     "relevance_score": result.relevance_score,
-                    "match_type": result.match_type
+                    "match_type": result.match_type,
+                    "pill_image_url": result.pill_image_url,
+                    "label_images": [img.dict() for img in result.label_images],
                 }
             
             return {}

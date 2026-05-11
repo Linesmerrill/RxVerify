@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 from openai import AsyncOpenAI
 
@@ -39,7 +39,7 @@ def _get_client() -> AsyncOpenAI | None:
 
 # Bump when the prompt structure or tier rules change so the service can
 # treat older cache rows as stale without a manual DB sweep.
-PROMPT_VERSION = "v5-mandatory-bullets-2026-05"
+PROMPT_VERSION = "v6-retry-empty-sections-2026-05"
 
 LITERACY_LEVELS = ("beginner", "intermediate", "advanced")
 DEFAULT_LITERACY_LEVEL = "intermediate"
@@ -139,6 +139,58 @@ OUTPUT: strict JSON of the shape {{"sections": {{"<key>": ["bullet 1", "bullet 2
 """
 
 
+RETRY_NUDGE = """The previous response returned an empty bullet list for one or more sections that DO contain real content. That is the failure mode you were told to prevent. For the sections below, you MUST produce at least one bullet each. The text contains named risks, drugs, events, or directives — bullet them. If you have to be brief or use a clinical term, do that. Empty lists are not acceptable here. Apply the same source-locking, hedge-preservation, and reading-level rules from the original system prompt."""
+
+
+async def _call_llm(
+    client: AsyncOpenAI,
+    system_prompt: str,
+    user_payload: Dict[str, Any],
+    drug_name: str,
+) -> Dict[str, List[str]]:
+    """One LLM round-trip. Returns {section_key -> bullets} for the keys in
+    user_payload['sections']. Empty dict on any failure — caller decides
+    whether to fall back or retry."""
+    try:
+        response = await client.chat.completions.create(
+            model=app_settings.OPENAI_MODEL,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": json.dumps(user_payload)},
+            ],
+            response_format={"type": "json_object"},
+            temperature=0,
+            max_tokens=1500,
+            # Keep this tight: we sit behind Heroku's 30s H12 hard limit. If
+            # the model can't summarize in 12s the caller falls back. Retry
+            # call uses the same budget — bounded to 1 retry so worst-case
+            # total is ~24s for the LLM stage, leaving room for openFDA.
+            timeout=12,
+        )
+        raw = response.choices[0].message.content or "{}"
+        parsed = json.loads(raw)
+        return parsed.get("sections") or {}
+    except json.JSONDecodeError as e:
+        logger.warning(f"Summarizer returned invalid JSON: {e}")
+        return {}
+    except Exception as e:
+        logger.warning(f"Summarizer call failed for {drug_name}: {e}")
+        return {}
+
+
+def _clean_bullets(raw: Any) -> List[str]:
+    if not isinstance(raw, list):
+        return []
+    cleaned: List[str] = []
+    for b in raw:
+        if not isinstance(b, str):
+            continue
+        b = b.strip().lstrip("-•*").strip()
+        if b:
+            cleaned.append(b)
+    return cleaned[:6]
+
+
 async def summarize_sections(
     section_texts: Dict[str, str],
     drug_name: str,
@@ -152,6 +204,11 @@ async def summarize_sections(
     keys mapping to bullet-string lists (possibly empty). On any failure,
     returns empty lists for every key — the caller still has the verbatim
     text and the UI degrades gracefully.
+
+    If the first LLM call returns empty bullets for any section that DID
+    have real content in the input (>=30 chars), retries those sections
+    once with an explicit nudge. Bounded to a single retry so a stubborn
+    drug doesn't burn unbounded LLM budget.
     """
     client = _get_client()
     if client is None:
@@ -166,49 +223,35 @@ async def summarize_sections(
     tier = normalize_literacy_level(literacy_level)
     system_prompt = _build_system_prompt(tier, focus_areas)
 
-    user_payload = {
-        "drug_name": drug_name,
-        "sections": non_empty,
-    }
-
-    try:
-        response = await client.chat.completions.create(
-            model=app_settings.OPENAI_MODEL,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": json.dumps(user_payload)},
-            ],
-            response_format={"type": "json_object"},
-            temperature=0,
-            max_tokens=1500,
-            # Keep this tight: we sit behind Heroku's 30s H12 hard limit, and
-            # an unbounded LLM stall would burn the whole request budget. If
-            # the model can't summarize in 12s, the caller falls back to
-            # verbatim text — a degraded but still-correct response.
-            timeout=12,
-        )
-        raw = response.choices[0].message.content or "{}"
-        parsed = json.loads(raw)
-        out_sections = parsed.get("sections") or {}
-    except json.JSONDecodeError as e:
-        logger.warning(f"Summarizer returned invalid JSON: {e}")
-        return {key: [] for key in section_texts}
-    except Exception as e:
-        logger.warning(f"Summarizer call failed for {drug_name}: {e}")
-        return {key: [] for key in section_texts}
+    first_out = await _call_llm(
+        client,
+        system_prompt,
+        {"drug_name": drug_name, "sections": non_empty},
+        drug_name,
+    )
 
     result: Dict[str, List[str]] = {}
     for key in section_texts:
-        bullets = out_sections.get(key)
-        if isinstance(bullets, list):
-            cleaned: List[str] = []
-            for b in bullets:
-                if not isinstance(b, str):
-                    continue
-                b = b.strip().lstrip("-•*").strip()
-                if b:
-                    cleaned.append(b)
-            result[key] = cleaned[:6]
-        else:
-            result[key] = []
+        result[key] = _clean_bullets(first_out.get(key)) if key in non_empty else []
+
+    # Find sections that had real content but came back empty. Retry just
+    # those with an emphatic nudge — captures cases like metformin where
+    # the model bails on certain FDA section structures even at v5.
+    missing = {k: non_empty[k] for k in non_empty if not result.get(k)}
+    if missing:
+        logger.info(
+            f"Retrying {list(missing.keys())} for {drug_name} ({tier}) — "
+            f"first call returned empty bullets"
+        )
+        retry_out = await _call_llm(
+            client,
+            system_prompt + "\n\n" + RETRY_NUDGE,
+            {"drug_name": drug_name, "sections": missing},
+            drug_name,
+        )
+        for k in missing:
+            bullets = _clean_bullets(retry_out.get(k))
+            if bullets:
+                result[k] = bullets
+
     return result

@@ -39,7 +39,7 @@ def _get_client() -> AsyncOpenAI | None:
 
 # Bump when the prompt structure or tier rules change so the service can
 # treat older cache rows as stale without a manual DB sweep.
-PROMPT_VERSION = "v7-retry-uses-intermediate-2026-05"
+PROMPT_VERSION = "v8-gpt4o-2026-05"
 
 LITERACY_LEVELS = ("beginner", "intermediate", "advanced")
 DEFAULT_LITERACY_LEVEL = "intermediate"

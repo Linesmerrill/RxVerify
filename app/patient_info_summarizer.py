@@ -39,7 +39,7 @@ def _get_client() -> AsyncOpenAI | None:
 
 # Bump when the prompt structure or tier rules change so the service can
 # treat older cache rows as stale without a manual DB sweep.
-PROMPT_VERSION = "v3-section-prefix-2026-05"
+PROMPT_VERSION = "v4-translate-vs-fabricate-2026-05"
 
 LITERACY_LEVELS = ("beginner", "intermediate", "advanced")
 DEFAULT_LITERACY_LEVEL = "intermediate"
@@ -105,17 +105,24 @@ def _build_system_prompt(
 
 READING-LEVEL TARGET: {tier['grade_level']}. Every bullet should be readable, in one pass, by someone at this level. If a bullet would force them to re-read or look something up, simplify it.
 
+TRANSLATING VS FABRICATING (the most important distinction):
+- You MAY use general English vocabulary to translate medical jargon into plain language. That is a LINGUISTIC task, not a medical one. Examples that are FINE: "myopathy" -> "muscle damage", "rhabdomyolysis" -> "severe muscle breakdown", "hepatic dysfunction" -> "liver problems", "nasopharyngitis" -> "a cold", "arthralgia" -> "joint pain", "HbA1c" -> "long-term blood sugar", "concomitant use" -> "using at the same time".
+- What you MUST NOT do is invent new FACTS: do not add risks, frequencies, drug names, conditions, mechanisms, dosages, or causal claims that are not in the source text. Translating "myopathy" to "muscle damage" is fine; adding "occurs in 5% of patients" when the source does not state that is fabrication.
+- If you can name the risk, drug, or event from the source, you can bullet it — even if you have to translate the term to plain English.
+
 STRICT RULES (these never bend, regardless of tier):
-- Use ONLY the provided text. No outside medical knowledge. No additions. No fabrication of numbers, frequencies, or risk levels.
-- If a section's text is empty, missing, or under ~30 characters, return an empty list for that key. Otherwise you MUST return at least one bullet — never return an empty list for a section that contains real content.
+- Use ONLY the FACTS in the provided text. Linguistic translation (above) is allowed; new facts are not.
+- If a section's text is empty, missing, or under ~30 characters, return an empty list for that key. Otherwise you MUST return at least one bullet — never return an empty list for a section that contains real content. **If the section names specific risks, drugs, or events (even as a list with cross-references), EACH named item MUST become a bullet.**
 - Preserve hedges and qualifiers from the source ("may", "rarely", "common", "in some patients", "generally"). Never tighten a hedged claim into a definite one.
 - Do NOT add medical advice the source does not contain. Do NOT say "talk to your doctor" unless the source says it.
 - Drug names: use Title Case once at the start of the section's first bullet ("Lansoprazole..."), not SHOUTING ALL CAPS.
 
-HANDLING THE INPUT (read carefully — FDA label text has structural quirks):
-- The text often STARTS with the FDA section number and heading inline (e.g. "6 ADVERSE REACTIONS The following important adverse reactions are...", "7 DRUG INTERACTIONS See full prescribing information...", "8.1 Pregnancy Risk Summary Discontinue..."). Skip that opening section-number prefix and bullet the body that follows. The prefix is NOT boilerplate; only the leading number+label is — the body is real content.
-- Cross-references like "[see Warnings and Precautions (5.1)]", "[see Use in Specific Populations (8.1)]", or "(2.5, 7.1)" are navigation pointers, NOT facts. Drop the bracket/paren reference and keep the surrounding fact. Do not skip a bullet just because it contains a cross-reference.
-- Things that ARE boilerplate and should be skipped: NDC codes, manufacturer addresses, "Inactive Ingredients" lists, dosage-form tables, "How Supplied" packaging info, footer text like "Distributed by...".
+HANDLING THE INPUT (FDA label text has structural quirks):
+- The text often STARTS with the FDA section number and heading inline (e.g. "6 ADVERSE REACTIONS The following important adverse reactions are...", "7 DRUG INTERACTIONS See full prescribing information...", "8.1 Pregnancy Risk Summary Discontinue..."). Skip that opening section-number prefix and bullet the body that follows. The body is real content even when the leading label is repetitive.
+- Cross-references like "[see Warnings and Precautions (5.1)]", "[see Use in Specific Populations (8.1)]", or "(2.5, 7.1)" are navigation pointers, NOT facts. Drop them and keep the surrounding fact. Do NOT skip a bullet just because it carried a cross-reference — the *named item* is still a fact.
+- Lists shaped as `Name: short claim. Name: short claim.` (common in DRUG INTERACTIONS) -> one bullet per Name, preserving the claim's hedge.
+- Lists shaped as `Named Risk [see ...] Named Risk [see ...]` (common in ADVERSE REACTIONS) -> one bullet per named risk, translated to plain English.
+- Things that ARE boilerplate to skip: NDC codes, manufacturer addresses, "Inactive Ingredients" lists, dosage-form tables, "How Supplied" packaging info, footer text like "Distributed by...", and reporting addresses like "To report SUSPECTED ADVERSE REACTIONS, contact...".
 
 PHRASING (tuned for this reader):
 - Each bullet: one sentence, no more than {tier['max_words']} words, plain English, active voice when natural.

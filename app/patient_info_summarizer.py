@@ -39,7 +39,7 @@ def _get_client() -> AsyncOpenAI | None:
 
 # Bump when the prompt structure or tier rules change so the service can
 # treat older cache rows as stale without a manual DB sweep.
-PROMPT_VERSION = "v6-retry-empty-sections-2026-05"
+PROMPT_VERSION = "v7-retry-uses-intermediate-2026-05"
 
 LITERACY_LEVELS = ("beginner", "intermediate", "advanced")
 DEFAULT_LITERACY_LEVEL = "intermediate"
@@ -235,17 +235,30 @@ async def summarize_sections(
         result[key] = _clean_bullets(first_out.get(key)) if key in non_empty else []
 
     # Find sections that had real content but came back empty. Retry just
-    # those with an emphatic nudge — captures cases like metformin where
-    # the model bails on certain FDA section structures even at v5.
+    # those with the intermediate-tier prompt (regardless of the user's
+    # actual tier) plus an emphatic nudge.
+    #
+    # Why downgrade to intermediate on retry: the advanced tier explicitly
+    # gives the model permission to "use clinical terms directly", and that
+    # permission turns out to be the difference between a section that
+    # bullets and one that stays empty. Lexapro's drug_interactions and
+    # pregnancy sections were 0-bullet at advanced but 5-6 bullets at
+    # intermediate from the same source text. The intermediate prompt has
+    # the strongest translation requirement, which seems to keep the model
+    # engaged with the task instead of bailing on dense clinical prose.
+    # A user reading at advanced sees a few "intermediate"-style bullets
+    # for the failed sections — visibly slightly more verbose, but vastly
+    # better than no bullets.
     missing = {k: non_empty[k] for k in non_empty if not result.get(k)}
     if missing:
         logger.info(
             f"Retrying {list(missing.keys())} for {drug_name} ({tier}) — "
-            f"first call returned empty bullets"
+            f"first call returned empty bullets; using intermediate prompt"
         )
+        retry_prompt = _build_system_prompt("intermediate", focus_areas)
         retry_out = await _call_llm(
             client,
-            system_prompt + "\n\n" + RETRY_NUDGE,
+            retry_prompt + "\n\n" + RETRY_NUDGE,
             {"drug_name": drug_name, "sections": missing},
             drug_name,
         )

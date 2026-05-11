@@ -631,21 +631,48 @@ async def lookup_drug_by_ndc(ndc: str = ""):
 
 
 @app.get("/drugs/patient-info")
-async def get_drug_patient_info(rxcui: Optional[str] = None, name: Optional[str] = None):
-    """Patient-friendly drug info pulled verbatim from the openFDA SPL label.
+async def get_drug_patient_info(
+    rxcui: Optional[str] = None,
+    name: Optional[str] = None,
+    literacy_level: Optional[str] = None,
+    focus_areas: Optional[str] = None,
+):
+    """Patient-friendly drug info pulled verbatim from the openFDA SPL label,
+    with plain-language bullets summarized at the reader's literacy tier.
 
     Provide `rxcui` (preferred — exact match) or `name` (generic, then brand).
-    Returns the standard label sections we surface — `what_it_does`,
-    `do_not_use`, `side_effects`, `drug_interactions`, `pregnancy` — each as
-    `{label, text}` or `null` when the FDA label doesn't carry that section.
-    Results are cached for ~30 days. Never summarized or rewritten.
+    `literacy_level` is one of beginner / intermediate / advanced; defaults to
+    intermediate (the 6th-grade baseline) when omitted or unrecognized.
+    `focus_areas` is a comma-separated list of topic hints from the user's
+    learning profile (e.g. "side_effects,drug_interactions") that biases
+    bullet ordering without changing facts. CSV is used instead of repeated
+    query keys because the upstream Node proxy uses axios, whose default
+    serializer encodes arrays as `key[]=a&key[]=b` — which FastAPI's
+    `List[str]` does not parse.
+
+    Returns the standard label sections — `what_it_does`, `do_not_use`,
+    `side_effects`, `drug_interactions`, `pregnancy` — each as
+    `{label, text, bullets}` or `null` when the FDA label doesn't carry that
+    section. Verbatim text is always present alongside bullets. Cached for
+    ~30 days per (drug, tier); stale-prompt rows regenerate lazily on read.
     """
     if not rxcui and not name:
         raise HTTPException(status_code=400, detail="rxcui or name is required")
 
     from app.patient_info_service import get_patient_info
 
-    info = await get_patient_info(rxcui, name)
+    focus_list = (
+        [s.strip() for s in focus_areas.split(",") if s.strip()]
+        if focus_areas
+        else None
+    )
+
+    info = await get_patient_info(
+        rxcui,
+        name,
+        literacy_level=literacy_level,
+        focus_areas=focus_list,
+    )
     if not info:
         return {
             "available": False,

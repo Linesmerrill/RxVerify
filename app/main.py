@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect, Body
+from fastapi import FastAPI, Header, HTTPException, Request, WebSocket, WebSocketDisconnect, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -685,6 +685,58 @@ async def get_drug_patient_info(
         }
     info["available"] = True
     return info
+
+
+@app.post("/drugs/patient-info/regenerate")
+async def regenerate_patient_info_endpoint(
+    body: Dict[str, Any] = Body(...),
+    x_rxverify_internal_key: Optional[str] = Header(default=None),
+):
+    """Batch-path patient-info regenerator. Called by the med-learn weekly
+    Heroku Scheduler job; hash-checks the openFDA verbatim text against the
+    cached entry and only invokes the LLM when the label has actually
+    changed (or the prompt version has been bumped, or `force` is set).
+
+    Auth: when `RXVERIFY_INTERNAL_KEY` is set in the environment, the request
+    MUST carry a matching `X-RxVerify-Internal-Key` header. Unset key
+    (local dev only) means the endpoint is open.
+
+    Body:
+      * `rxcui` (str, optional) or `name` (str, optional) — one is required.
+      * `literacy_level` ("beginner"|"intermediate"|"advanced") — defaults to
+        intermediate.
+      * `focus_areas` (list[str], optional) — same semantics as the GET path.
+      * `force` (bool, optional) — skip the hash check and always regen.
+
+    Returns the status dict from `regenerate_patient_info` (status =
+    "skipped" / "regenerated" / "not-found" / "error").
+    """
+    expected_key = settings.RXVERIFY_INTERNAL_KEY
+    if expected_key and x_rxverify_internal_key != expected_key:
+        raise HTTPException(status_code=401, detail="invalid internal key")
+
+    rxcui = body.get("rxcui")
+    name = body.get("name")
+    if not rxcui and not name:
+        raise HTTPException(status_code=400, detail="rxcui or name is required")
+
+    raw_focus = body.get("focus_areas")
+    if isinstance(raw_focus, str):
+        focus_list = [s.strip() for s in raw_focus.split(",") if s.strip()]
+    elif isinstance(raw_focus, list):
+        focus_list = [s for s in raw_focus if isinstance(s, str) and s.strip()]
+    else:
+        focus_list = None
+
+    from app.patient_info_service import regenerate_patient_info
+
+    return await regenerate_patient_info(
+        rxcui=rxcui,
+        name=name,
+        literacy_level=body.get("literacy_level"),
+        focus_areas=focus_list,
+        force=bool(body.get("force", False)),
+    )
 
 
 @app.put("/drugs/{drug_id}")

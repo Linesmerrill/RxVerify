@@ -9,11 +9,18 @@ remains — a degraded but still-correct response.
 
 Lookup order: openFDA label by RxCUI (precise), then by generic name, then by
 brand name. Results are cached in the `drug_patient_info` Mongo collection
-keyed on (rxcui-or-name, literacy_level) for CACHE_TTL_DAYS. Cached entries
-carry a `prompt_version`; rows generated under an older prompt are treated as
-stale and regenerated lazily on the next read.
+keyed on (rxcui-or-name, literacy_level). Two entry-points:
+
+* `get_patient_info(...)` — used by the on-demand GET path. Serves the cache
+  when fresh; otherwise fetches openFDA + summarizes + caches. Designed to
+  fit inside the 30s HTTP budget.
+* `regenerate_patient_info(...)` — used by the weekly batch. Fetches the
+  openFDA label, hashes the verbatim text, and skips the LLM entirely when
+  the hash and prompt_version are both unchanged from the cached entry.
+  Steady-state batches spend zero LLM tokens.
 """
 
+import hashlib
 import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, Iterable, Optional
@@ -34,15 +41,19 @@ OPENFDA_LABEL_URL = "https://api.fda.gov/drug/label.json"
 DAILYMED_SETID_URL = "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid={set_id}"
 FDA_LABEL_FALLBACK_URL = "https://labels.fda.gov/"
 
-CACHE_TTL_DAYS = 30
+# Hash-based invalidation is the primary freshness signal now (verbatim text
+# unchanged AND prompt version unchanged -> skip LLM). TTL is kept as a
+# safety net in case the weekly batch script fails for several weeks in a
+# row, so users don't see indefinitely-stale bullets.
+CACHE_TTL_DAYS = 90
 COLLECTION_NAME = "drug_patient_info"
-# Sized to fit the long-tail FDA adverse-reactions sections (lovastatin is
-# ~7100 chars; clozapine, atorvastatin similar). At 1500 we were trimming
-# off the actual list of named adverse reactions and only sending the
-# clinical-study methodology prose to the LLM — which has nothing to
-# bullet. The full payload across all 5 sections is still well under the
-# model's context limit.
-MAX_SECTION_CHARS = 8000
+# Effectively no truncation for typical FDA labels — lovastatin's longest
+# section is ~7100 chars, clozapine/atorvastatin similar. We previously
+# trimmed to 1500 and were cutting off the actual list of named adverse
+# reactions, sending the LLM only clinical-study methodology prose. With
+# gpt-4o-mini the larger input is well under the model's context limit
+# and adds negligible per-call cost.
+MAX_SECTION_CHARS = 12000
 
 # (openFDA field, ui key, display label). Order is the display order.
 SECTION_SPEC = [
@@ -82,6 +93,31 @@ def _extract_section(label: Dict[str, Any], field: str) -> Optional[str]:
     return _trim_section(text)
 
 
+def _extract_all_sections(label: Dict[str, Any]) -> Dict[str, Optional[str]]:
+    out: Dict[str, Optional[str]] = {}
+    for fda_field, ui_key, _ in SECTION_SPEC:
+        out[ui_key] = _extract_section(label, fda_field)
+    return out
+
+
+def _text_hash(sections_by_key: Dict[str, Optional[str]]) -> str:
+    """Stable hash of the verbatim text for change-detection.
+
+    Sorts keys so the hash is order-independent, and includes a section
+    delimiter so a section that moved between fields doesn't accidentally
+    collide. Used by the batch path to decide whether the label has actually
+    changed since the last LLM run; if the hash matches, we skip regen.
+    """
+    h = hashlib.sha256()
+    for key in sorted(sections_by_key.keys()):
+        text = sections_by_key.get(key) or ""
+        h.update(key.encode("utf-8"))
+        h.update(b"\x1e")  # ASCII record separator — won't appear in label text
+        h.update(text.encode("utf-8"))
+        h.update(b"\x1f")  # ASCII unit separator
+    return h.hexdigest()
+
+
 def _resolve_drug_name(label: Dict[str, Any], fallback: Optional[str]) -> str:
     openfda = label.get("openfda") or {}
     for key in ("generic_name", "brand_name", "substance_name"):
@@ -118,11 +154,13 @@ async def _shape_response(
     name: Optional[str],
     literacy_level: str,
     focus_areas: list[str],
+    extracted: Optional[Dict[str, Optional[str]]] = None,
 ) -> Dict[str, Any]:
-    # Extract verbatim sections first — the source of truth.
-    extracted: Dict[str, Optional[str]] = {}
-    for fda_field, ui_key, _ in SECTION_SPEC:
-        extracted[ui_key] = _extract_section(label, fda_field)
+    # Extract verbatim sections first — the source of truth. Caller may pass
+    # `extracted` if they already computed it (e.g. for hashing); avoids
+    # parsing the openFDA payload twice.
+    if extracted is None:
+        extracted = _extract_all_sections(label)
 
     drug_name = _resolve_drug_name(label, name)
 
@@ -321,6 +359,32 @@ async def _backfill_bullets(
     return payload
 
 
+async def _write_cache(
+    coll,
+    cache_filter: Dict[str, Any],
+    rxcui: Optional[str],
+    name: Optional[str],
+    tier: str,
+    payload: Dict[str, Any],
+    text_hash: Optional[str],
+) -> None:
+    if coll is None or cache_filter is None:
+        return
+    update: Dict[str, Any] = {
+        "rxcui": rxcui,
+        "name_lower": (name or "").strip().lower() or None,
+        "literacy_level": tier,
+        "payload": payload,
+        "cached_at": datetime.now(timezone.utc),
+    }
+    if text_hash is not None:
+        update["text_hash"] = text_hash
+    try:
+        await coll.update_one(cache_filter, {"$set": update}, upsert=True)
+    except Exception as e:
+        logger.warning(f"patient_info cache write failed: {e}")
+
+
 async def get_patient_info(
     rxcui: Optional[str],
     name: Optional[str],
@@ -331,10 +395,11 @@ async def get_patient_info(
     tuned to the reader's medical-literacy tier. Returns None if no matching
     openFDA label exists.
 
-    Sections inside the response payload may individually be None when the
-    label exists but lacks that section — the UI is expected to hide nulls.
-    `literacy_level` is one of beginner / intermediate / advanced; any other
-    value (or omission) defaults to intermediate, the 6th-grade baseline.
+    On-demand path used by `GET /drugs/patient-info`. Serves cache when fresh
+    (within TTL + matching prompt_version); otherwise fetches openFDA and
+    summarizes inline so the user never sees an empty card. The batch
+    regenerator below is responsible for keeping the cache populated with
+    high-quality results so this on-demand path rarely needs to do real work.
     """
     if not rxcui and not name:
         return None
@@ -353,8 +418,7 @@ async def get_patient_info(
                     payload = dict(payload)
                     # Cache entries written while the LLM was unavailable are
                     # missing bullets. Backfill them in-place at the current
-                    # tier so we don't have to wait for the 30-day TTL to
-                    # recover.
+                    # tier so we don't have to wait for the TTL to recover.
                     if _payload_missing_bullets(payload):
                         payload = await _backfill_bullets(
                             payload, coll, cache_filter, tier, focus
@@ -368,25 +432,92 @@ async def get_patient_info(
     if not label:
         return None
 
-    payload = await _shape_response(label, rxcui, name, tier, focus)
+    extracted = _extract_all_sections(label)
+    payload = await _shape_response(
+        label, rxcui, name, tier, focus, extracted=extracted
+    )
     payload["cache_hit"] = False
 
-    if coll is not None and cache_filter is not None:
-        try:
-            await coll.update_one(
-                cache_filter,
-                {
-                    "$set": {
-                        "rxcui": rxcui,
-                        "name_lower": (name or "").strip().lower() or None,
-                        "literacy_level": tier,
-                        "payload": payload,
-                        "cached_at": datetime.now(timezone.utc),
-                    }
-                },
-                upsert=True,
-            )
-        except Exception as e:
-            logger.warning(f"patient_info cache write failed: {e}")
-
+    await _write_cache(
+        coll, cache_filter, rxcui, name, tier, payload, _text_hash(extracted)
+    )
     return payload
+
+
+async def regenerate_patient_info(
+    rxcui: Optional[str],
+    name: Optional[str],
+    literacy_level: Optional[str] = None,
+    focus_areas: Optional[Iterable[str]] = None,
+    force: bool = False,
+) -> Dict[str, Any]:
+    """Batch-path regenerator. Hash-checks the openFDA label against the
+    cached entry; only runs the LLM when the verbatim text has actually
+    changed or the prompt version has been bumped. Returns a status dict
+    the batch script can log/aggregate over.
+
+    Status values:
+      * `not-found`  — openFDA returned no label for this drug.
+      * `skipped`    — cached hash + prompt_version match; no LLM call made.
+      * `regenerated`— LLM ran, cache updated.
+      * `error`      — unexpected failure during regen (caller may retry).
+    """
+    if not rxcui and not name:
+        return {"status": "error", "reason": "rxcui-or-name-required"}
+
+    tier = normalize_literacy_level(literacy_level)
+    focus = _normalize_focus_areas(focus_areas)
+
+    label = await _fetch_label(rxcui, name)
+    if not label:
+        return {"status": "not-found", "rxcui": rxcui, "name": name, "tier": tier}
+
+    extracted = _extract_all_sections(label)
+    new_hash = _text_hash(extracted)
+
+    coll = _get_cache_collection()
+    cache_filter = _cache_filter(rxcui, name, tier)
+
+    if coll is not None and cache_filter is not None and not force:
+        try:
+            cached = await coll.find_one(cache_filter)
+            if cached:
+                cached_payload = cached.get("payload") or {}
+                hash_match = cached.get("text_hash") == new_hash
+                version_match = cached_payload.get("prompt_version") == PROMPT_VERSION
+                no_missing_bullets = not _payload_missing_bullets(cached_payload)
+                if hash_match and version_match and no_missing_bullets:
+                    return {
+                        "status": "skipped",
+                        "reason": "unchanged",
+                        "rxcui": rxcui,
+                        "name": name,
+                        "tier": tier,
+                        "text_hash": new_hash,
+                    }
+        except Exception as e:
+            logger.warning(f"regenerate cache read failed: {e}")
+
+    try:
+        payload = await _shape_response(
+            label, rxcui, name, tier, focus, extracted=extracted
+        )
+    except Exception as e:
+        logger.warning(f"regenerate _shape_response failed: {e}")
+        return {"status": "error", "reason": str(e)}
+
+    payload["cache_hit"] = False
+    await _write_cache(coll, cache_filter, rxcui, name, tier, payload, new_hash)
+    return {
+        "status": "regenerated",
+        "rxcui": rxcui,
+        "name": name,
+        "tier": tier,
+        "text_hash": new_hash,
+        "drug_name": payload.get("drug_name"),
+        "sections_with_bullets": sum(
+            1
+            for v in (payload.get("sections") or {}).values()
+            if v and (v.get("bullets") or [])
+        ),
+    }

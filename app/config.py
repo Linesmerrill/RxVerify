@@ -38,6 +38,13 @@ class Settings:
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_PER_MINUTE", "60"))
 
+    # Shared secret for batch endpoints that mutate the patient_info cache
+    # (e.g. /drugs/patient-info/regenerate). Set this on Heroku and pass via
+    # the X-RxVerify-Internal-Key header from the med-learn batch script. If
+    # unset (local dev), the endpoint is open — production deploys MUST set
+    # it.
+    RXVERIFY_INTERNAL_KEY: str = os.getenv("RXVERIFY_INTERNAL_KEY", "")
+
     # openFDA configuration
     # API key (optional but bumps the per-IP cap from 240/min to 240/min/key
     # and 120k/day). Stored only in env / .env / Heroku config; never committed.

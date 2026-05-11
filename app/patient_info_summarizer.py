@@ -39,7 +39,7 @@ def _get_client() -> AsyncOpenAI | None:
 
 # Bump when the prompt structure or tier rules change so the service can
 # treat older cache rows as stale without a manual DB sweep.
-PROMPT_VERSION = "v8-gpt4o-2026-05"
+PROMPT_VERSION = "v9-mini-then-4o-escalation-2026-05"
 
 LITERACY_LEVELS = ("beginner", "intermediate", "advanced")
 DEFAULT_LITERACY_LEVEL = "intermediate"
@@ -147,13 +147,18 @@ async def _call_llm(
     system_prompt: str,
     user_payload: Dict[str, Any],
     drug_name: str,
+    model: Optional[str] = None,
 ) -> Dict[str, List[str]]:
     """One LLM round-trip. Returns {section_key -> bullets} for the keys in
     user_payload['sections']. Empty dict on any failure — caller decides
-    whether to fall back or retry."""
+    whether to fall back or retry.
+
+    `model` overrides the configured `OPENAI_MODEL` for this single call,
+    which the summarizer uses to escalate from the fast model on first
+    attempt to the robust model on retry."""
     try:
         response = await client.chat.completions.create(
-            model=app_settings.OPENAI_MODEL,
+            model=model or app_settings.OPENAI_MODEL,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": json.dumps(user_payload)},
@@ -207,8 +212,16 @@ async def summarize_sections(
 
     If the first LLM call returns empty bullets for any section that DID
     have real content in the input (>=30 chars), retries those sections
-    once with an explicit nudge. Bounded to a single retry so a stubborn
-    drug doesn't burn unbounded LLM budget.
+    once with:
+      1. The intermediate-tier prompt (regardless of the user's actual
+         tier — its translation rules keep the model engaged).
+      2. The OPENAI_MODEL_ROBUST model (gpt-4o) instead of OPENAI_MODEL
+         (gpt-4o-mini). gpt-4o-mini occasionally returns empty bullets
+         on dense FDA prose even at temperature=0; gpt-4o is markedly
+         more reliable. Two-model escalation lets us pay the gpt-4o cost
+         only on the ~5% of calls that actually need it.
+    Bounded to a single retry so a stubborn drug can't burn unbounded
+    LLM budget.
     """
     client = _get_client()
     if client is None:
@@ -228,6 +241,7 @@ async def summarize_sections(
         system_prompt,
         {"drug_name": drug_name, "sections": non_empty},
         drug_name,
+        model=app_settings.OPENAI_MODEL,  # fast/cheap default
     )
 
     result: Dict[str, List[str]] = {}
@@ -253,7 +267,8 @@ async def summarize_sections(
     if missing:
         logger.info(
             f"Retrying {list(missing.keys())} for {drug_name} ({tier}) — "
-            f"first call returned empty bullets; using intermediate prompt"
+            f"first call ({app_settings.OPENAI_MODEL}) returned empty bullets; "
+            f"escalating to {app_settings.OPENAI_MODEL_ROBUST} with intermediate prompt"
         )
         retry_prompt = _build_system_prompt("intermediate", focus_areas)
         retry_out = await _call_llm(
@@ -261,6 +276,7 @@ async def summarize_sections(
             retry_prompt + "\n\n" + RETRY_NUDGE,
             {"drug_name": drug_name, "sections": missing},
             drug_name,
+            model=app_settings.OPENAI_MODEL_ROBUST,  # robust escalation
         )
         for k in missing:
             bullets = _clean_bullets(retry_out.get(k))

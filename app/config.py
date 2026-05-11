@@ -11,7 +11,16 @@ class Settings:
     
     # OpenAI Configuration
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+    # OPENAI_MODEL is the primary/fast model used for the first attempt of
+    # every LLM call — chosen for low cost since most calls succeed first
+    # try.
     OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    # OPENAI_MODEL_ROBUST is the fallback used by the patient-info summarizer
+    # when the first call leaves any non-empty section without bullets.
+    # gpt-4o is markedly better at the nuanced "translate jargon without
+    # fabricating" task; only ~5% of calls escalate so the cost overhead is
+    # small while reliability approaches ~100%.
+    OPENAI_MODEL_ROBUST: str = os.getenv("OPENAI_MODEL_ROBUST", "gpt-4o")
     OPENAI_MAX_TOKENS: int = int(os.getenv("OPENAI_MAX_TOKENS", "1000"))
     OPENAI_TEMPERATURE: float = float(os.getenv("OPENAI_TEMPERATURE", "0.1"))
     

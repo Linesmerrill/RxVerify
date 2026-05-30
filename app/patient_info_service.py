@@ -22,6 +22,7 @@ keyed on (rxcui-or-name, literacy_level). Two entry-points:
 
 import hashlib
 import logging
+import re
 from datetime import datetime, timezone
 from typing import Any, Dict, Iterable, Optional
 
@@ -198,6 +199,14 @@ async def _shape_response(
     return {
         "rxcui": rxcui,
         "drug_name": drug_name,
+        # Normalized names from the resolved label, persisted so a cached entry
+        # can be re-validated against the requested name on read (see
+        # _payload_matches_name) without re-hitting openFDA. Internal field.
+        "_match_keys": {
+            "brand_name": _openfda_values(label, "brand_name"),
+            "generic_name": _openfda_values(label, "generic_name"),
+            "substance_name": _openfda_values(label, "substance_name"),
+        },
         "literacy_level": literacy_level,
         "prompt_version": PROMPT_VERSION,
         "sections": sections,
@@ -231,11 +240,109 @@ async def _query_openfda_label(query_expr: str) -> Optional[Dict[str, Any]]:
     return results[0] if results else None
 
 
+_NON_ALNUM_RE = re.compile(r"[^a-z0-9]+")
+
+
+def _norm(s: Optional[str]) -> str:
+    """Lowercase a string and collapse runs of non-alphanumerics to single
+    spaces, so 'Amlodipine Besylate' and 'amlodipine-besylate' compare equal."""
+    if not s:
+        return ""
+    return _NON_ALNUM_RE.sub(" ", s.lower()).strip()
+
+
+def _openfda_values(label: Dict[str, Any], key: str) -> list[str]:
+    vals = (label.get("openfda") or {}).get(key) or []
+    if isinstance(vals, str):
+        vals = [vals]
+    return [_norm(v) for v in vals if v]
+
+
+def _label_is_combination(label: Dict[str, Any]) -> bool:
+    """True when the label lists more than one distinct active substance
+    (e.g. Tribenzor = olmesartan + amlodipine + hydrochlorothiazide)."""
+    return len({s for s in _openfda_values(label, "substance_name") if s}) > 1
+
+
+def _label_matches_name(name: str, label: Dict[str, Any]) -> bool:
+    """Does this openFDA label actually correspond to the requested drug name?
+
+    Guards against a synthetic or shared RxCUI resolving to the wrong product.
+    The key rule: a single-ingredient request must never bind to a combination
+    label (Norvasc/amlodipine -> Tribenzor) and vice versa. A combination label
+    is therefore accepted ONLY on a brand-name match — being one of the combo's
+    ingredients is not enough.
+    """
+    q = _norm(name)
+    if not q:
+        return False
+    q_head = q.split()[0]
+
+    # Brand match uniquely identifies the product, combo or not — handles combo
+    # brands like "Tribenzor" and single brands like "Norvasc".
+    for b in _openfda_values(label, "brand_name"):
+        b_tokens = b.split()
+        if q == b or q in b_tokens or (q_head and q_head in b_tokens):
+            return True
+
+    # No brand match: only single-ingredient labels may match on the ingredient
+    # or generic name. This stops "amlodipine" (or Norvasc via its rxcui) from
+    # binding to the Tribenzor combo just because amlodipine is in it.
+    if _label_is_combination(label):
+        return False
+    for s in _openfda_values(label, "substance_name") + _openfda_values(label, "generic_name"):
+        s_tokens = s.split()
+        if q == s or q_head in s_tokens or (s_tokens and s_tokens[0] == q_head):
+            return True
+    return False
+
+
+def _payload_matches_name(name: Optional[str], payload: Dict[str, Any]) -> bool:
+    """Self-heal check for cached entries: does a cached payload's resolved
+    label still correspond to the requested name?
+
+    Entries written after this change carry `_match_keys` (the resolved
+    label's normalized openFDA names), so we re-run the exact same matcher
+    used at fetch time — a combo brand like Tribenzor keeps matching while a
+    single drug wrongly bound to a combo (Norvasc -> Tribenzor) is rejected.
+
+    Legacy entries lack `_match_keys`; for those we fall back to a conservative
+    drug_name heuristic that only evicts the exact bug shape (a single-product
+    request, no '/', whose cache resolved to a combination 'A / B / C' name
+    that doesn't name the request). Those get `_match_keys` on their next write.
+    """
+    if not name:
+        return True
+    match_keys = payload.get("_match_keys")
+    if isinstance(match_keys, dict):
+        return _label_matches_name(name, {"openfda": match_keys})
+
+    raw_dn = payload.get("drug_name") or ""
+    q = _norm(name)
+    dn = _norm(raw_dn)
+    if not q or not dn:
+        return True
+    q_head = q.split()[0]
+    if q == dn or q in dn or q_head in dn.split():
+        return True
+    cached_is_combo = "/" in raw_dn
+    requested_is_combo = "/" in name
+    if cached_is_combo and not requested_is_combo:
+        return False
+    return True
+
+
 async def _fetch_label(rxcui: Optional[str], name: Optional[str]) -> Optional[Dict[str, Any]]:
+    rxcui_label = None
     if rxcui:
-        label = await _query_openfda_label(f'openfda.rxcui:"{rxcui}"')
-        if label:
-            return label
+        rxcui_label = await _query_openfda_label(f'openfda.rxcui:"{rxcui}"')
+        # Trust the rxcui hit only when there's no name to cross-check, or when
+        # it actually matches that name. A synthetic/shared rxcui can resolve to
+        # the wrong product — e.g. Norvasc's local rxcui resolving to the
+        # Tribenzor combo label — so on a name mismatch we prefer the
+        # name-based lookup below and keep the rxcui hit only as a last resort.
+        if rxcui_label and (not name or _label_matches_name(name, rxcui_label)):
+            return rxcui_label
     if name:
         slug = name.strip().lower().replace(" ", "+")
         if slug:
@@ -245,7 +352,9 @@ async def _fetch_label(rxcui: Optional[str], name: Optional[str]) -> Optional[Di
             label = await _query_openfda_label(f"openfda.brand_name:{slug}")
             if label:
                 return label
-    return None
+    # Name lookup found nothing usable; degrade to the rxcui hit (if any) rather
+    # than returning no label at all.
+    return rxcui_label
 
 
 def _cache_filter(
@@ -414,7 +523,13 @@ async def get_patient_info(
             cached = await coll.find_one(cache_filter)
             if cached:
                 payload = cached.get("payload") or {}
-                if _is_cache_fresh(cached.get("cached_at"), payload):
+                # Self-heal entries written before the combination-product guard:
+                # if a single-product request cached a combo label (Norvasc ->
+                # Tribenzor), drop through to a fresh, validated _fetch_label.
+                if (
+                    _is_cache_fresh(cached.get("cached_at"), payload)
+                    and _payload_matches_name(name, payload)
+                ):
                     payload = dict(payload)
                     # Cache entries written while the LLM was unavailable are
                     # missing bullets. Backfill them in-place at the current

@@ -216,8 +216,33 @@ async def _shape_response(
     }
 
 
-async def _query_openfda_label(query_expr: str) -> Optional[Dict[str, Any]]:
-    params: Dict[str, Any] = {"search": query_expr, "limit": 1}
+def _pick_best_label(
+    results: list[Dict[str, Any]], name: Optional[str]
+) -> Optional[Dict[str, Any]]:
+    """Choose the best candidate from a set of openFDA labels.
+
+    Preference order: (1) labels that actually match the requested name —
+    which excludes combination products for a single-ingredient request, so
+    "metformin" picks plain metformin over the Saxagliptin/Metformin combo;
+    then (2) an oral form over an injectable/IV one. Falls back to the first
+    result when nothing matches, so the caller's name/combo gate still applies.
+    """
+    if not results:
+        return None
+    candidates = results
+    if name:
+        matched = [r for r in results if _label_matches_name(name, r)]
+        if matched:
+            candidates = matched
+    return next((r for r in candidates if _is_oral_label(r)), candidates[0])
+
+
+async def _query_openfda_label(
+    query_expr: str, name: Optional[str] = None
+) -> Optional[Dict[str, Any]]:
+    # Fetch several candidates (not just 1) so we can prefer a name-matching,
+    # single-ingredient, oral form over a combo/injectable openFDA ranks first.
+    params: Dict[str, Any] = {"search": query_expr, "limit": 10}
     if app_settings.OPENFDA_API_KEY:
         params["api_key"] = app_settings.OPENFDA_API_KEY
     try:
@@ -236,8 +261,7 @@ async def _query_openfda_label(query_expr: str) -> Optional[Dict[str, Any]]:
     except Exception as e:
         logger.warning(f"openFDA label query unexpected error ({query_expr}): {e}")
         return None
-    results = data.get("results") or []
-    return results[0] if results else None
+    return _pick_best_label(data.get("results") or [], name)
 
 
 _NON_ALNUM_RE = re.compile(r"[^a-z0-9]+")
@@ -264,6 +288,32 @@ def _label_is_combination(label: Dict[str, Any]) -> bool:
     return len({s for s in _openfda_values(label, "substance_name") if s}) > 1
 
 
+# Routes/forms taken by mouth. This app is about the pills people take at home,
+# so an oral form should win over an injectable/IV version of the same drug.
+_ORAL_ROUTES = {"ORAL", "SUBLINGUAL", "BUCCAL"}
+_ORAL_FORM_HINTS = (
+    "TABLET", "CAPSULE", "ORAL", "SUBLINGUAL", "BUCCAL",
+    "LOZENGE", "CHEWABLE", "GRANULE", "FILM", "TROCHE",
+)
+
+
+def _is_oral_label(label: Dict[str, Any]) -> bool:
+    """Best-effort check that a label describes an orally-administered form.
+    Routes are the strong signal; dosage_form wording is a fallback for the
+    labels that omit `route`. A label with neither is treated as non-oral so
+    it never beats a label we can positively confirm as oral."""
+    openfda = label.get("openfda") or {}
+    routes = openfda.get("route") or []
+    if isinstance(routes, str):
+        routes = [routes]
+    if any((r or "").strip().upper() in _ORAL_ROUTES for r in routes):
+        return True
+    forms = openfda.get("dosage_form") or []
+    if isinstance(forms, str):
+        forms = [forms]
+    return any(any(h in (f or "").upper() for h in _ORAL_FORM_HINTS) for f in forms)
+
+
 def _label_matches_name(name: str, label: Dict[str, Any]) -> bool:
     """Does this openFDA label actually correspond to the requested drug name?
 
@@ -277,19 +327,28 @@ def _label_matches_name(name: str, label: Dict[str, Any]) -> bool:
     if not q:
         return False
     q_head = q.split()[0]
+    brands = _openfda_values(label, "brand_name")
 
-    # Brand match uniquely identifies the product, combo or not — handles combo
-    # brands like "Tribenzor" and single brands like "Norvasc".
-    for b in _openfda_values(label, "brand_name"):
-        b_tokens = b.split()
-        if q == b or q in b_tokens or (q_head and q_head in b_tokens):
-            return True
+    # An EXACT brand match always wins — it uniquely identifies the product,
+    # combo or not. This is the only way a combination label is accepted, so a
+    # combo brand like "Tribenzor" still matches itself.
+    if any(q == b for b in brands):
+        return True
 
-    # No brand match: only single-ingredient labels may match on the ingredient
-    # or generic name. This stops "amlodipine" (or Norvasc via its rxcui) from
-    # binding to the Tribenzor combo just because amlodipine is in it.
+    # For a combination product, a loose/partial match is NOT enough. "Metformin"
+    # must not bind to "Saxagliptin and Metformin Hydrochloride" just because
+    # 'metformin' is one of its ingredients (or a token in its brand name), and
+    # likewise "amlodipine" must not bind to Tribenzor. Only the exact brand
+    # match above accepts a combo.
     if _label_is_combination(label):
         return False
+
+    # Single-ingredient label: a partial brand-token or ingredient/generic match
+    # is fine (handles "Norvasc" -> brand, "amlodipine" -> substance/generic).
+    for b in brands:
+        b_tokens = b.split()
+        if q in b_tokens or (q_head and q_head in b_tokens):
+            return True
     for s in _openfda_values(label, "substance_name") + _openfda_values(label, "generic_name"):
         s_tokens = s.split()
         if q == s or q_head in s_tokens or (s_tokens and s_tokens[0] == q_head):
@@ -333,28 +392,38 @@ def _payload_matches_name(name: Optional[str], payload: Dict[str, Any]) -> bool:
 
 
 async def _fetch_label(rxcui: Optional[str], name: Optional[str]) -> Optional[Dict[str, Any]]:
-    rxcui_label = None
+    # Non-oral but otherwise-correct label, kept only as a last resort so an
+    # injectable-only drug still resolves when no oral form exists.
+    fallback = None
+
     if rxcui:
-        rxcui_label = await _query_openfda_label(f'openfda.rxcui:"{rxcui}"')
+        rxcui_label = await _query_openfda_label(f'openfda.rxcui:"{rxcui}"', name)
         # Trust the rxcui hit only when there's no name to cross-check, or when
         # it actually matches that name. A synthetic/shared rxcui can resolve to
         # the wrong product — e.g. Norvasc's local rxcui resolving to the
         # Tribenzor combo label — so on a name mismatch we prefer the
         # name-based lookup below and keep the rxcui hit only as a last resort.
         if rxcui_label and (not name or _label_matches_name(name, rxcui_label)):
-            return rxcui_label
+            if _is_oral_label(rxcui_label) or not name:
+                return rxcui_label
+            # Matched but non-oral (e.g. an IV-only rxcui). Hold it and look for
+            # the oral form by name before settling.
+            fallback = rxcui_label
+
     if name:
         slug = name.strip().lower().replace(" ", "+")
         if slug:
-            label = await _query_openfda_label(f"openfda.generic_name:{slug}")
-            if label:
-                return label
-            label = await _query_openfda_label(f"openfda.brand_name:{slug}")
-            if label:
-                return label
-    # Name lookup found nothing usable; degrade to the rxcui hit (if any) rather
-    # than returning no label at all.
-    return rxcui_label
+            for field in ("generic_name", "brand_name"):
+                label = await _query_openfda_label(f"openfda.{field}:{slug}", name)
+                if label:
+                    if _is_oral_label(label):
+                        return label
+                    if fallback is None:
+                        fallback = label
+
+    # No oral form found anywhere; degrade to the best non-oral match (if any)
+    # rather than returning no label at all.
+    return fallback
 
 
 def _cache_filter(

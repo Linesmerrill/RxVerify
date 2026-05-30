@@ -39,7 +39,7 @@ def _get_client() -> AsyncOpenAI | None:
 
 # Bump when the prompt structure or tier rules change so the service can
 # treat older cache rows as stale without a manual DB sweep.
-PROMPT_VERSION = "v9-mini-then-4o-escalation-2026-05"
+PROMPT_VERSION = "v10-oral-pref-plain-gloss-2026-05"
 
 LITERACY_LEVELS = ("beginner", "intermediate", "advanced")
 DEFAULT_LITERACY_LEVEL = "intermediate"
@@ -69,7 +69,9 @@ _TIER_RULES = {
         "grade_level": "6th grade (the baseline patient-comms target)",
         "max_words": 18,
         "extra_rules": [
-            "Translate clinical terms inline with the everyday word in parentheses: 'acid reflux (GERD)', 'kidney inflammation (nephritis)', 'a serious gut infection (C. difficile diarrhea)'.",
+            "Lead with the everyday words; put the medical term in parentheses AFTER, never before: 'acid reflux (GERD)', 'kidney inflammation (nephritis)', 'a serious gut infection (C. difficile diarrhea)'.",
+            "NEVER leave a disease, condition, or Latin/Greek medical term standing alone without a plain-English gloss. This includes condition NAMES, not just symptoms: 'hypothyroidism' -> 'low thyroid (hypothyroidism)', 'myxedema coma' -> 'a dangerous drop in thyroid hormone (myxedema coma)', 'diabetic ketoacidosis' -> 'a serious diabetes emergency (diabetic ketoacidosis)'. If a 12-year-old would not know the word, gloss it.",
+            "The plain gloss describes what the term MEANS in ordinary words — that is linguistic translation, allowed under the TRANSLATING VS FABRICATING rule. Do not add new facts (frequencies, causes, severities) the source doesn't state; keep the gloss to the plain meaning of the word.",
             "Expand acronyms on first use; after that the acronym alone is fine.",
             "You / your is preferred, but third-person ('some people may...') is acceptable.",
         ],
